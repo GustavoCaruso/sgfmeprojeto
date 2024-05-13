@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SGFME.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0ca5ba159acb2fb4c8b059c167f2a43474a0c034")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a50eb309502f346e454006774760129d829eef8a")]
 [assembly: System.Reflection.AssemblyProductAttribute("SGFME.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SGFME.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

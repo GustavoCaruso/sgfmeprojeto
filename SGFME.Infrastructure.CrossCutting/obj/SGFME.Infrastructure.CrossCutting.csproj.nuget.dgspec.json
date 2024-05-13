@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gusta\\source\\repos\\SGFME\\SGFME.Infrastructure.CrossCutting\\SGFME.Infrastructure.CrossCutting.csproj": {}
+    "C:\\Users\\gusta\\Documents\\SGFME\\SGFME.Infrastructure.CrossCutting\\SGFME.Infrastructure.CrossCutting.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gusta\\source\\repos\\SGFME\\SGFME.Infrastructure.CrossCutting\\SGFME.Infrastructure.CrossCutting.csproj": {
+    "C:\\Users\\gusta\\Documents\\SGFME\\SGFME.Infrastructure.CrossCutting\\SGFME.Infrastructure.CrossCutting.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gusta\\source\\repos\\SGFME\\SGFME.Infrastructure.CrossCutting\\SGFME.Infrastructure.CrossCutting.csproj",
+        "projectUniqueName": "C:\\Users\\gusta\\Documents\\SGFME\\SGFME.Infrastructure.CrossCutting\\SGFME.Infrastructure.CrossCutting.csproj",
         "projectName": "SGFME.Infrastructure.CrossCutting",
-        "projectPath": "C:\\Users\\gusta\\source\\repos\\SGFME\\SGFME.Infrastructure.CrossCutting\\SGFME.Infrastructure.CrossCutting.csproj",
+        "projectPath": "C:\\Users\\gusta\\Documents\\SGFME\\SGFME.Infrastructure.CrossCutting\\SGFME.Infrastructure.CrossCutting.csproj",
         "packagesPath": "C:\\Users\\gusta\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gusta\\source\\repos\\SGFME\\SGFME.Infrastructure.CrossCutting\\obj\\",
+        "outputPath": "C:\\Users\\gusta\\Documents\\SGFME\\SGFME.Infrastructure.CrossCutting\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

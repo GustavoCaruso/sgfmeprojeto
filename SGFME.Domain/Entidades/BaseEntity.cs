@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SGFME.Domain.Entidades
 {
-    internal class BaseEntity
+    public abstract class BaseEntity
     {
+        public virtual long id { get; set; }
     }
 }
