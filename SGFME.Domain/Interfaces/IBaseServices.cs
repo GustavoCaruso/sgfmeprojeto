@@ -24,7 +24,7 @@ namespace SGFME.Domain.Interfaces
 
         public IEnumerable<TModel> GetFiltro<TModel>(
         Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity >, IOrderedQueryable<TEntity >> orderBy = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         string includeProperties = null,
         long? take = null)
         where TModel : class;

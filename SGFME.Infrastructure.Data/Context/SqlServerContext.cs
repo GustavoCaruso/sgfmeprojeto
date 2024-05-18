@@ -16,12 +16,15 @@ namespace SGFME.Infrastructure.Data.Context
             this.Database.EnsureCreated();
         }
 
-        public DbSet<Paciente> pacientes { get; set; }//Replicar para as próximas entidades
+        public DbSet<Paciente> paciente { get; set; }//Replicar para as próximas entidades
+        public DbSet<Contato> contato { get; set; }//Replicar para as próximas entidades
+        public DbSet<TipoContato> tipocontato { get; set; }//Replicar para as próximas entidades
+
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv4;integrated security=true;TrustServerCertificate=True;";
+            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv12;integrated security=true;TrustServerCertificate=True;";
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(stringConexao);
@@ -32,6 +35,8 @@ namespace SGFME.Infrastructure.Data.Context
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Paciente>(new PacienteMapping().Configure);//Replicar para as próximas entidades
+            modelBuilder.Entity<Contato>(new ContatoMapping().Configure);//Replicar para as próximas entidades
+            modelBuilder.Entity<TipoContato>(new TipoContatoMapping().Configure);//Replicar para as próximas entidades
 
         }
     }

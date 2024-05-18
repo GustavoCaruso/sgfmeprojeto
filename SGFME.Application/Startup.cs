@@ -29,11 +29,11 @@ namespace SGFME.Application
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProjetoConsultorio.Application", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SGFME.Application", Version = "v1" });
             });
             services.AddCors(); // Make sure you call this previous to AddMvc
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
+
             services.AddSingleton<IConfiguration>(Configuration);
 
             services.AddDbContext<SqlServerContext>(); //contexto
@@ -45,20 +45,32 @@ namespace SGFME.Application
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 
             });
-            
+
             services.AddSingleton(new MapperConfiguration(config =>
             {
-                
+
 
                 config.CreateMap<Paciente, PacienteModel>();
                 config.CreateMap<PacienteModel, Paciente>();
 
-                
+                config.CreateMap<Contato, ContatoModel>();
+                config.CreateMap<ContatoModel, Contato>();
+
+                config.CreateMap<TipoContato, TipoContatoModel>();
+                config.CreateMap<TipoContatoModel, TipoContato>();
+
+
 
             }).CreateMapper());
 
             services.AddScoped<IBaseService<Paciente>, BaseService<Paciente>>();
             services.AddScoped<IBaseRepository<Paciente>, BaseRepository<Paciente>>();
+
+            services.AddScoped<IBaseService<Contato>, BaseService<Contato>>();
+            services.AddScoped<IBaseRepository<Contato>, BaseRepository<Contato>>();
+
+            services.AddScoped<IBaseService<TipoContato>, BaseService<TipoContato>>();
+            services.AddScoped<IBaseRepository<TipoContato>, BaseRepository<TipoContato>>();
 
         }
 

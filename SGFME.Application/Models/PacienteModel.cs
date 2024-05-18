@@ -1,4 +1,7 @@
-﻿namespace SGFME.Application.Models
+﻿using SGFME.Domain.Entidades;
+using System.Text.Json.Serialization;
+
+namespace SGFME.Application.Models
 {
     public class PacienteModel
     {
@@ -17,7 +20,9 @@
         public  string corRaca { get; set; }
         public  string estadoCivil { get; set; }
         //public String status { get; set; } status vai se relacionar com outra tabela
-        //public String medicacao { get; set; } medica vai se relacionar com outra tabela
+        //public String medicacao { get; set; } medicacao vai se relacionar com outra tabela
         public  string nomeMae { get; set; }
+
+        public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
     }
 }

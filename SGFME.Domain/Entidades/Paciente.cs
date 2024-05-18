@@ -8,6 +8,7 @@ namespace SGFME.Domain.Entidades
 {
     public class Paciente : BaseEntity
     {
+        
         public  string nomeCompleto { get; set; }
         public  string sexo { get; set; }
         public  string rg { get; set; }
@@ -24,6 +25,7 @@ namespace SGFME.Domain.Entidades
         //public String status { get; set; } status vai se relacionar com outra tabela
         //public String medicacao { get; set; } medica vai se relacionar com outra tabela
         public  string nomeMae { get; set; }
+        public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
 
     }
 }
