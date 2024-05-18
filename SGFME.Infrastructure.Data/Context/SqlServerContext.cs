@@ -19,6 +19,9 @@ namespace SGFME.Infrastructure.Data.Context
         public DbSet<Paciente> paciente { get; set; }//Replicar para as próximas entidades
         public DbSet<Contato> contato { get; set; }//Replicar para as próximas entidades
         public DbSet<TipoContato> tipocontato { get; set; }//Replicar para as próximas entidades
+        public DbSet<CorRaca> corraca { get; set; }//Replicar para as próximas entidades
+        public DbSet<Sexo> sexo { get; set; }//Replicar para as próximas entidades
+        public DbSet<Rg> rg { get; set; }//Replicar para as próximas entidades
 
 
 
@@ -37,6 +40,9 @@ namespace SGFME.Infrastructure.Data.Context
             modelBuilder.Entity<Paciente>(new PacienteMapping().Configure);//Replicar para as próximas entidades
             modelBuilder.Entity<Contato>(new ContatoMapping().Configure);//Replicar para as próximas entidades
             modelBuilder.Entity<TipoContato>(new TipoContatoMapping().Configure);//Replicar para as próximas entidades
+            modelBuilder.Entity<CorRaca>(new CorRacaMapping().Configure);//Replicar para as próximas entidades
+            modelBuilder.Entity<Sexo>(new SexoMapping().Configure);//Replicar para as próximas entidades
+            modelBuilder.Entity<Rg>(new RgMapping().Configure);//Replicar para as próximas entidades
 
         }
     }

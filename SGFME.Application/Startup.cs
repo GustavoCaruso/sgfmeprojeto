@@ -59,6 +59,14 @@ namespace SGFME.Application
                 config.CreateMap<TipoContato, TipoContatoModel>();
                 config.CreateMap<TipoContatoModel, TipoContato>();
 
+                config.CreateMap<CorRaca, CorRacaModel>();
+                config.CreateMap<CorRacaModel, CorRaca>();
+
+                config.CreateMap<Sexo, SexoModel>();
+                config.CreateMap<SexoModel, Sexo>();
+
+                
+
 
 
             }).CreateMapper());
@@ -71,6 +79,12 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<TipoContato>, BaseService<TipoContato>>();
             services.AddScoped<IBaseRepository<TipoContato>, BaseRepository<TipoContato>>();
+
+            services.AddScoped<IBaseService<CorRaca>, BaseService<CorRaca>>();
+            services.AddScoped<IBaseRepository<CorRaca>, BaseRepository<CorRaca>>();
+
+            services.AddScoped<IBaseService<Sexo>, BaseService<Sexo>>();
+            services.AddScoped<IBaseRepository<Sexo>, BaseRepository<Sexo>>();
 
         }
 
