@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -65,7 +66,34 @@ namespace SGFME.Application
                 config.CreateMap<Sexo, SexoModel>();
                 config.CreateMap<SexoModel, Sexo>();
 
-                
+                config.CreateMap<Rg, RgModel>();
+                config.CreateMap<RgModel, Rg>();
+
+                config.CreateMap<Cpf, CpfModel>();
+                config.CreateMap<CpfModel, Cpf>();
+
+                config.CreateMap<Status, StatusModel>();
+                config.CreateMap<StatusModel, Status>();
+
+                config.CreateMap<EstadoCivil, EstadoCivilModel>();
+                config.CreateMap<EstadoCivilModel, EstadoCivil>();
+
+                config.CreateMap<Profissao, ProfissaoModel>();
+                config.CreateMap<ProfissaoModel, Profissao>();
+
+                config.CreateMap<Endereco, EnderecoModel>();
+                config.CreateMap<EnderecoModel, Endereco>();
+
+                config.CreateMap<Cns, CnsModel>();
+                config.CreateMap<CnsModel, Cns>();
+
+                config.CreateMap<Naturalidade, NaturalidadeModel>();
+                config.CreateMap<NaturalidadeModel, Naturalidade>();
+
+                config.CreateMap<TipoEndereco, TipoEnderecoModel>();
+                config.CreateMap<TipoEnderecoModel, TipoEndereco>();
+
+
 
 
 
@@ -85,6 +113,33 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<Sexo>, BaseService<Sexo>>();
             services.AddScoped<IBaseRepository<Sexo>, BaseRepository<Sexo>>();
+
+            services.AddScoped<IBaseService<Rg>, BaseService<Rg>>();
+            services.AddScoped<IBaseRepository<Rg>, BaseRepository<Rg>>();
+
+            services.AddScoped<IBaseService<Cpf>, BaseService<Cpf>>();
+            services.AddScoped<IBaseRepository<Cpf>, BaseRepository<Cpf>>();
+
+            services.AddScoped<IBaseService<Status>, BaseService<Status>>();
+            services.AddScoped<IBaseRepository<Status>, BaseRepository<Status>>();
+
+            services.AddScoped<IBaseService<EstadoCivil>, BaseService<EstadoCivil>>();
+            services.AddScoped<IBaseRepository<EstadoCivil>, BaseRepository<EstadoCivil>>();
+
+            services.AddScoped<IBaseService<Profissao>, BaseService<Profissao>>();
+            services.AddScoped<IBaseRepository<Profissao>, BaseRepository<Profissao>>();
+
+            services.AddScoped<IBaseService<Endereco>, BaseService<Endereco>>();
+            services.AddScoped<IBaseRepository<Endereco>, BaseRepository<Endereco>>();
+
+            services.AddScoped<IBaseService<Cns>, BaseService<Cns>>();
+            services.AddScoped<IBaseRepository<Cns>, BaseRepository<Cns>>();
+
+            services.AddScoped<IBaseService<Naturalidade>, BaseService<Naturalidade>>();
+            services.AddScoped<IBaseRepository<Naturalidade>, BaseRepository<Naturalidade>>();
+
+            services.AddScoped<IBaseService<TipoEndereco>, BaseService<TipoEndereco>>();
+            services.AddScoped<IBaseRepository<TipoEndereco>, BaseRepository<TipoEndereco>>();
 
         }
 
