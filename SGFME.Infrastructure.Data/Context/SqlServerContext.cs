@@ -35,7 +35,7 @@ namespace SGFME.Infrastructure.Data.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv13;integrated security=true;TrustServerCertificate=True;";
+            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv16;integrated security=true;TrustServerCertificate=True;";
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(stringConexao);

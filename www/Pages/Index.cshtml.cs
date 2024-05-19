@@ -12,9 +12,11 @@ namespace www.Pages
             _logger = logger;
         }
 
+        public string ActivePage { get; private set; }
+
         public void OnGet()
         {
-
+            ActivePage = "Index";
         }
     }
 }

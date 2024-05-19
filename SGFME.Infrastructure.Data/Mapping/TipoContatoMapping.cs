@@ -15,9 +15,9 @@ namespace SGFME.Infrastructure.Data.Mapping
         {
             builder.ToTable("TipoContato"); //Nome da tabela no SqlServer
 
-            builder.HasKey(prop => prop.id); //Chave primária no SqlServer
+           
 
-            builder.ToTable("TipoContato"); //nome da tabela no banco
+       
             builder.HasKey(p => p.id); //definição de chave primaria
             builder.Property(p => p.nome).IsRequired() //campo requerido
                 .HasColumnType("varchar(150)")  //tipo da coluna

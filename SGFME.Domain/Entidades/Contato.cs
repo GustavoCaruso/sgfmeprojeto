@@ -16,7 +16,7 @@ namespace SGFME.Domain.Entidades
         public virtual Paciente paciente { get; set; } // Propriedade de navegação
 
 
-        //Relacionamento com a entidade TipoContato-One to one
+        //Relacionamento com a entidade TipoEndereco-One to one
         public long idTipoContato { get; set; } // Chave estrangeira
         public virtual TipoContato tipocontato { get; set; } // Propriedade de navegação
     }

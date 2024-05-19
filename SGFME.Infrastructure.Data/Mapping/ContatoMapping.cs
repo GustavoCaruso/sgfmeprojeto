@@ -26,7 +26,7 @@ namespace SGFME.Infrastructure.Data.Mapping
             .HasColumnType("varchar(150)");
 
 
-            //relacionamento com categoria
+            
             builder.HasOne(p => p.tipocontato).WithMany(c => c.contato)
                 .HasConstraintName("fk_tipocontato_contato")
                 .HasForeignKey(p => p.idTipoContato)

@@ -13,7 +13,7 @@ namespace SGFME.Domain.Entidades
         public string orgaoExpedidor { get; set; }
         public string ufEmissao { get; set; }
 
+        public virtual Paciente paciente { get; set; } // Navegação de volta para Paciente
 
-       
     }
 }

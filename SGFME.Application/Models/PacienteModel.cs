@@ -7,22 +7,26 @@ namespace SGFME.Application.Models
     {
         public  virtual long id { get; set; }
         public  string nomeCompleto { get; set; }
-        public  string sexo { get; set; }
-        public  string rg { get; set; }
-        public  string cpf { get; set; }
-        public  string cns { get; set; }
+        
         public decimal peso { get; set; }
         public decimal altura { get; set; }
-        //public String cid { get; set; } cid vai se relacionar com outra tabela
+        
         public DateTime dataNascimento { get; set; }
-        public  string naturalidade { get; set; }
-        public  string ufNaturalidade { get; set; }
-        public  string corRaca { get; set; }
-        public  string estadoCivil { get; set; }
-        //public String status { get; set; } status vai se relacionar com outra tabela
-        //public String medicacao { get; set; } medicacao vai se relacionar com outra tabela
+        public int idade { get; set; }
+        
         public  string nomeMae { get; set; }
 
+
+        //relacionamento de one to one
+        public long idCns { get; set; }
+        public virtual Cns cns { get; set; }
+
+        //relacionamento de one to one
+        public long idRg { get; set; }
+        public virtual Rg rg { get; set; }
+
+
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
+        public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
     }
 }

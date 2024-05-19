@@ -30,6 +30,16 @@
         background: #eee;
     }
 
+        .sidebar li:hover {
+            background: #eee;
+            border-radius: 8px;
+        }
+
+            .sidebar li:hover a,
+            .sidebar li:hover a:hover {
+                color: #1f2937;
+            }
+
     .sidebar li.active {
         background: #eee;
         border-radius: 8px;
@@ -74,15 +84,14 @@
             </div>
 
             <ul class="list-unstyled px-2">
-                <li class="">
-                    <a href="#" class="text-decoration-none px-3 py-2 d-block">
-                        <i class="fas fa-home"></i> Dashboard
+                <li class="@(Model.ActivePage == "Index" ? "active" : "")">
+                    <a href="/Index" class="text-decoration-none px-3 py-2 d-block">
+                        <i class="fas fa-home"></i> Início
                     </a>
                 </li>
-                <li class="">
+                <li class="@(Model.ActivePage == "Paciente" ? "active" : "")">
                     <a href="/Paciente" class="text-decoration-none px-3 py-2 d-block">
-                        <i class="fas fa-list"></i>
-                        Paciente
+                        <i class="fas fa-list"></i> Paciente
                     </a>
                 </li>
                 <li class="">

@@ -14,7 +14,9 @@ namespace SGFME.Infrastructure.Data.Mapping
         public void Configure(EntityTypeBuilder<TipoEndereco> builder)
         {
             builder.ToTable("TipoEndereco"); //nome da table no banco
+
             builder.HasKey(p => p.id); //definição de chave primaria
+
             builder.Property(p => p.nome).IsRequired() //campo requerido
                 .HasColumnType("varchar(150)")  //tipo da coluna
                 .HasColumnName("nome");  //nome da coluna no bd

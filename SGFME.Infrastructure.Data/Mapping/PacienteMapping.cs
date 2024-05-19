@@ -23,30 +23,6 @@ namespace SGFME.Infrastructure.Data.Mapping
             .HasColumnName("nomeCompleto")
             .HasColumnType("varchar(150)");
 
-            builder.Property(prop => prop.sexo)
-            .HasConversion(prop => prop.ToString(), prop => prop)
-            .IsRequired()
-            .HasColumnName("sexo")
-            .HasColumnType("varchar(50)");
-
-            builder.Property(prop => prop.rg)
-            .HasConversion(prop => prop.ToString(), prop => prop)
-            .IsRequired()
-            .HasColumnName("rg")
-            .HasColumnType("varchar(8)");
-
-            builder.Property(prop => prop.cpf)
-            .HasConversion(prop => prop.ToString(), prop => prop)
-            .IsRequired()
-            .HasColumnName("cpf")
-            .HasColumnType("varchar(11)");
-
-            builder.Property(prop => prop.cns)
-            .HasConversion(prop => prop.ToString(), prop => prop)
-            .IsRequired()
-            .HasColumnName("cns")
-            .HasColumnType("varchar(15)");
-
             builder.Property(prop => prop.peso)
             .IsRequired()
             .HasColumnName("peso")
@@ -63,35 +39,29 @@ namespace SGFME.Infrastructure.Data.Mapping
             .HasColumnName("dataNascimento")
             .HasColumnType("datetime");
 
-            builder.Property(prop => prop.naturalidade)
-            .HasConversion(prop => prop.ToString(), prop => prop)
+            builder.Property(prop => prop.idade)
             .IsRequired()
-            .HasColumnName("naturalidade")
-            .HasColumnType("varchar(150)");
-
-            builder.Property(prop => prop.ufNaturalidade)
-            .HasConversion(prop => prop.ToString(), prop => prop)
-            .IsRequired()
-            .HasColumnName("ufNaturalidade")
-            .HasColumnType("varchar(2)");
-
-            builder.Property(prop => prop.corRaca)
-            .HasConversion(prop => prop.ToString(), prop => prop)
-            .IsRequired()
-            .HasColumnName("corRaca")
-            .HasColumnType("varchar(50)");
-
-            builder.Property(prop => prop.estadoCivil)
-            .HasConversion(prop => prop.ToString(), prop => prop)
-            .IsRequired()
-            .HasColumnName("estadoCivil")
-            .HasColumnType("varchar(50)");
+            .HasColumnName("idade")
+            .HasColumnType("int");
 
             builder.Property(prop => prop.nomeMae)
             .HasConversion(prop => prop.ToString(), prop => prop)
             .IsRequired()
             .HasColumnName("nomeMae")
             .HasColumnType("varchar(150)");
+
+
+
+            builder.HasOne(p => p.cns)
+                .WithOne(c => c.paciente)
+                .HasForeignKey<Paciente>(p => p.idCns)
+                .OnDelete(DeleteBehavior.Cascade); // ou .Restrict baseado em sua regra de negócio
+
+
+            builder.HasOne(p => p.rg)
+               .WithOne(c => c.paciente)
+               .HasForeignKey<Paciente>(p => p.idRg)
+               .OnDelete(DeleteBehavior.Cascade); // ou .Restrict baseado em sua regra de negócio
 
 
 

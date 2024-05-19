@@ -9,5 +9,8 @@ namespace SGFME.Domain.Entidades
     public class Cns : BaseEntity
     {
         public string numero { get; set; }
+
+
+        public virtual Paciente paciente { get; set; } // Navegação de volta para Paciente
     }
 }
