@@ -32,7 +32,7 @@ namespace SGFME.Application
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SGFME.Application", Version = "v1" });
             });
-            services.AddCors(); // Make sure you call this previous to AddMvc
+            //services.AddCors(); // Make sure you call this previous to AddMvc
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSingleton<IConfiguration>(Configuration);
@@ -66,11 +66,7 @@ namespace SGFME.Application
                 config.CreateMap<Sexo, SexoModel>();
                 config.CreateMap<SexoModel, Sexo>();
 
-                config.CreateMap<Rg, RgModel>();
-                config.CreateMap<RgModel, Rg>();
-
-                config.CreateMap<Cpf, CpfModel>();
-                config.CreateMap<CpfModel, Cpf>();
+                
 
                 config.CreateMap<Status, StatusModel>();
                 config.CreateMap<StatusModel, Status>();
@@ -84,14 +80,19 @@ namespace SGFME.Application
                 config.CreateMap<Endereco, EnderecoModel>();
                 config.CreateMap<EnderecoModel, Endereco>();
 
-                config.CreateMap<Cns, CnsModel>();
-                config.CreateMap<CnsModel, Cns>();
+               
 
                 config.CreateMap<Naturalidade, NaturalidadeModel>();
                 config.CreateMap<NaturalidadeModel, Naturalidade>();
 
                 config.CreateMap<TipoEndereco, TipoEnderecoModel>();
                 config.CreateMap<TipoEnderecoModel, TipoEndereco>();
+
+                config.CreateMap<Pessoa, PessoaModel>();
+                config.CreateMap<PessoaModel, Pessoa>();
+
+                config.CreateMap<Cid, CidModel>();
+                config.CreateMap<CidModel, Cid>();
 
 
 
@@ -114,11 +115,7 @@ namespace SGFME.Application
             services.AddScoped<IBaseService<Sexo>, BaseService<Sexo>>();
             services.AddScoped<IBaseRepository<Sexo>, BaseRepository<Sexo>>();
 
-            services.AddScoped<IBaseService<Rg>, BaseService<Rg>>();
-            services.AddScoped<IBaseRepository<Rg>, BaseRepository<Rg>>();
-
-            services.AddScoped<IBaseService<Cpf>, BaseService<Cpf>>();
-            services.AddScoped<IBaseRepository<Cpf>, BaseRepository<Cpf>>();
+           
 
             services.AddScoped<IBaseService<Status>, BaseService<Status>>();
             services.AddScoped<IBaseRepository<Status>, BaseRepository<Status>>();
@@ -132,14 +129,19 @@ namespace SGFME.Application
             services.AddScoped<IBaseService<Endereco>, BaseService<Endereco>>();
             services.AddScoped<IBaseRepository<Endereco>, BaseRepository<Endereco>>();
 
-            services.AddScoped<IBaseService<Cns>, BaseService<Cns>>();
-            services.AddScoped<IBaseRepository<Cns>, BaseRepository<Cns>>();
+           
 
             services.AddScoped<IBaseService<Naturalidade>, BaseService<Naturalidade>>();
             services.AddScoped<IBaseRepository<Naturalidade>, BaseRepository<Naturalidade>>();
 
             services.AddScoped<IBaseService<TipoEndereco>, BaseService<TipoEndereco>>();
             services.AddScoped<IBaseRepository<TipoEndereco>, BaseRepository<TipoEndereco>>();
+
+            services.AddScoped<IBaseService<Pessoa>, BaseService<Pessoa>>();
+            services.AddScoped<IBaseRepository<Pessoa>, BaseRepository<Pessoa>>();
+
+            services.AddScoped<IBaseService<Cid>, BaseService<Cid>>();
+            services.AddScoped<IBaseRepository<Cid>, BaseRepository<Cid>>();
 
         }
 
@@ -150,7 +152,7 @@ namespace SGFME.Application
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProjetoConsultorio.Application v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGFME.Application v1"));
             }
 
             app.UseHttpsRedirection();

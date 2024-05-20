@@ -52,17 +52,45 @@ namespace SGFME.Infrastructure.Data.Mapping
 
 
 
-            builder.HasOne(p => p.cns)
-                .WithOne(c => c.paciente)
-                .HasForeignKey<Paciente>(p => p.idCns)
-                .OnDelete(DeleteBehavior.Cascade); // ou .Restrict baseado em sua regra de negócio
+            builder.Property(p => p.rgNumero).IsRequired() //campo requerido
+                .HasColumnType("varchar(150)")  //tipo da coluna
+                .HasColumnName("rgNumero");  //nome da coluna no bd
+
+            builder.Property(p => p.rgDataEmissao)
+                .HasColumnType("datetime")
+                .HasColumnName("rgDataEmissao");
+
+            builder.Property(p => p.rgOrgaoExpedidor).IsRequired() //campo requerido
+                .HasColumnType("varchar(150)")  //tipo da coluna
+                .HasColumnName("orgaoExpedidor");  //nome da coluna no bd
+
+            builder.Property(p => p.rgUfEmissao).IsRequired() //campo requerido
+                .HasColumnType("varchar(150)")  //tipo da coluna
+                .HasColumnName("ufEmissao");  //nome da coluna no bd
 
 
-            builder.HasOne(p => p.rg)
-               .WithOne(c => c.paciente)
-               .HasForeignKey<Paciente>(p => p.idRg)
-               .OnDelete(DeleteBehavior.Cascade); // ou .Restrict baseado em sua regra de negócio
 
+
+            builder.Property(p => p.cpfNumero).IsRequired() //campo requerido
+                .HasColumnType("varchar(150)")  //tipo da coluna
+                .HasColumnName("cpfNumero");  //nome da coluna no bd
+
+
+            builder.Property(p => p.cnsNumero).IsRequired() //campo requerido
+                .HasColumnType("varchar(150)")  //tipo da coluna
+                .HasColumnName("cnsNumero");  //nome da coluna no bd
+
+
+
+
+            builder.Property(p => p.nomeConjuge) //campo requerido
+               .HasColumnType("varchar(150)")  //tipo da coluna
+               .HasColumnName("nomeConjuge");  //nome da coluna no bd
+
+
+            builder.Property(p => p.dataCadastro)
+                .HasColumnType("datetime")
+                .HasColumnName("dataCadastro");
 
 
         }

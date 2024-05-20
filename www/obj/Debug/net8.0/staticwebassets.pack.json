@@ -13,8 +13,16 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Cid.js",
+      "PackagePath": "staticwebassets\\js\\Cid.js"
+    },
+    {
       "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Paciente.js",
       "PackagePath": "staticwebassets\\js\\Paciente.js"
+    },
+    {
+      "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\TipoContato.js",
+      "PackagePath": "staticwebassets\\js\\TipoContato.js"
     },
     {
       "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\site.js",

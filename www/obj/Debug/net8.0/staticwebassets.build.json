@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "0gF4GQgxVS6Herp0PpzB7+P+3zVWCqxzbbEvq01kOxU=",
+  "Hash": "vLYShu7ddFEFJ3idgk34uQL2fG//Jahj5DEOdGRB00E=",
   "Source": "www",
   "BasePath": "_content/www",
   "Mode": "Default",
@@ -105,6 +105,25 @@
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
+      "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Cid.js",
+      "SourceId": "www",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\",
+      "BasePath": "_content/www",
+      "RelativePath": "js/Cid.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\Cid.js"
+    },
+    {
       "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Paciente.js",
       "SourceId": "www",
       "SourceType": "Discovered",
@@ -141,6 +160,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\site.js"
+    },
+    {
+      "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\TipoContato.js",
+      "SourceId": "www",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\",
+      "BasePath": "_content/www",
+      "RelativePath": "js/TipoContato.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\TipoContato.js"
     },
     {
       "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",

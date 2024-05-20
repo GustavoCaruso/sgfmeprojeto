@@ -9,11 +9,11 @@ namespace SGFME.Application.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RgController : ControllerBase
+    public class PessoaController : ControllerBase
     {
-        private IBaseService<Rg> _baseService;
+        private IBaseService<Pessoa> _baseService;
 
-        public RgController(IBaseService<Rg> baseService)
+        public PessoaController(IBaseService<Pessoa> baseService)
         {
             _baseService = baseService;
         }
@@ -31,28 +31,28 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        //EndPoint para criar um Rg:
+        //EndPoint para criar um Pessoa:
         [HttpPost]
-        public IActionResult Create(RgModel Rg)
+        public IActionResult Create(PessoaModel Pessoa)
         {
-            if (Rg == null)
+            if (Pessoa == null)
                 return NotFound();
-            return Execute(() => _baseService.Add<RgModel,
-           RgValidator>(Rg));
+            return Execute(() => _baseService.Add<PessoaModel,
+           PessoaValidator>(Pessoa));
         }
 
-        //EndPoint para alterar um Rg:
+        //EndPoint para alterar um Pessoa:
         [HttpPut]
-        public IActionResult Update(RgModel Rg)
+        public IActionResult Update(PessoaModel Pessoa)
         {
-            if (Rg == null)
+            if (Pessoa == null)
                 return NotFound();
-            return Execute(() => _baseService.Update<RgModel,
-           RgValidator>(Rg));
+            return Execute(() => _baseService.Update<PessoaModel,
+           PessoaValidator>(Pessoa));
         }
 
 
-        //EndPoint para excluir um Rg:
+        //EndPoint para excluir um Pessoa:
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -67,14 +67,14 @@ namespace SGFME.Application.Controllers
         }
 
 
-        // EndPoint para selecionar um Rg pelo ID:
+        // EndPoint para selecionar um Pessoa pelo ID:
         [HttpGet("{id:long}")]
         public IActionResult Get(long id)
         {
             if (id == 0)
                 return NotFound();
 
-            return Execute(() => _baseService.GetById<RgModel>(id));
+            return Execute(() => _baseService.GetById<PessoaModel>(id));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SGFME.Application.Models;
 using SGFME.Domain.Entidades;
@@ -76,5 +77,6 @@ namespace SGFME.Application.Controllers
 
             return Execute(() => _baseService.GetById<TipoContatoModel>(id));
         }
+
     }
 }

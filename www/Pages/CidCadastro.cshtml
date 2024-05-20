@@ -1,0 +1,34 @@
+﻿@page
+@model www.Pages.CidCadastroModel
+@{
+}
+
+
+<form class="row g-3">
+    <div class="col-md-2">
+        <label for="txtid" class="form-label">Código</label>
+        <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
+    </div>
+
+    <div class="col-md-2">
+        <label for="txtcodigo" class="form-label">Código CID</label>
+        <input type="text" class="form-control" id="txtcodigo" value="0" placeholder="Código CID" required>
+    </div>
+
+    <div class="col-md-8">
+        <label for="txtdescricao" class="form-label">Descrição</label>
+        <input type="text" class="form-control" id="txtdescricao" placeholder="Código CID" required>
+    </div>
+
+
+
+    <div class="col-12">
+        <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
+        <button type="button" id="btnlimpar" class="btn btn-primary">Limpar</button>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script src="~/js/Cid.js"></script>
+}

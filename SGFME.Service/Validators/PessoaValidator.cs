@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace SGFME.Service.Validators
 {
-    public class RgValidator : AbstractValidator<Rg>
+    public class PessoaValidator : AbstractValidator<Pessoa>
     {
-        public RgValidator()
+        public PessoaValidator()
         {
-           
+            
         }
     }
 }

@@ -1,0 +1,35 @@
+﻿@page
+@model www.Pages.TipoContatoModel
+@{
+}
+
+
+
+<div class="container mt-5">
+    <h1>Status da consulta</h1>
+
+    <div class="container">
+
+        <input type="hidden" id="txtid" value="0" />
+
+        <div class="form-group">
+            <label for="txtnome">Nome</label>
+            <input type="text" class="form-control" id="txtnome" placeholder="Nome">
+        </div>
+
+
+
+        <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
+        <button type="button" id="btnlimpar" class="btn btn-secondary">Limpar</button>
+
+        <hr />
+
+
+
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/js/TipoContato.js"></script>
+} 

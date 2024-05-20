@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SGFME.Domain.Entidades
 {
-    public class Cpf : BaseEntity
+    public class Cid : BaseEntity
     {
-        public string numero { get; set; }
-       
+        public string codigo { get; set; }
+        public string descricao { get; set; }
     }
 }

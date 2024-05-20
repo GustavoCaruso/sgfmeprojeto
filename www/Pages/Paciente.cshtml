@@ -10,74 +10,16 @@
     </div>
 
 
-    <div class="col-md-6">
-        <label for="txtnomeCompleto" class="form-label">Nome Completo</label>
-        <input type="text" class="form-control" id="txtnomeCompleto" placeholder="Nome Completo" required>
-    </div>
-
-
-    <div class="col-md-4">
-        <label for="txtsexo" class="form-label">Sexo</label>
-        <select id="txtsexo" class="form-select" required>
-            <option selected>Escolha...</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Feminino">Feminino</option>
-            <option value="Outro">Outro</option>
+    <h2>Formulário de Paciente</h2>
+    <form id="formPaciente">
+        <label for="tipoContatoSelect">Tipo de Contato:</label>
+        <select id="tipoContatoSelect" name="tipoContato">
+            <!-- Options serão adicionadas dinamicamente pela função jQuery -->
         </select>
-    </div>
+        <!-- Outros campos do formulário -->
+        <input type="submit" value="Salvar Paciente">
+    </form>
 
-    <div class="col-md-6">
-        <label for="txtrg" class="form-label">RG</label>
-        <input type="text" class="form-control" id="txtrg" placeholder="RG" required>
-    </div>
-    <div class="col-md-6">
-        <label for="txtcpf" class="form-label">CPF</label>
-        <input type="text" class="form-control" id="txtcpf" placeholder="CPF"required>
-    </div>
-    <div class="col-md-6">
-        <label for="txtcns" class="form-label">CNS</label>
-        <input type="text" class="form-control" id="txtcns" placeholder="CNS" required>
-    </div>
-    <div class="col-md-3">
-        <label for="txtpeso" class="form-label">Peso</label>
-        <input type="number" class="form-control" value="0" id="txtpeso" placeholder="Peso" required>
-    </div>
-    <div class="col-md-3">
-        <label for="txtaltura" class="form-label">Altura</label>
-        <input type="number" class="form-control" value="0" id="txtaltura" placeholder="Altura" required>
-    </div>
-    <div class="col-md-6">
-        <label for="txtdataNascimento" class="form-label">Data de Nascimento</label>
-        <input type="date" class="form-control" id="txtdataNascimento" required>
-    </div>
-    <div class="col-md-6">
-        <label for="txtnaturalidade" class="form-label">Naturalidade</label>
-        <input type="text" class="form-control" id="txtnaturalidade" placeholder="Naturalidade" required>
-    </div>
-    <div class="col-md-3">
-        <label for="txtufNaturalidade" class="form-label">UF Naturalidade</label>
-        <input type="text" class="form-control" id="txtufNaturalidade" placeholder="UF Naturalidade" required>
-    </div>
-    <div class="col-md-3">
-        <label for="txtcorRaca" class="form-label">Cor/Raça</label>
-        <input type="text" class="form-control" id="txtcorRaca" placeholder="Cor/Raça" required>
-    </div>
-    <div class="col-md-6">
-        <label for="txtestadoCivil" class="form-label">Estado Civil</label>
-        <input type="text" class="form-control" id="txtestadoCivil" placeholder="Estado Civil" required>
-    </div>
-    <div class="col-md-6">
-        <label for="txtnomeMae" class="form-label">Nome da Mãe</label>
-        <input type="text" class="form-control" id="txtnomeMae" placeholder="Nome da Mãe" required>
-    </div>
-    <div class="col-md-6">
-        <label for="txttipoContato" class="form-label">Tipo de Contato</label>
-        <input type="text" class="form-control" id="txttipoContato" placeholder="Tipo de Contato" required>
-    </div>
-    <div class="col-md-6">
-        <label for="txtvalorContato" class="form-label">Valor do Contato</label>
-        <input type="text" class="form-control" id="txtvalorContato" placeholder="Valor do Contato" required>
-    </div>
 
 
 

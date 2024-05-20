@@ -17,13 +17,25 @@ namespace SGFME.Application.Models
         public  string nomeMae { get; set; }
 
 
-        //relacionamento de one to one
-        public long idCns { get; set; }
-        public virtual Cns cns { get; set; }
+        //propriedades adicionadas agora
 
-        //relacionamento de one to one
-        public long idRg { get; set; }
-        public virtual Rg rg { get; set; }
+
+        //propriedades do rg
+        public string rgNumero { get; set; }
+        public DateTime rgDataEmissao { get; set; }
+        public string rgOrgaoExpedidor { get; set; }
+        public string rgUfEmissao { get; set; }
+
+
+        //propriedades do cns
+        public string cnsNumero { get; set; }
+
+        //propriedades do cpf
+        public string cpfNumero { get; set; }
+
+
+        public string nomeConjuge { get; set; }
+        public DateTime dataCadastro { get; set; }
 
 
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();

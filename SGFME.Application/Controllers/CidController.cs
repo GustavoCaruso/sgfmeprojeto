@@ -9,11 +9,11 @@ namespace SGFME.Application.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CpfController : ControllerBase
+    public class CidController : ControllerBase
     {
-        private IBaseService<Cpf> _baseService;
+        private IBaseService<Cid> _baseService;
 
-        public CpfController(IBaseService<Cpf> baseService)
+        public CidController(IBaseService<Cid> baseService)
         {
             _baseService = baseService;
         }
@@ -31,28 +31,28 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        //EndPoint para criar um Cpf:
+        //EndPoint para criar um Cid:
         [HttpPost]
-        public IActionResult Create(CpfModel Cpf)
+        public IActionResult Create(CidModel Cid)
         {
-            if (Cpf == null)
+            if (Cid == null)
                 return NotFound();
-            return Execute(() => _baseService.Add<CpfModel,
-           CpfValidator>(Cpf));
+            return Execute(() => _baseService.Add<CidModel,
+           CidValidator>(Cid));
         }
 
-        //EndPoint para alterar um Cpf:
+        //EndPoint para alterar um Cid:
         [HttpPut]
-        public IActionResult Update(CpfModel Cpf)
+        public IActionResult Update(CidModel Cid)
         {
-            if (Cpf == null)
+            if (Cid == null)
                 return NotFound();
-            return Execute(() => _baseService.Update<CpfModel,
-           CpfValidator>(Cpf));
+            return Execute(() => _baseService.Update<CidModel,
+           CidValidator>(Cid));
         }
 
 
-        //EndPoint para excluir um Cpf:
+        //EndPoint para excluir um Cid:
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -67,14 +67,14 @@ namespace SGFME.Application.Controllers
         }
 
 
-        // EndPoint para selecionar um Cpf pelo ID:
+        // EndPoint para selecionar um Cid pelo ID:
         [HttpGet("{id:long}")]
         public IActionResult Get(long id)
         {
             if (id == 0)
                 return NotFound();
 
-            return Execute(() => _baseService.GetById<CpfModel>(id));
+            return Execute(() => _baseService.GetById<CidModel>(id));
         }
     }
 }

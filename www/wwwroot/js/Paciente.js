@@ -1,76 +1,41 @@
-﻿
-const urlAPI = "https://localhost:44309/"
+﻿const urlAPI = "https://localhost:44309/";
+
 $(document).ready(function () {
-
-    // Essa função vai fazer o botão limpar o formulário
-    $("#btnlimpar").click(function () {
-        $("#txtid").val('0');
-        $("#txtnomeCompleto").val('');
-        $("#txtsexo").val('');
-        $("#txtrg").val('');
-        $("#txtcpf").val('');
-        $("#txtcns").val('');
-        $("#txtpeso").val('0');
-        $("#txtaltura").val('0');
-        $("#txtdataNascimento").val('');
-        $("#txtnaturalidade").val('');
-        $("#txtufNaturalidade").val('');
-        $("#txtcorRaca").val('');
-        $("#txtestadoCivil").val('');
-        $("#txtnomeMae").val('');
-    });
-
-    // Essa função vai fazer o botão salvar os dados do formulário
-    $("#btnsalvar").click(function () {
-        // Aqui é para validar os campos
-        const obj = {
-            id: $("#txtid").val(),
-            nomeCompleto: $("#txtnomeCompleto").val(),
-            sexo: $("#txtsexo").val(),
-            rg: $("#txtrg").val(),
-            cpf: $("#txtcpf").val(),
-            cns: $("#txtcns").val(),
-            peso: $("#txtpeso").val(),
-            altura: $("#txtaltura").val(),
-            dataNascimento: $("#txtdataNascimento").val(),
-            naturalidade: $("#txtnaturalidade").val(),
-            ufNaturalidade: $("#txtufNaturalidade").val(),
-            corRaca: $("#txtcorRaca").val(),
-            estadoCivil: $("#txtestadoCivil").val(),
-            nomeMae: $("#txtnomeMae").val()
-        };
-
-        console.log(JSON.stringify(obj))
-
+    // Função para carregar os tipos de contato
+    function carregarTiposContato() {
         $.ajax({
-            type: $("#txtid").val() == "0" ? "POST" : "PUT",
-            url: urlAPI + "api/Paciente",
-            contentType: "application/json;charset=utf-8",
-            data: JSON.stringify(obj),
-            dataType: "json",
-            success: function (jsonResult) {
-                console.log(jsonResult);
-                $("#txtid").val('0');
-                $("#txtnomeCompleto").val('');
-                $("#txtsexo").val('');
-                $("#txtrg").val('');
-                $("#txtcpf").val('');
-                $("#txtcns").val('');
-                $("#txtpeso").val('0');
-                $("#txtaltura").val('0');
-                $("#txtdataNascimento").val('');
-                $("#txtnaturalidade").val('');
-                $("#txtufNaturalidade").val('');
-                $("#txtcorRaca").val('');
-                $("#txtestadoCivil").val('');
-                $("#txtnomeMae").val('');
-                alert("Dados Salvos com sucesso!");
+            url: urlAPI + "api/TipoContato",
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Limpar o select
+                $('#tipoContatoSelect').empty();
 
+                // Adicionar uma opção padrão
+                $('#tipoContatoSelect').append($('<option>', {
+                    value: '',
+                    text: 'Selecione o tipo de contato'
+                }));
+
+                // Adicionar os tipos de contato ao select
+                $.each(data, function (index, tipo) {
+                    $('#tipoContatoSelect').append($('<option>', {
+                        value: tipo.id,
+                        text: tipo.nome
+                    }));
+                });
             },
-            failure: function (response) {
-                alert("Erro ao carregar os dados: " + response);
+            error: function (xhr, status, error) {
+                console.error('Erro ao carregar tipos de contato:', error);
             }
         });
-    });
+    }
 
+    // Chamar a função para carregar os tipos de contato quando a página carregar
+    carregarTiposContato();
+
+    // Evento de mudança no select de tipo de contato
+    $('#tipoContatoSelect').change(function () {
+        // Aqui você pode adicionar lógica adicional se necessário
+    });
 });

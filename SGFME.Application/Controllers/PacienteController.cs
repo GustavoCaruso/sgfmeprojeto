@@ -57,42 +57,19 @@ namespace SGFME.Application.Controllers
                         dataNascimento = request.dataNascimento,
                         idade = request.idade,
                         nomeMae = request.nomeMae,
+                        rgNumero = request.rgNumero,
+                        rgOrgaoExpedidor = request.rgOrgaoExpedidor,
+                        rgDataEmissao = request.rgDataEmissao,
+                        rgUfEmissao = request.rgUfEmissao,
+                        cpfNumero = request.cpfNumero,
+                        cnsNumero = request.cnsNumero,
+                        nomeConjuge = request.nomeConjuge,
+                        dataCadastro = request.dataCadastro,
                         // Inicializa a lista de contatos
                         contato = new List<Contato>(),
                         endereco = new List<Endereco>()
                     };
-                    // Verifica se foi fornecido um CNS no DTO
-                    if (!string.IsNullOrEmpty(request.cnsNumero))
-                    {
-                        // Verifica se o CNS já existe no banco de dados
-                        var cnsExistente = await _context.cns.FirstOrDefaultAsync(c => c.numero == request.cnsNumero);
-                        if (cnsExistente != null)
-                        {
-                            // Associa o CNS existente ao paciente
-                            novoPaciente.cns = cnsExistente;
-                        }
-                        else
-                        {
-                            // Se o CNS não existe, cria um novo CNS
-                            var novoCns = new Cns { numero = request.cnsNumero };
-                            novoPaciente.cns = novoCns;
-                        }
-                    }
-                    // Verifica se foram fornecidos detalhes do RG no DTO
-                    if (!string.IsNullOrEmpty(request.rgNumero))
-                    {
-                        // Cria um novo objeto RG
-                        var novoRg = new Rg
-                        {
-                            numero = request.rgNumero,
-                            dataEmissao = request.rgDataEmissao,
-                            orgaoExpedidor = request.rgOrgaoExpedidor,
-                            ufEmissao = request.rgUfEmissao
-                        };
-
-                        // Associa o RG ao paciente
-                        novoPaciente.rg = novoRg;
-                    }
+                    
 
 
 
