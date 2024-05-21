@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("www")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+765e49f282700a7c6356287cfe4ac06a6df8a936")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+263fc15cf938666e81d7d89bc43abf586ebacb57")]
 [assembly: System.Reflection.AssemblyProductAttribute("www")]
 [assembly: System.Reflection.AssemblyTitleAttribute("www")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

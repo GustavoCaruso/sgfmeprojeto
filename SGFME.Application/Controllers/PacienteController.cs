@@ -154,5 +154,41 @@ namespace SGFME.Application.Controllers
 
             return Execute(() => _baseService.GetById<PacienteModel>(id));
         }
+
+
+
+
+
+
+        [HttpGet]
+        [Route("api/TipoContato")]
+        public IActionResult ObterTiposContato()
+        {
+            try
+            {
+                var tiposContato = _context.tipocontato.ToList();
+                return Ok(tiposContato);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("api/TipoEndereco")]
+        public IActionResult ObterTipoEndereco()
+        {
+            try
+            {
+                var tipoEndereco = _context.tipoendereco.ToList();
+                return Ok(tipoEndereco);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }

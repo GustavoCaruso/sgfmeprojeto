@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SGFME.Infrastructure.CrossCutting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a50eb309502f346e454006774760129d829eef8a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+263fc15cf938666e81d7d89bc43abf586ebacb57")]
 [assembly: System.Reflection.AssemblyProductAttribute("SGFME.Infrastructure.CrossCutting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SGFME.Infrastructure.CrossCutting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

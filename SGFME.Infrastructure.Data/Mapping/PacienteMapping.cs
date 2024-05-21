@@ -62,11 +62,11 @@ namespace SGFME.Infrastructure.Data.Mapping
 
             builder.Property(p => p.rgOrgaoExpedidor).IsRequired() //campo requerido
                 .HasColumnType("varchar(150)")  //tipo da coluna
-                .HasColumnName("orgaoExpedidor");  //nome da coluna no bd
+                .HasColumnName("rgOrgaoExpedidor");  //nome da coluna no bd
 
             builder.Property(p => p.rgUfEmissao).IsRequired() //campo requerido
                 .HasColumnType("varchar(150)")  //tipo da coluna
-                .HasColumnName("ufEmissao");  //nome da coluna no bd
+                .HasColumnName("rgUfEmissao");  //nome da coluna no bd
 
 
 
