@@ -4,26 +4,76 @@
     ViewData["Title"] = "Home page";
 }
 
+<style>
+    .logo {
+        width: 100%; /* Ajusta para 100% da largura do contêiner pai */
+        height: auto; /* Mantém a proporção da imagem */
+        max-width: 200px; /* Largura máxima da imagem */
+    }
+
+</style>
+
 <div class="container mt-4">
-    <h1 class="text-center mb-4">Bem-vindo ao Sistema</h1>
+    <div class="text-center mb-2 d-flex justify-content-center align-items-center">
+        <!-- reduzi a margem inferior -->
+        <h1 style="margin-bottom: 0; flex-grow: 0;">
+             Bem-vindo  ao
+        </h1>
+        <a class="navbar-brand" href="#" style="flex-grow: 0;">
+            <img src="/img/logo-sgfme.png" alt="Logo SGFME" class="logo">
+        </a>
+    </div>
+    <p class="text-center mb-1">
+        <!-- reduzi a margem superior para 'mb-1' -->
+        Sistema de Gestão para Farmácia de Medicamentos Especializados
+    </p>
+
+
+
+
 
     <h2 class="mb-3">Módulos</h2>
+ 
     <div class="row mb-4">
         <div class="col-md-4 mb-4">
-            <div class="card grid-item text-center py-5">
-                <i class="fas fa-user-injured fa-3x mb-3"></i>
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-hospital fa-3x mb-3 icon-dark"></i>
+                <h3>Estabelecimento de Saúde</h3>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-user-injured fa-3x mb-3 icon-dark"></i>
                 <h3>Paciente</h3>
             </div>
         </div>
         <div class="col-md-4 mb-4">
-            <div class="card grid-item text-center py-5">
-                <i class="fas fa-user-tie fa-3x mb-3"></i>
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-user-tie fa-3x mb-3 icon-dark"></i>
                 <h3>Funcionário</h3>
             </div>
         </div>
         <div class="col-md-4 mb-4">
-            <div class="card grid-item text-center py-5">
-                <i class="fas fa-user-md fa-3x mb-3"></i>
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-user-friends fa-3x mb-3 icon-dark"></i>
+                <h3>Representante</h3>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-diagnoses fa-3x mb-3 icon-dark"></i>
+                <h3>CID</h3>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-pills fa-3x mb-3 icon-dark"></i>
+                <h3>Medicamento</h3>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-user-md fa-3x mb-3 icon-dark"></i>
                 <h3>Médico</h3>
             </div>
         </div>
@@ -32,20 +82,20 @@
     <h2 class="mb-3">Relatórios</h2>
     <div class="row mb-4">
         <div class="col-md-4 mb-4">
-            <div class="card grid-item text-center py-5">
-                <i class="fas fa-file-alt fa-3x mb-3"></i>
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-file-alt fa-3x mb-3 icon-dark"></i>
                 <h3>Relatórios</h3>
             </div>
         </div>
         <div class="col-md-4 mb-4">
-            <div class="card grid-item text-center py-5">
-                <i class="fas fa-pills fa-3x mb-3"></i>
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-pills fa-3x mb-3 icon-dark"></i>
                 <h3>Dispensação</h3>
             </div>
         </div>
         <div class="col-md-4 mb-4">
-            <div class="card grid-item text-center py-5">
-                <i class="fas fa-chart-line fa-3x mb-3"></i>
+            <div class="card grid-item text-center py-5 bg-dark text-white">
+                <i class="fas fa-chart-line fa-3x mb-3 icon-dark"></i>
                 <h3>Estatísticas</h3>
             </div>
         </div>
@@ -56,10 +106,23 @@
     .grid-item {
         transition: transform 0.3s, background-color 0.3s;
         cursor: pointer;
+        background-color: #f8f9fa; /* Cor original dos itens da grade */
     }
 
         .grid-item:hover {
             transform: scale(1.05);
             background-color: #d1d1d1;
         }
+
+    .bg-dark {
+        background-color: #1f2937 !important; /* Cor de fundo dos itens da grade alterada para escuro */
+    }
+
+    .icon-dark {
+        color: #f8f9fa; /* Cor dos ícones alterada para clara */
+    }
+
+    .text-white {
+        color: #fff !important; /* Mantém o texto em branco para contraste */
+    }
 </style>

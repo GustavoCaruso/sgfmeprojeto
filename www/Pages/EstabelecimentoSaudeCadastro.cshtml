@@ -1,0 +1,98 @@
+﻿@page
+@model www.Pages.EstabelecimentoSaudeCadastroModel
+@{
+}
+
+
+<form class="row g-3">
+
+
+
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <i class="fas fa-hospital fa-3x mb-3"></i>
+        </div>
+        <div class="col">
+            <h1>Cadastro de Estabelecimento de Saúde</h1>
+            <hr />
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <label for="txtid" class="form-label">Código</label>
+        <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
+    </div>
+
+    <div class="col-md-2">
+        <label for="txtnomeFantasia" class="form-label">Nome Fantasia</label>
+        <input type="text" class="form-control" id="txtnomeFantasia" placeholder="Nome Fantasia" required>
+    </div>
+
+    <div class="col-md-8">
+        <label for="txtrazaoSocial" class="form-label">Razão Social</label>
+        <input type="text" class="form-control" id="txtrazaoSocial" placeholder="Razão Social" required>
+    </div>
+
+    <div class="col-md-8">
+        <label for="txtcnes" class="form-label">Número do CNES</label>
+        <input type="text" class="form-control" id="txtcnes" placeholder="Número do CNES" required>
+    </div>
+
+
+
+
+    <h3 style="margin-bottom:0.5%; margin-top:2%">Contato</h3>
+    <!-- Campos de contato -->
+    <div id="contatos-container" class="col-md-12">
+        <div class="contato row">
+            <div class="col-md-4">
+                <label for="txttipocontato" class="form-label">Tipo de Contato</label>
+                <select class="form-select" id="txttipocontato" required>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="txtvalor" class="form-label">Contato</label>
+                <input type="text" class="form-control" id="txtvalor" placeholder="Contato" required>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="col-12">
+        <button type="button" id="btnAdicionarContato" class="btn btn-secondary">Adicionar Contato</button>
+    </div>
+
+    <div class="col-12">
+        <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
+        <button type="button" id="btnlimpar" class="btn btn-primary">Limpar</button>
+    </div>
+
+
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Código</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Visualizar</th>
+            <th scope="col">Excluir</th>
+        </tr>
+    </thead>
+    <tbody id="tabela">
+    </tbody>
+</table>
+
+<table style="display:none">
+    <tr id="linhaExemplo">
+        <th scope="row" class="codigo"></th>
+        <td class="nomeFantasia"></td>
+        <td><a href="#" class="alterar">Visualizar</a></td>
+        <td><a href="#" class="excluir">Excluir</a></td>
+    </tr>
+</table>
+
+@section Scripts {
+    <script src="~/js/EstabelecimentoSaude.js"></script>
+}

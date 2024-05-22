@@ -94,6 +94,9 @@ namespace SGFME.Application
                 config.CreateMap<Cid, CidModel>();
                 config.CreateMap<CidModel, Cid>();
 
+                config.CreateMap<EstabelecimentoSaude, EstabelecimentoSaudeModel>();
+                config.CreateMap<EstabelecimentoSaudeModel, EstabelecimentoSaude>();
+
 
 
 
@@ -142,6 +145,9 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<Cid>, BaseService<Cid>>();
             services.AddScoped<IBaseRepository<Cid>, BaseRepository<Cid>>();
+
+            services.AddScoped<IBaseService<EstabelecimentoSaude>, BaseService<EstabelecimentoSaude>>();
+            services.AddScoped<IBaseRepository<EstabelecimentoSaude>, BaseRepository<EstabelecimentoSaude>>();
 
         }
 

@@ -9,13 +9,16 @@ namespace SGFME.Application.Models
         public string tipo { get; set; }
         public string valor { get; set; }
 
-        public long idPaciente { get; set; } // Chave estrangeira
+        public long? idPaciente { get; set; } // Chave estrangeira
         
         public virtual Paciente paciente { get; set; } // Propriedade de navegação
 
+        public string discriminator { get; set; } // Propriedade discriminadora
 
-
-        public long idTipoContato { get; set; } // Chave estrangeira
+        public long? idTipoContato { get; set; } // Chave estrangeira
         public virtual TipoContato tipocontato { get; set; } // Propriedade de navegação
+
+        public long idEstabelecimentoSaude { get; set; } // Chave estrangeira
+        public virtual EstabelecimentoSaude estabelecimentosaude { get; set; } // Propriedade de navegação
     }
 }

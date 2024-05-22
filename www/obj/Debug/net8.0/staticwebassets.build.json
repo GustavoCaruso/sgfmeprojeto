@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "vLYShu7ddFEFJ3idgk34uQL2fG//Jahj5DEOdGRB00E=",
+  "Hash": "HqbEu2OFfK+w4PMhZFHKx0ctm82EQ2Mcp3lyBsrTm34=",
   "Source": "www",
   "BasePath": "_content/www",
   "Mode": "Default",
@@ -105,6 +105,25 @@
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
+      "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\img\\logo-sgfme.png",
+      "SourceId": "www",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\",
+      "BasePath": "_content/www",
+      "RelativePath": "img/logo-sgfme.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\img\\logo-sgfme.png"
+    },
+    {
       "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Cid.js",
       "SourceId": "www",
       "SourceType": "Discovered",
@@ -122,6 +141,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\Cid.js"
+    },
+    {
+      "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\EstabelecimentoSaude.js",
+      "SourceId": "www",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\",
+      "BasePath": "_content/www",
+      "RelativePath": "js/EstabelecimentoSaude.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\EstabelecimentoSaude.js"
     },
     {
       "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Paciente.js",

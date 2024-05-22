@@ -13,8 +13,16 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\img\\logo-sgfme.png",
+      "PackagePath": "staticwebassets\\img\\logo-sgfme.png"
+    },
+    {
       "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Cid.js",
       "PackagePath": "staticwebassets\\js\\Cid.js"
+    },
+    {
+      "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\EstabelecimentoSaude.js",
+      "PackagePath": "staticwebassets\\js\\EstabelecimentoSaude.js"
     },
     {
       "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Paciente.js",

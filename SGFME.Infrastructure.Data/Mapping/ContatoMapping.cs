@@ -34,11 +34,23 @@ namespace SGFME.Infrastructure.Data.Mapping
 
 
 
-            //Relação com a tabela de Paciente 
+            // Relação com a tabela de Paciente 
             builder.HasOne(p => p.paciente).WithMany(c => c.contato)
                 .HasConstraintName("fk_paciente_contato")
                 .HasForeignKey(p => p.idPaciente)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
+            // Relação com a tabela de EstabelecimentoSaude 
+            builder.HasOne(p => p.estabelecimentosaude).WithMany(c => c.contato)
+                .HasConstraintName("fk_estabelecimentosaude_contato")
+                .HasForeignKey(p => p.idEstabelecimentoSaude)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
+            builder.Property(prop => prop.discriminator)
+                .IsRequired()
+                .HasMaxLength(50);
         }
     }
 }
