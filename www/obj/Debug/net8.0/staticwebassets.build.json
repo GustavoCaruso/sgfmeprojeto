@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "HqbEu2OFfK+w4PMhZFHKx0ctm82EQ2Mcp3lyBsrTm34=",
+  "Hash": "Dmq5xrbLAMt1IwhdpMXYrGGFltXU9PfSNu1S+x8S/uA=",
   "Source": "www",
   "BasePath": "_content/www",
   "Mode": "Default",
@@ -160,6 +160,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\EstabelecimentoSaude.js"
+    },
+    {
+      "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Medico.js",
+      "SourceId": "www",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\",
+      "BasePath": "_content/www",
+      "RelativePath": "js/Medico.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\Medico.js"
     },
     {
       "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Paciente.js",

@@ -97,6 +97,9 @@ namespace SGFME.Application
                 config.CreateMap<EstabelecimentoSaude, EstabelecimentoSaudeModel>();
                 config.CreateMap<EstabelecimentoSaudeModel, EstabelecimentoSaude>();
 
+                config.CreateMap<Medico, MedicoModel>();
+                config.CreateMap<MedicoModel, Medico>();
+
 
 
 
@@ -148,6 +151,9 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<EstabelecimentoSaude>, BaseService<EstabelecimentoSaude>>();
             services.AddScoped<IBaseRepository<EstabelecimentoSaude>, BaseRepository<EstabelecimentoSaude>>();
+
+            services.AddScoped<IBaseService<Medico>, BaseService<Medico>>();
+            services.AddScoped<IBaseRepository<Medico>, BaseRepository<Medico>>();
 
         }
 

@@ -25,17 +25,22 @@ $(document).ready(function () {
         });
     }
 
-
-
     $("#contatos-container").on("click", ".btnRemoverContato", function () {
         $(this).closest(".contato").remove();
     });
 
+
+
+
+
+
+
+
     // Adicionar mais contatos
     $("#btnAdicionarContato").click(function () {
         let novoContato = `
-        <div class="contato">
-           <div class="col-md-4">
+        <div class="contato row mb-3">
+           <div class="col-md-2">
                 <label class="form-label">Contato</label>
                 <input type="text" class="form-control" placeholder="Contato" required>
             </div>
@@ -43,9 +48,9 @@ $(document).ready(function () {
                 <label class="form-label">Tipo de Contato</label>
                 <select class="form-select" required></select>
             </div>
-            <div class="col-md-4">
-                <button type="button" class="btn btn-danger btnRemoverContato">Remover</button>
-            </div>
+             <div class="col-md-4 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btnRemoverContato mt-2">Remover</button>
+        </div>
         </div>
         `;
         let novoElemento = $(novoContato);
@@ -61,12 +66,12 @@ $(document).ready(function () {
 
 
 
-    $("btnlimpar").click(function () {
+    $("#btnlimpar").click(function () {
         $("#txtid").val('0');
         $("#txtnomeFantasia").val('');
         $("#txtrazaoSocial").val('');
         $("#txtcnes").val('');
-
+        $("#contatos-container").empty();
     });
 
 
@@ -99,7 +104,7 @@ $(document).ready(function () {
             id: $("#txtid").val(),
             nomeFantasia: $("#txtnomeFantasia").val(),
             razaoSocial: $("#txtrazaoSocial").val(),
-            Cnes: $("#txtcnes").val(),
+            cnes: $("#txtcnes").val(),
             contato: contatos
         }
         console.log(JSON.stringify(obj));
@@ -123,8 +128,16 @@ $(document).ready(function () {
                 location.reload(); // Atualiza a página para limpar os campos dinamicos
 
             },
-            failure: function (response) {
-                alert("Erro ao carregar os dados: " + response);
+            error: function (jqXHR) {
+                if (jqXHR.status === 400) {
+                    var mensagem = "";
+                    $(jqXHR.responseJSON.errors).each(function (index, elemento) {
+                        mensagem = mensagem + elemento.errorMessage + "\n";
+                    });
+                    alert(mensagem);
+                } else {
+                    alert("Erro ao salvar os dados.");
+                }
             }
         });
     });
@@ -149,9 +162,11 @@ function CarregarEstabelecimentoSaude() {
             $("#tabela").empty();
             $.each(jsonResult, function (index, item) {
 
-                var linha = $("#linhaExemplo").clone();
+                var linha = $("#linhaEstabelecimentoSaude").clone();
                 $(linha).find(".codigo").html(item.id);
                 $(linha).find(".nomeFantasia").html(item.nomeFantasia);
+                $(linha).find(".razaoSocial").html(item.nomeFantasia)
+                $(linha).find(".cnes").html(item.cnes)
 
                 $("#tabela").append(linha)
             })
@@ -198,21 +213,42 @@ function visualizar(codigo) {
         data: {},
         dataType: "json",
         success: function (jsonResult) {
-
-            console.log(jsonResult);
             $("#txtid").val(jsonResult.id);
             $("#txtnomeFantasia").val(jsonResult.nomeFantasia);
             $("#txtrazaoSocial").val(jsonResult.razaoSocial);
-            $("#txtCnes").val(jsonResult.Cnes);
+            $("#txtcnes").val(jsonResult.Cnes);
 
-
-
+            // Preencher os contatos, se estiverem disponíveis nos dados retornados
+            if (jsonResult.contato) {
+                $("#contatos-container").empty();
+                jsonResult.contato.forEach(function (contato) {
+                    let contatoHTML = `
+                    <div class="contato">
+                       <div class="col-md-4">
+                            <label class="form-label">Contato</label>
+                            <input type="text" class="form-control" value="${contato.valor}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo de Contato</label>
+                            <select class="form-select" required></select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-danger btnRemoverContato">Remover</button>
+                        </div>
+                    </div>`;
+                    let novoElemento = $(contatoHTML);
+                    $("#contatos-container").append(novoElemento);
+                    CarregarTipoContatoSelect(novoElemento.find('select'));
+                    novoElemento.find('select').val(contato.idTipoContato);
+                });
+            }
         },
         failure: function (response) {
             alert("Erro ao carregar os dados: " + response);
         }
     });
 }
+
 
 
 function CarregarTipoContato() {
@@ -232,11 +268,10 @@ function CarregarTipoContato() {
     });
 }
 
-
 function CarregarContatoEstabelecimentoSaude(idEstabelecimentoSaude) {
     $.ajax({
         type: "GET",
-        url: urlAPI + "api/Contato/PorEstabelecimentoSaude/" + idEstabelecimentoSaude,
+        url: urlAPI + "api/Contato/EstabelecimentoSaude/" + idEstabelecimentoSaude,
         contentType: "application/json;charset=utf-8",
         data: {},
         dataType: "json",

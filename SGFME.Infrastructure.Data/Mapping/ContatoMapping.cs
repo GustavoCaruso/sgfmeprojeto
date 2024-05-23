@@ -48,6 +48,16 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
+
+
+            builder.HasOne(p => p.medico).WithMany(c => c.contato)
+                .HasConstraintName("fk_medico_contato")
+                .HasForeignKey(p => p.idMedico)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
+
+
             builder.Property(prop => prop.discriminator)
                 .IsRequired()
                 .HasMaxLength(50);

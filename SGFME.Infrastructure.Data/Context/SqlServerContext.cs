@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SGFME.Domain.Entidades;
 using SGFME.Infrastructure.Data.Mapping;
 using System;
@@ -33,15 +34,18 @@ namespace SGFME.Infrastructure.Data.Context
         public DbSet<Cid> cid { get; set; }//Replicar para as próximas entidades
 
         public DbSet<EstabelecimentoSaude> estabelecimentosaude { get; set; }//Replicar para as próximas entidades
+        public DbSet<Medico> medico { get; set; }//Replicar para as próximas entidades
 
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv25;integrated security=true;TrustServerCertificate=True;";
+            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv29;integrated security=true;TrustServerCertificate=True;";
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(stringConexao);
+                optionsBuilder.UseSqlServer(stringConexao)
+                    .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
+                    .EnableSensitiveDataLogging();
             }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +69,7 @@ namespace SGFME.Infrastructure.Data.Context
 
             modelBuilder.Entity<Cid>(new CidMapping().Configure);//Replicar para as próximas entidades
             modelBuilder.Entity<EstabelecimentoSaude>(new EstabelecimentoSaudeMapping().Configure);//Replicar para as próximas entidades
+            modelBuilder.Entity<Medico>(new MedicoMapping().Configure);//Replicar para as próximas entidades
 
         }
     }

@@ -25,6 +25,10 @@
       "PackagePath": "staticwebassets\\js\\EstabelecimentoSaude.js"
     },
     {
+      "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Medico.js",
+      "PackagePath": "staticwebassets\\js\\Medico.js"
+    },
+    {
       "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\Paciente.js",
       "PackagePath": "staticwebassets\\js\\Paciente.js"
     },

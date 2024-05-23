@@ -1,0 +1,78 @@
+﻿@page
+@model www.Pages.MedicoCadastroModel
+@{
+}
+
+<form class="row g-3">
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <i class="fas fa-hospital fa-3x mb-3"></i>
+        </div>
+        <div class="col">
+            <h1>Cadastro de Médico</h1>
+            <hr />
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <label for="txtid" class="form-label">Código</label>
+        <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
+    </div>
+
+    <div class="col-md-2">
+        <label for="txtnomeCompleto" class="form-label">Nome Completo</label>
+        <input type="text" class="form-control" id="txtnomeCompleto" placeholder="Nome Completo" required>
+        <div class="invalid-feedback">
+            Por favor, insira o nome completo.
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <label for="txtdataNascimento" class="form-label">Data de Nascimento</label>
+        <input type="date" class="form-control" id="txtdataNascimento" required>
+        <div class="invalid-feedback">
+            Por favor, insira a data de nascimento.
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <label for="txtcrm" class="form-label">CRM</label>
+        <input type="text" class="form-control" id="txtcrm" placeholder="CRM" required>
+        <div class="invalid-feedback">
+            Por favor, insira o CRM.
+        </div>
+    </div>
+
+    <h2>Contatos</h2>
+    <table class="table" id="contatoTable">
+        <thead>
+            <tr>
+                <th scope="col">Tipo</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Excluir</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="form-group">
+        <label for="selectTipoContato">Tipo de Contato</label>
+        <select class="form-control" id="selectTipoContato">
+            <!-- Opções serão carregadas aqui -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="txtValorContato">Valor do Contato</label>
+        <input type="text" class="form-control" id="txtValorContato" placeholder="Valor do Contato">
+    </div>
+    <button type="button" class="btn btn-primary" id="btnAdicionarContato">Adicionar Contato</button>
+
+    <div class="col-12">
+        <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
+        <button type="button" id="btnlimpar" class="btn btn-primary">Limpar</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/js/Medico.js"></script>
+}
