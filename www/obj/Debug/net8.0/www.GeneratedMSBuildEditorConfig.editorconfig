@@ -42,8 +42,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTWVkaWNvQ2FkYXN0cm8uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/gusta/Documents/SGFME/www/Pages/Paciente.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGFjaWVudGUuY3NodG1s
+[C:/Users/gusta/Documents/SGFME/www/Pages/MedicoGerenciamento.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTWVkaWNvR2VyZW5jaWFtZW50by5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/gusta/Documents/SGFME/www/Pages/PacienteCadastro.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGFjaWVudGVDYWRhc3Ryby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/gusta/Documents/SGFME/www/Pages/Privacy.cshtml]

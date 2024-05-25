@@ -49,19 +49,25 @@ namespace SGFME.Infrastructure.Data.Mapping
                .HasColumnType("varchar(200)")  //tipo da coluna
                .HasColumnName("pontoReferencia");  //nome da coluna no bd
 
+            builder.Property(prop => prop.discriminator)
+               .IsRequired()
+               .HasMaxLength(50);
+
 
             //relacionamento com 
             builder.HasOne(p => p.tipoendereco).WithMany(c => c.endereco)
                 .HasConstraintName("fk_tipoendereco_endereco")
                 .HasForeignKey(p => p.idTipoEndereco)
                 .OnDelete(DeleteBehavior.NoAction);
+       
 
 
             //Relação com a tabela de Paciente 
             builder.HasOne(p => p.paciente).WithMany(c => c.endereco)
                 .HasConstraintName("fk_paciente_endereco")
                 .HasForeignKey(p => p.idPaciente)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
 
         }
     }

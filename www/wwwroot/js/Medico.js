@@ -1,39 +1,6 @@
 ﻿const urlAPI = "https://localhost:44309/";
 
 $(document).ready(function () {
-
-
-    //Início da validação dos campos no frontend
-  
-
-    //Fim da validação dos campos no frontend
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     let contatos = [];
 
     // Carregar tipos de contato
@@ -47,18 +14,13 @@ $(document).ready(function () {
                 selectTipoContato.append(option);
             });
         },
-        error: function (jqXHR) {
+        error: function () {
             alert("Erro ao carregar os tipos de contato.");
         }
     });
 
     $("#btnlimpar").click(function () {
-        $("#txtnomeCompleto").val('');
-        $("#txtdataNascimento").val('');
-        $("#txtcrm").val('');
-        $("#txtid").val('0');
-        contatos = [];
-        atualizarTabelaContatos();
+        limparFormulario();
     });
 
     $("#btnAdicionarContato").click(function () {
@@ -103,40 +65,98 @@ $(document).ready(function () {
             crm: $("#txtcrm").val(),
             contato: contatos
         };
-        console.log(JSON.stringify(obj));
 
         $.ajax({
-            type: $("#txtid").val() == "0" ? "POST" : "PUT",
-            url: urlAPI + "api/Medico",
+            type: obj.id == "0" ? "POST" : "PUT",
+            url: urlAPI + "api/Medico" + (obj.id != "0" ? "/" + obj.id : ""),
             contentType: "application/json;charset=utf-8",
             data: JSON.stringify(obj),
             dataType: "json",
-            success: function (jsonResult) {
-                console.log(jsonResult);
-                $("#txtnomeCompleto").val('');
-                $("#txtdataNascimento").val('');
-                $("#txtcrm").val('');
-                $("#txtid").val('0');
-                contatos = [];
-                atualizarTabelaContatos();
+            success: function () {
+                limparFormulario();
                 alert("Dados Salvos com sucesso!");
+                carregarMedicos();
             },
-            error: function (jqXHR, textStatus, errorThrown) {
-                if (jqXHR.status === 409) {
-                    var errorMessage = JSON.parse(jqXHR.responseText);
-                    alert("Erro ao salvar os dados: " + errorMessage.message);
-                } else {
-                    if (jqXHR.status === 400) {
-                        var mensagem = "";
-                        $(jqXHR.responseJSON.errors).each(function (index, elemento) {
-                            mensagem = mensagem + elemento.errorMessage + "\n";
-                        });
-                        alert(mensagem);
-                    } else {
-                        alert("Erro ao salvar os dados: " + errorThrown);
+            error: function (jqXHR, textStatus) {
+                if (jqXHR.status === 400) {
+                    var errors = jqXHR.responseJSON.errors;
+                    var message = "";
+                    for (var key in errors) {
+                        if (errors.hasOwnProperty(key)) {
+                            errors[key].forEach(function (errorMessage) {
+                                message += errorMessage + "\n";
+                            });
+                        }
                     }
+                    alert(message);
+                } else {
+                    alert("Erro ao salvar os dados: " + textStatus);
                 }
             }
         });
     });
+
+    function limparFormulario() {
+        $("#txtnomeCompleto").val('');
+        $("#txtdataNascimento").val('');
+        $("#txtcrm").val('');
+        $("#txtid").val('0');
+        contatos = [];
+        atualizarTabelaContatos();
+    }
+
+    function carregarMedicos() {
+        $.ajax({
+            url: urlAPI + "api/Medico",
+            method: "GET",
+            success: function (data) {
+                const tabela = $("#medicosTable tbody");
+                tabela.empty();
+
+                data.forEach(medico => {
+                    const linha = `<tr>
+                        <td>${medico.id}</td>
+                        <td>${medico.nomeCompleto}</td>
+                        <td>${new Date(medico.dataNascimento).toLocaleDateString()}</td>
+                        <td>${medico.crm}</td>
+                        <td><button type="button" class="btn btn-primary btn-editar" data-id="${medico.id}">Editar</button></td>
+                    </tr>`;
+                    tabela.append(linha);
+                });
+
+                $(".btn-editar").click(function () {
+                    const id = $(this).data("id");
+                    editarMedico(id);
+                });
+            },
+            error: function () {
+                alert("Erro ao carregar médicos.");
+            }
+        });
+    }
+
+    function editarMedico(id) {
+        $.ajax({
+            url: urlAPI + "api/Medico/" + id,
+            method: "GET",
+            success: function (data) {
+                $("#txtid").val(data.id);
+                $("#txtnomeCompleto").val(data.nomeCompleto);
+                $("#txtdataNascimento").val(new Date(data.dataNascimento).toISOString().split('T')[0]);
+                $("#txtcrm").val(data.crm);
+
+                contatos = data.contato.map(c => ({
+                    idTipoContato: c.idTipoContato,
+                    tipo: c.tipocontato.nome, // Acesso ao nome do tipo de contato
+                    valor: c.valor
+                }));
+                atualizarTabelaContatos();
+            },
+            error: function () {
+                alert("Erro ao carregar os dados do médico.");
+            }
+        });
+    }
+
+    carregarMedicos();
 });

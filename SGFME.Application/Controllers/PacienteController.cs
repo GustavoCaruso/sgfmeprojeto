@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using SGFME.Application.DTOs;
 using SGFME.Application.Models;
 using SGFME.Domain.Entidades;
@@ -10,6 +9,9 @@ using SGFME.Domain.Interfaces;
 using SGFME.Infrastructure.Data.Context;
 using SGFME.Service.Validators;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SGFME.Application.Controllers
 {
@@ -17,7 +19,7 @@ namespace SGFME.Application.Controllers
     [ApiController]
     public class PacienteController : ControllerBase
     {
-        private IBaseService<Paciente> _baseService;
+        private readonly IBaseService<Paciente> _baseService;
         private readonly SqlServerContext _context;
 
         public PacienteController(IBaseService<Paciente> baseService, SqlServerContext context)
@@ -26,7 +28,6 @@ namespace SGFME.Application.Controllers
             _context = context;
         }
 
-        //Adicionar método para executar comando e retornar IActionResult
         private IActionResult Execute(Func<object> func)
         {
             try
@@ -40,9 +41,8 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
         [HttpPost]
-        public async Task<ActionResult<List<Paciente>>> Create(PacienteCreateDTO request)
+        public async Task<ActionResult<List<Paciente>>> Create(PacienteDTO request)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -51,7 +51,6 @@ namespace SGFME.Application.Controllers
                     var novoPaciente = new Paciente
                     {
                         nomeCompleto = request.nomeCompleto,
-                        
                         peso = request.peso,
                         altura = request.altura,
                         dataNascimento = request.dataNascimento,
@@ -65,28 +64,22 @@ namespace SGFME.Application.Controllers
                         cnsNumero = request.cnsNumero,
                         nomeConjuge = request.nomeConjuge,
                         dataCadastro = request.dataCadastro,
-                        // Inicializa a lista de contatos
                         contato = new List<Contato>(),
                         endereco = new List<Endereco>()
                     };
-                    
-
-
-
 
                     foreach (var contatoDto in request.contato)
                     {
                         var contato = new Contato
                         {
-                            
                             valor = contatoDto.valor,
-                            idTipoContato = contatoDto.idTipoContato, // Define o tipo de contato
-                            paciente = novoPaciente // Define a relação com o paciente
+                            idTipoContato = contatoDto.idTipoContato,
+                            paciente = novoPaciente,
+                            discriminator = "Paciente", // Define o discriminador
                         };
                         novoPaciente.contato.Add(contato);
                     }
 
-                    // Adiciona os endereços ao paciente
                     foreach (var enderecoDto in request.endereco)
                     {
                         var endereco = new Endereco
@@ -99,15 +92,15 @@ namespace SGFME.Application.Controllers
                             uf = enderecoDto.uf,
                             cep = enderecoDto.cep,
                             pontoReferencia = enderecoDto.pontoReferencia,
-                            idTipoEndereco = enderecoDto.idTipoEndereco, // Define o tipo de contato
-                            paciente = novoPaciente // Define a relação com o paciente
+                            idTipoEndereco = enderecoDto.idTipoEndereco,
+                            paciente = novoPaciente,
+                            discriminator = "Paciente", // Define o discriminador
                         };
                         novoPaciente.endereco.Add(endereco);
                     }
 
                     _context.paciente.Add(novoPaciente);
                     await _context.SaveChangesAsync();
-
                     await transaction.CommitAsync();
 
                     return Ok(await _context.paciente.Include(p => p.contato).Include(p => p.endereco).ToListAsync());
@@ -115,53 +108,56 @@ namespace SGFME.Application.Controllers
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    // Log the exception (consider using a logging framework)
                     return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao criar paciente.");
                 }
             }
         }
 
-
-        //EndPoint para alterar um paciente:
-        [HttpPut]
-        public IActionResult Update(PacienteModel pacienteModel)
+        [HttpGet("{id}/contatos")]
+        public async Task<IActionResult> GetContatosByPacienteId(long id)
         {
-            if (pacienteModel == null)
-                return NotFound();
-            return Execute(() => _baseService.Update<PacienteModel, PacienteValidator>(pacienteModel));
-        }
-
-        //EndPoint para excluir um paciente:
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            if (id == 0)
-                return NotFound();
-            Execute(() =>
+            try
             {
-                _baseService.Delete(id);
-                return true;
-            });
-            return new NoContentResult();
+                var paciente = await _context.paciente
+                    .Include(p => p.contato)
+                    .FirstOrDefaultAsync(p => p.id == id);
+
+                if (paciente == null)
+                {
+                    return NotFound("Paciente não encontrado.");
+                }
+
+                return Ok(paciente.contato);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar contatos do paciente.");
+            }
         }
 
-        // EndPoint para selecionar um paciente pelo ID:
-        [HttpGet("{id:long}")]
-        public IActionResult Get(long id)
+        [HttpGet("{id}/enderecos")]
+        public async Task<IActionResult> GetEnderecosByPacienteId(long id)
         {
-            if (id == 0)
-                return NotFound();
+            try
+            {
+                var paciente = await _context.paciente
+                    .Include(p => p.endereco)
+                    .FirstOrDefaultAsync(p => p.id == id);
 
-            return Execute(() => _baseService.GetById<PacienteModel>(id));
+                if (paciente == null)
+                {
+                    return NotFound("Paciente não encontrado.");
+                }
+
+                return Ok(paciente.endereco);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar endereços do paciente.");
+            }
         }
 
-
-
-
-
-
-        [HttpGet]
-        [Route("api/TipoContato")]
+        [HttpGet("tipoContato")]
         public IActionResult ObterTiposContato()
         {
             try
@@ -171,22 +167,141 @@ namespace SGFME.Application.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
-        [HttpGet]
-        [Route("api/TipoEndereco")]
-        public IActionResult ObterTipoEndereco()
+        [HttpGet("tipoEndereco")]
+        public IActionResult ObterTiposEndereco()
         {
             try
             {
-                var tipoEndereco = _context.tipoendereco.ToList();
-                return Ok(tipoEndereco);
+                var tiposEndereco = _context.tipoendereco.ToList();
+                return Ok(tiposEndereco);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+        [HttpGet]
+        public IActionResult SelecionarTodos()
+        {
+            return Execute(() => _baseService.Get<PacienteModel>());
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, PacienteDTO request)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var paciente = await _context.paciente
+                        .Include(p => p.contato)
+                        .FirstOrDefaultAsync(p => p.id == id);
+
+                    if (paciente == null)
+                    {
+                        return NotFound("Paciente não encontrado.");
+                    }
+
+                    paciente.nomeCompleto = request.nomeCompleto;
+                    paciente.dataNascimento = request.dataNascimento;
+                    paciente.rgNumero = request.rgNumero;
+                    paciente.rgOrgaoExpedidor = request.rgOrgaoExpedidor;
+                    paciente.rgDataEmissao = request.rgDataEmissao;
+                    paciente.rgUfEmissao = request.rgUfEmissao;
+                    paciente.cpfNumero = request.cpfNumero;
+
+                    // Atualizando os contatos
+                    _context.contato.RemoveRange(paciente.contato);
+                    paciente.contato.Clear();
+
+                    foreach (var contatoDto in request.contato)
+                    {
+                        var contato = new Contato
+                        {
+                            valor = contatoDto.valor,
+                            idTipoContato = contatoDto.idTipoContato,
+                            paciente = paciente
+                        };
+                        paciente.contato.Add(contato);
+                    }
+
+                    // Validar a entrada usando FluentValidation
+                    var validator = new PacienteValidator();
+                    var validationResult = await validator.ValidateAsync(paciente);
+
+                    if (!validationResult.IsValid)
+                    {
+                        return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+                    }
+
+                    _context.paciente.Update(paciente);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(paciente);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar Paciente.");
+                }
+            }
+        }
+
+        // Método para excluir um paciente
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(long id)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var pacienteExistente = await _context.paciente.Include(p => p.contato).FirstOrDefaultAsync(p => p.id == id);
+
+                    if (pacienteExistente == null)
+                    {
+                        return NotFound("Paciente não encontrado.");
+                    }
+
+                    _context.paciente.Remove(pacienteExistente);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok("Paciente excluído com sucesso.");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao excluir Paciente.");
+                }
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPacienteById(int id)
+        {
+            try
+            {
+                var paciente = await _context.paciente
+                    .Include(p => p.contato)
+                    .FirstOrDefaultAsync(p => p.id == id);
+
+                if (paciente == null)
+                {
+                    return NotFound("Paciente não encontrado.");
+                }
+
+                return Ok(paciente);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar o paciente.");
             }
         }
 

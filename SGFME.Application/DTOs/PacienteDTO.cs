@@ -1,6 +1,6 @@
 ﻿namespace SGFME.Application.DTOs
 {
-    public class PacienteCreateDTO
+    public class PacienteDTO
     {
         public string nomeCompleto { get; set; }
 

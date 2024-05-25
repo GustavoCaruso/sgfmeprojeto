@@ -101,7 +101,7 @@ namespace SGFME.Application.Controllers
         }
 
         [HttpGet("selecionarContatos/{id}")]
-        public async Task<ActionResult<List<Contato>>> GetContatosByMedicoId(int id)
+        public async Task<ActionResult<List<Contato>>> GetContatosByMedicoId(long id)
         {
             try
             {
@@ -137,15 +137,135 @@ namespace SGFME.Application.Controllers
         }
 
 
-
-
-
-
         [HttpGet]
         public IActionResult selecionarTodos()
         {
             //select * from produtos
             return Execute(() => _baseService.Get<MedicoModel>());
         }
+
+
+
+
+
+
+
+
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, MedicoDTO request)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var medico = await _context.medico
+                        .Include(m => m.contato)
+                        .FirstOrDefaultAsync(m => m.id == id);
+
+                    if (medico == null)
+                    {
+                        return NotFound("Médico não encontrado.");
+                    }
+
+                    medico.nomeCompleto = request.nomeCompleto;
+                    medico.dataNascimento = request.dataNascimento;
+                    medico.crm = request.crm;
+
+                    // Atualizando os contatos
+                    _context.contato.RemoveRange(medico.contato);
+                    medico.contato.Clear();
+
+                    foreach (var contatoDto in request.contato)
+                    {
+                        var contato = new Contato
+                        {
+                            valor = contatoDto.valor,
+                            idTipoContato = contatoDto.idTipoContato,
+                            medico = medico,
+                            discriminator = "Medico"
+                        };
+                        medico.contato.Add(contato);
+                    }
+
+                    // Validar a entrada usando FluentValidation
+                    var validator = new MedicoValidator();
+                    var validationResult = await validator.ValidateAsync(medico);
+
+                    if (!validationResult.IsValid)
+                    {
+                        return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+                    }
+
+                    _context.medico.Update(medico);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(medico);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar Médico.");
+                }
+            }
+        }
+
+
+        // Método para excluir um médico
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(long id)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var medicoExistente = await _context.medico.Include(m => m.contato).FirstOrDefaultAsync(m => m.id == id);
+
+                    if (medicoExistente == null)
+                    {
+                        return NotFound("Médico não encontrado.");
+                    }
+
+                    _context.medico.Remove(medicoExistente);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok("Médico excluído com sucesso.");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao excluir Médico.");
+                }
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMedicoById(int id)
+        {
+            try
+            {
+                var medico = await _context.medico
+                    .Include(m => m.contato)
+                    .ThenInclude(c => c.tipocontato) // Assuming tipoContato is the navigation property
+                    .FirstOrDefaultAsync(m => m.id == id);
+
+                if (medico == null)
+                {
+                    return NotFound("Médico não encontrado.");
+                }
+
+                return Ok(medico);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar o médico.");
+            }
+        }
+
+
+
     }
 }
