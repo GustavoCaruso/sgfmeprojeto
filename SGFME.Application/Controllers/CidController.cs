@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SGFME.Application.Models;
 using SGFME.Domain.Entidades;
 using SGFME.Domain.Interfaces;
+using SGFME.Infrastructure.Data.Context;
 using SGFME.Service.Validators;
 
 namespace SGFME.Application.Controllers
@@ -12,10 +13,12 @@ namespace SGFME.Application.Controllers
     public class CidController : ControllerBase
     {
         private IBaseService<Cid> _baseService;
+        private readonly SqlServerContext _context;
 
-        public CidController(IBaseService<Cid> baseService)
+        public CidController(IBaseService<Cid> baseService, SqlServerContext context)
         {
             _baseService = baseService;
+            _context = context;
         }
         //Adicionar método para executar comando e retornar IActionResult
         private IActionResult Execute(Func<object> func)
@@ -65,6 +68,15 @@ namespace SGFME.Application.Controllers
             });
             return new NoContentResult();
         }
+
+        [HttpGet]
+        public IActionResult selecionarTodos()
+        {
+            //select * from produtos
+            return Execute(() => _baseService.Get<CidModel>());
+        }
+
+
 
 
         // EndPoint para selecionar um Cid pelo ID:

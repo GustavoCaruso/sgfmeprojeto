@@ -5,6 +5,150 @@ $(document).ready(function () {
     let tiposEndereco = [];
     let enderecos = [];
 
+
+
+    //Início das validações
+    $("#pacienteForm").submit(function (event) {
+        // Impede a submissão do formulário até a validação
+        event.preventDefault();
+
+        // Limpa todas as mensagens de erro
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+
+        // Função para mostrar a mensagem de erro
+        function showError(element, message) {
+            element.classList.add('is-invalid');
+            element.nextElementSibling.innerText = message;
+            element.nextElementSibling.style.display = 'block';
+        }
+
+        let isValid = true;
+
+        // Validações dos campos
+        const nomeCompleto = document.getElementById("txtnomecompleto");
+        if (!nomeCompleto.value) {
+            showError(nomeCompleto, "Informe o Nome Completo!");
+            isValid = false;
+        }
+
+        const peso = document.getElementById("txtpeso");
+        if (peso.value <= 0) {
+            showError(peso, "O peso deve ser maior que zero!");
+            isValid = false;
+        }
+
+        const altura = document.getElementById("txtaltura");
+        altura.value = altura.value.replace(",", ".");  // Converte vírgula para ponto
+        if (altura.value <= 0) {
+            showError(altura, "A altura deve ser maior que zero!");
+            isValid = false;
+        }
+
+        const dataNascimento = document.getElementById("txtdatanascimento");
+        if (!dataNascimento.value || new Date(dataNascimento.value) >= new Date()) {
+            showError(dataNascimento, "Informe a Data de Nascimento válida!");
+            isValid = false;
+        }
+
+        const nomeMae = document.getElementById("txtnomemae");
+        if (!nomeMae.value) {
+            showError(nomeMae, "Informe o Nome da Mãe!");
+            isValid = false;
+        }
+
+        const rgNumero = document.getElementById("txtrgnumero");
+        if (!rgNumero.value) {
+            showError(rgNumero, "Informe o Número do RG!");
+            isValid = false;
+        }
+
+        const rgDataEmissao = document.getElementById("txtrgdataemissao");
+        if (!rgDataEmissao.value || new Date(rgDataEmissao.value) > new Date()) {
+            showError(rgDataEmissao, "Informe a Data de Emissão do RG válida!");
+            isValid = false;
+        }
+
+        const rgOrgaoExpedidor = document.getElementById("txtrgorgaoexpedidor");
+        if (!rgOrgaoExpedidor.value) {
+            showError(rgOrgaoExpedidor, "Informe o Órgão Expedidor do RG!");
+            isValid = false;
+        }
+
+        const rgUfEmissao = document.getElementById("txtrgufemissao");
+        if (!rgUfEmissao.value) {
+            showError(rgUfEmissao, "Informe a UF de Emissão do RG!");
+            isValid = false;
+        }
+
+        const cnsNumero = document.getElementById("txtcnsnumero");
+        if (!cnsNumero.value) {
+            showError(cnsNumero, "Informe o Número do CNS!");
+            isValid = false;
+        }
+
+        const cpfNumero = document.getElementById("txtcpfnumero");
+        if (!cpfNumero.value.match(/^\d{11}$/)) {
+            showError(cpfNumero, "O CPF deve conter 11 dígitos!");
+            isValid = false;
+        }
+
+        const nomeConjuge = document.getElementById("txtnomeconjuge");
+        if (!nomeConjuge.value) {
+            showError(nomeConjuge, "Informe o Nome do Cônjuge!");
+            isValid = false;
+        }
+
+        const dataCadastro = document.getElementById("txtdatacadastro");
+        if (!dataCadastro.value || new Date(dataCadastro.value) > new Date()) {
+            showError(dataCadastro, "Informe a Data de Cadastro válida!");
+            isValid = false;
+        }
+
+        // Se o formulário for válido, pode enviar
+        if (isValid) {
+            this.submit();
+        }
+    });
+
+    //Fim das validações
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Carregar tipos de contato
     $.ajax({
         url: urlAPI + "api/Paciente/tipoContato",
@@ -33,8 +177,16 @@ $(document).ready(function () {
                 selectTipoEndereco.append(option);
             });
         },
-        error: function () {
-            alert("Erro ao carregar os tipos de endereço.");
+        error: function (jqXHR) {
+            if (jqXHR.status === 400) {
+                var mensagem = "";
+                $(jqXHR.responseJSON.errors).each(function (index, elemento) {
+                    mensagem = mensagem + elemento.errorMessage + "\n";
+                });
+                alert(mensagem);
+            } else {
+                alert("Erro ao salvar os dados.");
+            }
         }
     });
 
@@ -138,7 +290,7 @@ $(document).ready(function () {
         console.log("Limpando formulário...");
         $("#txtnomecompleto").val('');
         $("#txtdatanascimento").val('');
-        $("#txtcpf").val('');
+        $("#txtcpfnumero").val('');
         $("#txtid").val('0');
         $("#txtpeso").val('');
         $("#txtaltura").val('');
@@ -263,7 +415,7 @@ $(document).ready(function () {
                 $("#txtid").val(data.id);
                 $("#txtnomeCompleto").val(data.nomeCompleto);
                 $("#txtdataNascimento").val(new Date(data.dataNascimento).toISOString().split('T')[0]);
-                $("#txtcpf").val(data.cpf);
+                $("#txtcpfnumero").val(data.cpf);
 
                 contatos = data.contato.map(c => ({
                     idTipoContato: c.idTipoContato,

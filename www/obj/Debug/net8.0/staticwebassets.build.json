@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Dmq5xrbLAMt1IwhdpMXYrGGFltXU9PfSNu1S+x8S/uA=",
+  "Hash": "zV6S+bg908C6eDIx90ClV3IdJlkIQHIsZJZ5htrgIX0=",
   "Source": "www",
   "BasePath": "_content/www",
   "Mode": "Default",
@@ -198,6 +198,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\Paciente.js"
+    },
+    {
+      "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\pt-BR.json",
+      "SourceId": "www",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\",
+      "BasePath": "_content/www",
+      "RelativePath": "js/pt-BR.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\pt-BR.json"
     },
     {
       "Identity": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\site.js",

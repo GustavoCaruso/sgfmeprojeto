@@ -2,3 +2,30 @@
 @model www.Pages.CidGerenciamentoModel
 @{
 }
+
+<table id="tabelaCid" class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">Código</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Visualizar</th>
+            <th scope="col">Excluir</th>
+        </tr>
+    </thead>
+    <tbody id="tabela">
+    </tbody>
+</table>
+
+<table style="display:none">
+    <tr id="linhaExemplo">
+        <th scope="row" class="codigo"></th>
+        <td class="descricao"></td>
+        <td><a href="#" class="alterar btn btn-info btn-sm">Visualizar</a></td>
+        <td><a href="#" class="excluir btn btn-danger btn-sm">Excluir</a></td>
+    </tr>
+</table>
+
+@section Scripts {
+   
+    <script src="~/js/Cid.js"></script>
+}

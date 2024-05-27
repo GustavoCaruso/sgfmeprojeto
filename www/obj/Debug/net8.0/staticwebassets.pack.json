@@ -37,6 +37,10 @@
       "PackagePath": "staticwebassets\\js\\TipoContato.js"
     },
     {
+      "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\pt-BR.json",
+      "PackagePath": "staticwebassets\\js\\pt-BR.json"
+    },
+    {
       "Id": "C:\\Users\\gusta\\Documents\\SGFME\\www\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

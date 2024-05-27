@@ -1,32 +1,32 @@
 ﻿@page
 @model www.Pages.CidCadastroModel
 @{
+    ViewData["Title"] = "Cadastro de CID";
 }
+<h2>Cadastro de CID</h2>
 
+<form id="cidForm">
+    <div class="container-fluid">
+        <div class="form-group">
+            <label for="txtid">Código</label>
+            <input type="text" class="form-control" id="txtid" value="0" readonly>
+        </div>
+        <div class="form-group">
+            <label for="txtcodigocid">Código do CID</label>
+            <input type="text" class="form-control" id="txtcodigocid" placeholder="Código do CID" required>
+            <div class="invalid-feedback">O campo Código não pode ser vazio.</div>
+        </div>
 
-<form class="row g-3">
-    <div class="col-md-2">
-        <label for="txtid" class="form-label">Código</label>
-        <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
-    </div>
+        <div class="form-group">
+            <label for="txtdescricao">Descrição</label>
+            <input type="text" class="form-control" id="txtdescricao" placeholder="Descrição" required>
+            <div class="invalid-feedback">O campo Descrição não pode ser vazio.</div>
+        </div>
 
-    <div class="col-md-2">
-        <label for="txtcodigo" class="form-label">Código CID</label>
-        <input type="text" class="form-control" id="txtcodigo" value="0" placeholder="Código CID" required>
-    </div>
-
-    <div class="col-md-8">
-        <label for="txtdescricao" class="form-label">Descrição</label>
-        <input type="text" class="form-control" id="txtdescricao" placeholder="Código CID" required>
-    </div>
-
-
-
-    <div class="col-12">
         <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
         <button type="button" id="btnlimpar" class="btn btn-primary">Limpar</button>
+        <hr />
     </div>
-
 </form>
 
 @section Scripts {
