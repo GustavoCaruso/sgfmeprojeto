@@ -14,7 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SGFME.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< Updated upstream
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1ba26a7b3af91e754243510d3f405979537761a3")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+618c7c1d17b3a5609a765e22d6b41b50adc43417")]
+>>>>>>> Stashed changes
 [assembly: System.Reflection.AssemblyProductAttribute("SGFME.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SGFME.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
