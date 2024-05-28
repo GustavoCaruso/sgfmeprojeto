@@ -17,12 +17,12 @@ $(document).ready(function () {
         limparFormulario();
     });
 
-    $("#tabela").on("click", ".alterar", function (elemento) {
+    $(document).on("click", ".alterar", function (elemento) {
         let codigo = $(elemento.target).closest("tr").find(".codigo").text();
         window.location.href = "/MedicoCadastro?id=" + codigo;
     });
 
-    $("#tabela").on("click", ".excluir", function (elemento) {
+    $(document).on("click", ".excluir", function (elemento) {
         let codigo = $(elemento.target).closest("tr").find(".codigo").text();
         excluir(codigo);
     });
@@ -150,7 +150,7 @@ $(document).ready(function () {
 
     function carregarMedicos() {
         $.ajax({
-            url: urlAPI + "api/Medico",
+            url: urlAPI + "api/Medico/todosMedicosComContatos",
             method: "GET",
             success: function (data) {
                 $("#tabela").empty();
@@ -158,10 +158,16 @@ $(document).ready(function () {
                     var linha = $("#linhaExemplo").clone().removeAttr("id").removeAttr("style");
                     $(linha).find(".codigo").html(item.id);
                     $(linha).find(".nomeCompleto").html(item.nomeCompleto);
-                    $(linha).find(".dataNascimento").html(item.dataNascimento);
+                    $(linha).find(".dataNascimento").html(new Date(item.dataNascimento).toLocaleDateString()); // Formata a data
                     $(linha).find(".crm").html(item.crm);
-                    var contatosHTML = item.contato.map(c => `${c.tipoContato}: ${c.valor}`).join("<br>");
+
+                    // Construir o HTML para exibir os contatos
+                    var contatosHTML = item.contato.map(c => {
+                        var tipoContatoNome = c.tipocontato ? c.tipocontato.nome : "Tipo de Contato Desconhecido";
+                        return `${tipoContatoNome}: ${c.valor}`;
+                    }).join("<br>");
                     $(linha).find(".contatos").html(contatosHTML);
+
                     $(linha).show();
                     $("#tabela").append(linha);
                 });
@@ -182,11 +188,11 @@ $(document).ready(function () {
     function excluir(codigo) {
         $.ajax({
             type: "DELETE",
-            url: urlAPI + "api/Cid/" + codigo,
+            url: urlAPI + "api/Medico/" + codigo,
             contentType: "application/json;charset=utf-8",
             success: function () {
                 alert('Exclusão efetuada!');
-                carregarMedicos();
+                location.reload(); // Recarrega a página para atualizar a tabela
             },
             error: function (xhr, textStatus, errorThrown) {
                 alert("Erro ao excluir o médico: " + errorThrown);
@@ -204,9 +210,17 @@ $(document).ready(function () {
             success: function (jsonResult) {
                 $("#txtid").val(jsonResult.id);
                 $("#txtnomeCompleto").val(jsonResult.nomeCompleto);
-                $("#txtdataNascimento").val(jsonResult.txtdataNascimento);
+                // Formatar e definir a data de nascimento
+                var dataNascimento = new Date(jsonResult.dataNascimento);
+                var formattedDate = dataNascimento.toISOString().split('T')[0];
+                $("#txtdataNascimento").val(formattedDate);
                 $("#txtcrm").val(jsonResult.crm);
-                contatos = jsonResult.contato.map(c => ({ idTipoContato: c.idTipoContato.nome, tipo: c.tipoContato, valor: c.valor }));
+
+                contatos = jsonResult.contato.map(c => ({
+                    idTipoContato: c.idTipoContato,
+                    tipo: c.tipocontato.nome,
+                    valor: c.valor
+                }));
                 atualizarTabelaContatos();
             },
             error: function (response) {

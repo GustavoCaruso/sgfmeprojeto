@@ -140,16 +140,12 @@ namespace SGFME.Application.Controllers
         }
 
 
-        //[HttpGet]
-        // public IActionResult selecionarTodos()
-        //{
-        //    //select * from produtos
-        //    return Execute(() => _baseService.Get<MedicoModel>());
-        //}
 
 
-        [HttpGet]
-        public async Task<IActionResult> selecionarTodos()
+
+
+        [HttpGet("todosMedicosComContatos")]
+        public async Task<ActionResult<List<Medico>>> GetAllMedicos()
         {
             try
             {
@@ -158,28 +154,15 @@ namespace SGFME.Application.Controllers
                     .ThenInclude(c => c.tipocontato)
                     .ToListAsync();
 
-                var medicoDtos = medicos.Select(m => new MedicoDTO
-                {
-                    id = m.id,
-                    nomeCompleto = m.nomeCompleto,
-                    dataNascimento = m.dataNascimento,
-                    crm = m.crm,
-                    contato = m.contato.Select(c => new ContatoCreateDTO
-                    {
-                        
-                        valor = c.valor,
-                        idTipoContato = c.idTipoContato,
-                        tipoContato = c.tipocontato.nome // Assuming `nome` is the property of `TipoContato`
-                    }).ToList()
-                }).ToList();
-
-                return Ok(medicoDtos);
+                return Ok(medicos);
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os médicos.");
             }
         }
+
+
 
 
 
@@ -258,13 +241,16 @@ namespace SGFME.Application.Controllers
             {
                 try
                 {
-                    var medicoExistente = await _context.medico.Include(m => m.contato).FirstOrDefaultAsync(m => m.id == id);
+                    var medicoExistente = await _context.medico
+                        .Include(m => m.contato)
+                        .FirstOrDefaultAsync(m => m.id == id);
 
                     if (medicoExistente == null)
                     {
                         return NotFound("Médico não encontrado.");
                     }
 
+                    _context.contato.RemoveRange(medicoExistente.contato);
                     _context.medico.Remove(medicoExistente);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -278,6 +264,7 @@ namespace SGFME.Application.Controllers
                 }
             }
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMedicoById(int id)
@@ -305,6 +292,12 @@ namespace SGFME.Application.Controllers
 
 
 
+        [HttpGet]
+        public IActionResult selecionarTodos()
+        {
+            //select * from produtos
+            return Execute(() => _baseService.Get<MedicoModel>());
+        }
 
     }
 }
