@@ -1,1 +1,41 @@
-.vs/
+# Ignorar diretórios de build e output
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Tt]est[Rr]esult*/
+
+# Arquivos de projeto específicos do Visual Studio e .NET
+*.user
+*.aps
+*.pch
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.vs/
+*.vscode/
+*.userprefs
+*.suo
+*.nupkg
+*.snk
+*.sln.cache
+
+# Arquivos de cache de pacote NuGet
+project.lock.json
+project.assets.json
+*.csproj.nuget.*
+project.nuget.cache
+
+# Arquivos de cache do Visual Studio
+*.cache
+*.csproj.AssemblyReference.cache
+
+# Outros arquivos e diretórios gerados
+*.ser
+*.Swipe
+*.DocStates
+
+# Arquivos temporários do sistema
+*.tmp
+*.temp
+*.tlog/
