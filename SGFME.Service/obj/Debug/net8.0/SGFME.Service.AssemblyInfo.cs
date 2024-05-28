@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SGFME.Service")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2fb99869ca7d3ee5b95c19d87470d82f0083cf10")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+251cbf0566761bc50d367f70e0dccd158fe8d3ef")]
 [assembly: System.Reflection.AssemblyProductAttribute("SGFME.Service")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SGFME.Service")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
