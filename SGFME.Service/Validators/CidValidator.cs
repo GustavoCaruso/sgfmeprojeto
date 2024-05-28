@@ -14,7 +14,6 @@ namespace SGFME.Service.Validators
         {
             RuleFor(p => p.codigo).NotEmpty().WithMessage("Informe o Código!");
             RuleFor(p => p.codigo).NotNull().WithMessage("Informe o Código!");
-
             RuleFor(p => p.descricao).NotEmpty().WithMessage("Informe a Descrição!");
             RuleFor(p => p.descricao).NotNull().WithMessage("Informe a Descrição!");
         }
