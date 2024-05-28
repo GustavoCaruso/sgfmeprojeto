@@ -1,12 +1,14 @@
 ﻿@page
 @model www.Pages.MedicoCadastroModel
 @{
+    ViewData["Title"] = "Cadastro de Médico";
 }
 
-<form class="row g-3">
+<form id="medicoForm" class="row g-3">
+   
     <div class="row align-items-center">
         <div class="col-auto">
-            <i class="fas fa-hospital fa-3x mb-3"></i>
+            <i class="fas fa-user-md fa-3x mb-3"></i>
         </div>
         <div class="col">
             <h1>Cadastro de Médico</h1>
@@ -19,7 +21,7 @@
         <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-6">
         <label for="txtnomeCompleto" class="form-label">Nome Completo</label>
         <input type="text" class="form-control" id="txtnomeCompleto" placeholder="Nome Completo" required>
         <div class="invalid-feedback">
@@ -71,6 +73,7 @@
         <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
         <button type="button" id="btnlimpar" class="btn btn-primary">Limpar</button>
     </div>
+    
 </form>
 
 

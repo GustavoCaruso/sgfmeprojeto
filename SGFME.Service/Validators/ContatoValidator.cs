@@ -12,10 +12,7 @@ namespace SGFME.Service.Validators
     {
         public ContatoValidator()
         {
-            //descricao nao pode ser vazia
-            RuleFor(p => p.valor).NotEmpty().WithMessage("Informe o valor!");
-            //descricao nao pode ser null
-            RuleFor(p => p.valor).NotNull().WithMessage("Informe o valor!");
+            
         }
     }
 }

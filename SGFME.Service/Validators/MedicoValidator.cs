@@ -20,8 +20,7 @@ namespace SGFME.Service.Validators
             RuleFor(p => p.crm).NotEmpty().WithMessage("Informe o CRM!");
             RuleFor(p => p.crm).NotNull().WithMessage("Informe o CRM!!");
 
-            // Se Medico contém uma coleção de Contato que também precisa ser validada
-            RuleForEach(m => m.contato).SetValidator(new ContatoValidator());
+          
         }
     }
 }

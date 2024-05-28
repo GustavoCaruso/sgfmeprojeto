@@ -100,6 +100,9 @@ namespace SGFME.Application.Controllers
             }
         }
 
+
+
+
         [HttpGet("selecionarContatos/{id}")]
         public async Task<ActionResult<List<Contato>>> GetContatosByMedicoId(long id)
         {
@@ -137,11 +140,45 @@ namespace SGFME.Application.Controllers
         }
 
 
+        //[HttpGet]
+        // public IActionResult selecionarTodos()
+        //{
+        //    //select * from produtos
+        //    return Execute(() => _baseService.Get<MedicoModel>());
+        //}
+
+
         [HttpGet]
-        public IActionResult selecionarTodos()
+        public async Task<IActionResult> selecionarTodos()
         {
-            //select * from produtos
-            return Execute(() => _baseService.Get<MedicoModel>());
+            try
+            {
+                var medicos = await _context.medico
+                    .Include(m => m.contato)
+                    .ThenInclude(c => c.tipocontato)
+                    .ToListAsync();
+
+                var medicoDtos = medicos.Select(m => new MedicoDTO
+                {
+                    id = m.id,
+                    nomeCompleto = m.nomeCompleto,
+                    dataNascimento = m.dataNascimento,
+                    crm = m.crm,
+                    contato = m.contato.Select(c => new ContatoCreateDTO
+                    {
+                        
+                        valor = c.valor,
+                        idTipoContato = c.idTipoContato,
+                        tipoContato = c.tipocontato.nome // Assuming `nome` is the property of `TipoContato`
+                    }).ToList()
+                }).ToList();
+
+                return Ok(medicoDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os médicos.");
+            }
         }
 
 
@@ -264,6 +301,8 @@ namespace SGFME.Application.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar o médico.");
             }
         }
+
+
 
 
 

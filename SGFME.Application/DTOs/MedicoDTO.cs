@@ -1,4 +1,6 @@
-﻿namespace SGFME.Application.DTOs
+﻿using SGFME.Domain.Entidades;
+
+namespace SGFME.Application.DTOs
 {
     public class MedicoDTO
     {
@@ -7,5 +9,6 @@
         public DateTime dataNascimento { get; set; }
         public String crm { get; set; }
         public List<ContatoCreateDTO> contato { get; set; } = new List<ContatoCreateDTO>();
+        
     }
 }

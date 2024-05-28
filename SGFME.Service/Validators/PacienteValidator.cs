@@ -68,9 +68,6 @@ namespace SGFME.Service.Validators
                 .NotEmpty().WithMessage("Informe a Data de Cadastro!")
                 .LessThanOrEqualTo(DateTime.Now).WithMessage("A Data de Cadastro deve ser hoje ou no passado!");
 
-            // Validação das coleções de contato e endereço
-            RuleForEach(p => p.contato).SetValidator(new ContatoValidator());
-            RuleForEach(p => p.endereco).SetValidator(new EnderecoValidator());
         }
     }
 }

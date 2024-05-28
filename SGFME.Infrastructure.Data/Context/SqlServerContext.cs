@@ -22,25 +22,23 @@ namespace SGFME.Infrastructure.Data.Context
         public DbSet<TipoContato> tipocontato { get; set; }//Replicar para as próximas entidades
         public DbSet<CorRaca> corraca { get; set; }//Replicar para as próximas entidades
         public DbSet<Sexo> sexo { get; set; }//Replicar para as próximas entidades
-       
         public DbSet<Status> status { get; set; }//Replicar para as próximas entidades
         public DbSet<EstadoCivil> estadocivil { get; set; }//Replicar para as próximas entidades
         public DbSet<Profissao> profissao { get; set; }//Replicar para as próximas entidades
         public DbSet<Endereco> endereco { get; set; }//Replicar para as próximas entidades
-        
         public DbSet<Naturalidade> naturalidade { get; set; }//Replicar para as próximas entidades
         public DbSet<TipoEndereco> tipoendereco { get; set; }//Replicar para as próximas entidades
         public DbSet<Pessoa> pessoa { get; set; }//Replicar para as próximas entidades
         public DbSet<Cid> cid { get; set; }//Replicar para as próximas entidades
-
         public DbSet<EstabelecimentoSaude> estabelecimentosaude { get; set; }//Replicar para as próximas entidades
         public DbSet<Medico> medico { get; set; }//Replicar para as próximas entidades
+       
 
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv31;integrated security=true;TrustServerCertificate=True;";
+            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv36;integrated security=true;TrustServerCertificate=True;";
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(stringConexao)
@@ -70,6 +68,7 @@ namespace SGFME.Infrastructure.Data.Context
             modelBuilder.Entity<Cid>(new CidMapping().Configure);//Replicar para as próximas entidades
             modelBuilder.Entity<EstabelecimentoSaude>(new EstabelecimentoSaudeMapping().Configure);//Replicar para as próximas entidades
             modelBuilder.Entity<Medico>(new MedicoMapping().Configure);//Replicar para as próximas entidades
+           
 
         }
     }

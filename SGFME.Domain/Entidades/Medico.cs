@@ -12,5 +12,6 @@ namespace SGFME.Domain.Entidades
         public DateTime dataNascimento { get; set; }
         public String crm { get; set; }
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
+       
     }
 }

@@ -100,6 +100,8 @@ namespace SGFME.Application
                 config.CreateMap<Medico, MedicoModel>();
                 config.CreateMap<MedicoModel, Medico>();
 
+                
+
 
 
 
@@ -154,6 +156,8 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<Medico>, BaseService<Medico>>();
             services.AddScoped<IBaseRepository<Medico>, BaseRepository<Medico>>();
+
+            
 
         }
 
