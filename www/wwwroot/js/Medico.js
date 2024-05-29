@@ -43,8 +43,17 @@ $(document).ready(function () {
             $("#txtcrm").addClass('is-invalid');
             isValid = false;
         }
+
+        if (contatos.length === 0) {
+            $("#mensagemValidacao").text("Por favor, adicione pelo menos um contato.");
+            isValid = false;
+        } else {
+            $("#mensagemValidacao").text(""); // Limpa a mensagem se a validação for bem-sucedida
+        }
+
         return isValid;
     }
+
 
     $.ajax({
         url: urlAPI + "api/Medico/tipoContato",
@@ -105,6 +114,11 @@ $(document).ready(function () {
                 contato: contatos
             };
 
+            if (contatos.length === 0) {
+                $("#mensagemValidacao").text("Por favor, adicione pelo menos um contato.");
+                return; // Não prossegue com o salvamento dos dados se a validação falhar
+            }
+
             $.ajax({
                 type: obj.id == "0" ? "POST" : "PUT",
                 url: urlAPI + "api/Medico" + (obj.id != "0" ? "/" + obj.id : ""),
@@ -138,6 +152,7 @@ $(document).ready(function () {
             });
         }
     });
+
 
     function limparFormulario() {
         $("#txtnomeCompleto").val('');
