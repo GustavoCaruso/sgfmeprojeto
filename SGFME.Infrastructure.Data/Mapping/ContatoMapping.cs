@@ -58,6 +58,14 @@ namespace SGFME.Infrastructure.Data.Mapping
 
 
 
+            builder.HasOne(p => p.representante).WithMany(c => c.contato)
+                .HasConstraintName("fk_representante_contato")
+                .HasForeignKey(p => p.idRepresentante)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
+
+
             builder.Property(prop => prop.discriminator)
                 .IsRequired()
                 .HasMaxLength(50);

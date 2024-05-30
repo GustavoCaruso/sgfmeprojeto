@@ -9,17 +9,15 @@ namespace SGFME.Application.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
-    //vaefhjrgrmmarmarmarhmrmagmarmarhmarymaetjeyjryky
-    public class EstadoCivilController : ControllerBase
+    public class MedicamentoController : ControllerBase
     {
-        private IBaseService<EstadoCivil> _baseService;
+        private IBaseService<Medicamento> _baseService;
 
-        public EstadoCivilController(IBaseService<EstadoCivil> baseService)
+        public MedicamentoController(IBaseService<Medicamento> baseService)
         {
             _baseService = baseService;
         }
-            //Adicionar método para executar comando e retornar IActionResult
+        //Adicionar método para executar comando e retornar IActionResult
         private IActionResult Execute(Func<object> func)
         {
             try
@@ -33,28 +31,28 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        //EndPoint para criar um EstadoCivil:
+        //EndPoint para criar um Medicamento:
         [HttpPost]
-        public IActionResult Create(EstadoCivilModel EstadoCivil)
+        public IActionResult Create(MedicamentoModel Medicamento)
         {
-            if (EstadoCivil == null)
+            if (Medicamento == null)
                 return NotFound();
-            return Execute(() => _baseService.Add<EstadoCivilModel,
-           EstadoCivilValidator>(EstadoCivil));
+            return Execute(() => _baseService.Add<MedicamentoModel,
+           MedicamentoValidator>(Medicamento));
         }
 
-        //EndPoint para alterar um EstadoCivil:
+        //EndPoint para alterar um Medicamento:
         [HttpPut]
-        public IActionResult Update(EstadoCivilModel EstadoCivil)
+        public IActionResult Update(MedicamentoModel Medicamento)
         {
-            if (EstadoCivil == null)
+            if (Medicamento == null)
                 return NotFound();
-            return Execute(() => _baseService.Update<EstadoCivilModel,
-           EstadoCivilValidator>(EstadoCivil));
+            return Execute(() => _baseService.Update<MedicamentoModel,
+           MedicamentoValidator>(Medicamento));
         }
 
 
-        //EndPoint para excluir um EstadoCivil:
+        //EndPoint para excluir um Medicamento:
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -69,14 +67,17 @@ namespace SGFME.Application.Controllers
         }
 
 
-        // EndPoint para selecionar um EstadoCivil pelo ID:
+        // EndPoint para selecionar um Medicamento pelo ID:
         [HttpGet("{id:long}")]
         public IActionResult Get(long id)
         {
             if (id == 0)
                 return NotFound();
 
-            return Execute(() => _baseService.GetById<EstadoCivilModel>(id));
+            return Execute(() => _baseService.GetById<MedicamentoModel>(id));
         }
     }
+
+
 }
+

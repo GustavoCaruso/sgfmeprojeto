@@ -32,13 +32,17 @@ namespace SGFME.Infrastructure.Data.Context
         public DbSet<Cid> cid { get; set; }//Replicar para as próximas entidades
         public DbSet<EstabelecimentoSaude> estabelecimentosaude { get; set; }//Replicar para as próximas entidades
         public DbSet<Medico> medico { get; set; }//Replicar para as próximas entidades
-       
+        public DbSet<Representante> representante { get; set; }
+        public DbSet<Medicamento> medicamento { get; set; }
+
+
+         
 
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv36;integrated security=true;TrustServerCertificate=True;";
+            var stringConexao = @"Server=ANDRE;DataBase=SGFMEv80;integrated security=true;TrustServerCertificate=True;";
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(stringConexao)
@@ -68,7 +72,9 @@ namespace SGFME.Infrastructure.Data.Context
             modelBuilder.Entity<Cid>(new CidMapping().Configure);//Replicar para as próximas entidades
             modelBuilder.Entity<EstabelecimentoSaude>(new EstabelecimentoSaudeMapping().Configure);//Replicar para as próximas entidades
             modelBuilder.Entity<Medico>(new MedicoMapping().Configure);//Replicar para as próximas entidades
-           
+
+            modelBuilder.Entity<Representante>(new RepresentanteMapping().Configure);   
+            modelBuilder.Entity<Medicamento>(new MedicamentoMapping().Configure);
 
         }
     }

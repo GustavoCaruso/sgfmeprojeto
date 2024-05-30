@@ -69,6 +69,14 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
+
+            
+            builder.HasOne(p => p.representante).WithMany(c => c.endereco)
+                .HasConstraintName("fk_representante_endereco")
+                .HasForeignKey(p => p.idRepresentante)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
         }
     }
 }
