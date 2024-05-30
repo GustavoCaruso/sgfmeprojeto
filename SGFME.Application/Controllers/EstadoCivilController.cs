@@ -9,6 +9,8 @@ namespace SGFME.Application.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
+    //vaefhjrgrmmarmarmarhmrmagmarmarhmarymaetjeyjryky
     public class EstadoCivilController : ControllerBase
     {
         private IBaseService<EstadoCivil> _baseService;
