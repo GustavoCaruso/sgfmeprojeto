@@ -25,11 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SGFME.Infrastructure.Data",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SGFME.Service", "SGFME.Service\SGFME.Service.csproj", "{CF09F7EE-FD9F-49E2-ABCE-280A88482451}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{619BFD78-16E0-4B4B-8D3B-DA3D5D29EEA4}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrontEnd", "FrontEnd", "{B4BF6743-EFCE-47D1-A632-DD264B266E7C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "www", "www\www.csproj", "{2BD786D5-E9DE-4694-8C7A-4B7822D80D59}"
