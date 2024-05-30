@@ -13,7 +13,7 @@ namespace SGFME.Infrastructure.Data.Mapping
     {
         public void Configure(EntityTypeBuilder<Contato> builder)
         {
-            builder.ToTable("Contato"); //Nome da tabela no SqlServer
+            builder.ToTable("Contato");   //Nome da tabela no SqlServer
 
             builder.HasKey(prop => prop.id); //Chave primária no SqlServer
 
