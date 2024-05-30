@@ -103,7 +103,8 @@ namespace SGFME.Application
                 config.CreateMap<Representante, RepresentanteModel>();
                 config.CreateMap<RepresentanteModel, Representante>();
 
-
+                config.CreateMap<Medicamento, MedicamentoModel>();
+                config.CreateMap<MedicamentoModel, Medicamento>();
 
 
 
@@ -163,7 +164,8 @@ namespace SGFME.Application
             services.AddScoped<IBaseService<Representante>, BaseService<Representante>>();
             services.AddScoped<IBaseRepository<Representante>, BaseRepository<Representante>>();
 
-
+            services.AddScoped<IBaseService<Medicamento>, BaseService<Medicamento>>();
+            services.AddScoped<IBaseRepository<Medicamento>, BaseRepository<Medicamento>>();
 
         }
 
