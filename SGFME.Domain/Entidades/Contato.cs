@@ -23,6 +23,15 @@ namespace SGFME.Domain.Entidades
         public long? idMedico { get; set; } // Chave estrangeira
         public virtual Medico medico { get; set; } // Propriedade de navegação
 
+
+
+
+        //Relacionamento com a entidade Paciente-One to Many
+        public long? idRepresentante { get; set; } // Chave estrangeira
+        public virtual Representante representante { get; set; } // Propriedade de navegação
+
+
+
         public string discriminator { get; set; } // Propriedade discriminadora
         //Relacionamento com a entidade TipoEndereco-One to one
         public long idTipoContato { get; set; } // Chave estrangeira

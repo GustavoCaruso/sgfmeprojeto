@@ -19,6 +19,10 @@ namespace SGFME.Application.Models
         public long? idTipoContato { get; set; } // Chave estrangeira
         public virtual TipoContato tipocontato { get; set; } // Propriedade de navegação
 
+        //Relacionamento com a entidade Paciente-One to Many
+        public long? idRepresentante { get; set; } // Chave estrangeira
+        public virtual Representante representante { get; set; } // Propriedade de navegação
+
         public long? idEstabelecimentoSaude { get; set; } // Chave estrangeira
         public virtual EstabelecimentoSaude estabelecimentosaude { get; set; } // Propriedade de navegação
     }

@@ -1,4 +1,6 @@
-﻿namespace SGFME.Application.Models
+﻿using SGFME.Domain.Entidades;
+
+namespace SGFME.Application.Models
 {
     public class RepresentanteModel
     {
@@ -12,5 +14,7 @@
         public string rgUfEmissao { get; set; }
         public string cnsNumero { get; set; }
         public string cpfNumero { get; set; }
+
+        public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
     }
 }

@@ -12,6 +12,7 @@
         public string rgUfEmissao { get; set; }
         public string cnsNumero { get; set; }
         public string cpfNumero { get; set; }
+        public List<ContatoCreateDTO> contato { get; set; } = new List<ContatoCreateDTO>();
 
     }
 }
