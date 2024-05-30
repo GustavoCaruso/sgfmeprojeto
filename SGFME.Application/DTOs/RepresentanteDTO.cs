@@ -13,6 +13,7 @@
         public string cnsNumero { get; set; }
         public string cpfNumero { get; set; }
         public List<ContatoCreateDTO> contato { get; set; } = new List<ContatoCreateDTO>();
+        public List<EnderecoCreateDTO> endereco { get; set; } = new List<EnderecoCreateDTO>();
 
     }
 }

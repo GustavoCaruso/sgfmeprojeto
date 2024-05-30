@@ -23,5 +23,10 @@ namespace SGFME.Application.Models
         public long? idPaciente { get; set; } // Chave estrangeira
 
         public virtual Paciente paciente { get; set; } // Propriedade de navegação
+
+
+        public long? idRepresentante { get; set; } // Chave estrangeira
+
+        public virtual Representante representante { get; set; } // Propriedade de navegação
     }
 }

@@ -62,10 +62,12 @@ namespace SGFME.Application.Controllers
                         rgUfEmissao = request.rgUfEmissao,
                         cnsNumero = request.cnsNumero,
                         cpfNumero = request.cpfNumero,
-                        // Inicializa a lista de contatos
-                        contato = new List<Contato>()
+                        // Inicializa as listas de contatos e endereços
+                        contato = new List<Contato>(),
+                        endereco = new List<Endereco>()
                     };
 
+                    // Adicionando contatos
                     foreach (var contatoDto in request.contato)
                     {
                         var contato = new Contato
@@ -76,6 +78,26 @@ namespace SGFME.Application.Controllers
                             discriminator = "Representante"
                         };
                         novoRepresentante.contato.Add(contato);
+                    }
+
+                    // Adicionando endereços
+                    foreach (var enderecoDto in request.endereco)
+                    {
+                        var endereco = new Endereco
+                        {
+                            idTipoEndereco = enderecoDto.idTipoEndereco,
+                            logradouro = enderecoDto.logradouro,
+                            numero = enderecoDto.numero,
+                            complemento = enderecoDto.complemento,
+                            bairro = enderecoDto.bairro,
+                            cidade = enderecoDto.cidade,
+                            uf = enderecoDto.uf,
+                            cep = enderecoDto.cep,
+                            pontoReferencia = enderecoDto.pontoReferencia,
+                            representante = novoRepresentante,
+                            discriminator = "Representante"
+                        };
+                        novoRepresentante.endereco.Add(endereco);
                     }
 
                     // Validar a entrada usando FluentValidation
@@ -93,6 +115,7 @@ namespace SGFME.Application.Controllers
 
                     var createdRepresentante = await _context.representante
                         .Include(p => p.contato)
+                        .Include(p => p.endereco)
                         .FirstOrDefaultAsync(e => e.id == novoRepresentante.id);
 
                     return CreatedAtAction(nameof(Create), new { id = createdRepresentante.id }, createdRepresentante);
@@ -127,6 +150,28 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        [HttpGet("selecionarEnderecos/{id}")]
+        public async Task<ActionResult<List<Endereco>>> GetEnderecosByRepresentanteId(long id)
+        {
+            try
+            {
+                var representante = await _context.representante
+                    .Include(m => m.endereco)
+                    .FirstOrDefaultAsync(m => m.id == id);
+
+                if (representante == null)
+                {
+                    return NotFound("Representante não encontrado.");
+                }
+
+                return Ok(representante.endereco);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar endereços.");
+            }
+        }
+
         [HttpGet("tipoContato")]
         public IActionResult ObterTiposContato()
         {
@@ -141,14 +186,15 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        [HttpGet("todosRepresentantesComContatos")]
+        [HttpGet("todosRepresentantesComContatosEEnderecos")]
         public async Task<ActionResult<List<Representante>>> GetAllRepresentantes()
         {
             try
             {
                 var representantes = await _context.representante
                     .Include(m => m.contato)
-                    .ThenInclude(c => c.tipocontato)
+                    .Include(m => m.endereco)
+                    .ThenInclude(e => e.tipoendereco)
                     .ToListAsync();
 
                 return Ok(representantes);
@@ -168,6 +214,7 @@ namespace SGFME.Application.Controllers
                 {
                     var representante = await _context.representante
                         .Include(m => m.contato)
+                        .Include(m => m.endereco)
                         .FirstOrDefaultAsync(m => m.id == id);
 
                     if (representante == null)
@@ -199,6 +246,29 @@ namespace SGFME.Application.Controllers
                             discriminator = "Representante"
                         };
                         representante.contato.Add(contato);
+                    }
+
+                    // Atualizando os endereços
+                    _context.endereco.RemoveRange(representante.endereco);
+                    representante.endereco.Clear();
+
+                    foreach (var enderecoDto in request.endereco)
+                    {
+                        var endereco = new Endereco
+                        {
+                            idTipoEndereco = enderecoDto.idTipoEndereco,
+                            logradouro = enderecoDto.logradouro,
+                            numero = enderecoDto.numero,
+                            complemento = enderecoDto.complemento,
+                            bairro = enderecoDto.bairro,
+                            cidade = enderecoDto.cidade,
+                            uf = enderecoDto.uf,
+                            cep = enderecoDto.cep,
+                            pontoReferencia = enderecoDto.pontoReferencia,
+                            representante = representante,
+                            discriminator = "Representante"
+                        };
+                        representante.endereco.Add(endereco);
                     }
 
                     // Validar a entrada usando FluentValidation
@@ -233,6 +303,7 @@ namespace SGFME.Application.Controllers
                 {
                     var representanteExistente = await _context.representante
                         .Include(m => m.contato)
+                        .Include(m => m.endereco)
                         .FirstOrDefaultAsync(m => m.id == id);
 
                     if (representanteExistente == null)
@@ -241,6 +312,7 @@ namespace SGFME.Application.Controllers
                     }
 
                     _context.contato.RemoveRange(representanteExistente.contato);
+                    _context.endereco.RemoveRange(representanteExistente.endereco);
                     _context.representante.Remove(representanteExistente);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -262,7 +334,8 @@ namespace SGFME.Application.Controllers
             {
                 var representante = await _context.representante
                     .Include(m => m.contato)
-                    .ThenInclude(c => c.tipocontato)
+                    .Include(m => m.endereco)
+                    .ThenInclude(e => e.tipoendereco)
                     .FirstOrDefaultAsync(m => m.id == id);
 
                 if (representante == null)
