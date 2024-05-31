@@ -72,6 +72,47 @@ $(document).ready(function () {
         return isValid;
     }
 
+    // Chamada AJAX para carregar estados do IBGE
+    $.ajax({
+        url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
+        method: "GET",
+        success: function (data) {
+            const selectEstado = $("#selectEstado");
+            data.forEach(estado => {
+                const option = `<option value="${estado.sigla}">${estado.sigla}</option>`;
+                selectEstado.append(option);
+            });
+        },
+        error: function () {
+            alert("Erro ao carregar os estados.");
+        }
+    });
+
+    // Carregar municípios ao selecionar um estado
+    $("#selectEstado").change(function () {
+        const estadoSigla = $(this).val();
+        if (estadoSigla) {
+            const estado = $("#selectEstado option:selected").text();
+            $.ajax({
+                url: `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoSigla}/municipios`,
+                method: "GET",
+                success: function (data) {
+                    const selectMunicipio = $("#selectMunicipio");
+                    selectMunicipio.empty();
+                    data.forEach(municipio => {
+                        const option = `<option value="${municipio.id}">${municipio.nome}</option>`;
+                        selectMunicipio.append(option);
+                    });
+                },
+                error: function () {
+                    alert("Erro ao carregar os municípios.");
+                }
+            });
+        } else {
+            $("#selectMunicipio").empty();
+        }
+    });
+
     $.ajax({
         url: urlAPI + "api/Representante/tipoContato",
         method: "GET",
@@ -138,8 +179,8 @@ $(document).ready(function () {
         const numero = $("#txtNumero").val();
         const complemento = $("#txtComplemento").val();
         const bairro = $("#txtBairro").val();
-        const cidade = $("#txtCidade").val();
-        const uf = $("#txtUf").val();
+        const cidade = $("#selectMunicipio option:selected").text();
+        const uf = $("#selectEstado option:selected").text();
         const cep = $("#txtCep").val();
         const pontoReferencia = $("#txtPontoReferencia").val();
 
@@ -150,8 +191,8 @@ $(document).ready(function () {
             $("#txtNumero").val('');
             $("#txtComplemento").val('');
             $("#txtBairro").val('');
-            $("#txtCidade").val('');
-            $("#txtUf").val('');
+            $("#selectMunicipio").val('');
+            $("#selectEstado").val('');
             $("#txtCep").val('');
             $("#txtPontoReferencia").val('');
         } else {
