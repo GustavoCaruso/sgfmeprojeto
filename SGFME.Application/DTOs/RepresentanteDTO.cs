@@ -12,6 +12,7 @@
         public string rgUfEmissao { get; set; }
         public string cnsNumero { get; set; }
         public string cpfNumero { get; set; }
+        public long idStatus { get; set; } // Novo campo para StatusId
         public List<ContatoCreateDTO> contato { get; set; } = new List<ContatoCreateDTO>();
         public List<EnderecoCreateDTO> endereco { get; set; } = new List<EnderecoCreateDTO>();
 

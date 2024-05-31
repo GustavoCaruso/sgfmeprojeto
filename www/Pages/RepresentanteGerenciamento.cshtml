@@ -1,0 +1,42 @@
+﻿@page
+@model www.Pages.RepresentanteGerenciamentoModel
+@{
+    ViewData["Title"] = "Gerenciamento de Representantes";
+}
+
+<table id="tabelaRepresentante" class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">Código</th>
+            <th scope="col">Nome Completo</th>
+            <th scope="col">Data de Nascimento</th>
+            <th scope="col">RG Número</th>
+            <th scope="col">Contatos</th>
+            <th scope="col">Endereços</th>
+            <th scope="col">Status</th>
+            <th scope="col">Visualizar</th>
+            <th scope="col">Excluir</th>
+        </tr>
+    </thead>
+    <tbody id="tabela">
+    </tbody>
+</table>
+
+<table style="display:none">
+    <tr id="linhaExemplo">
+        <th scope="row" class="codigo"></th>
+        <td class="nomeCompleto"></td>
+        <td class="dataNascimento"></td>
+        <td class="rgNumero"></td>
+        <td class="contatos"></td>
+        <td class="enderecos"></td>
+        <td class="status"></td>
+        <td><a href="#" class="alterar btn btn-info btn-sm">Visualizar</a></td>
+        <td><a href="#" class="excluir btn btn-danger btn-sm">Excluir</a></td>
+    </tr>
+</table>
+
+@section Scripts
+{
+    <script src="~/js/Representante.js"></script>
+}

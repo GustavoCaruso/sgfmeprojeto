@@ -19,7 +19,11 @@ namespace SGFME.Application.Controllers
         {
             _baseService = baseService;
         }
+<<<<<<< HEAD
           //Adicionar método para executar comando e retornar IActionResult
+=======
+            //Adicionar método para executar comando e retornar IActionResult
+>>>>>>> origin/Gustavo
         private IActionResult Execute(Func<object> func)
         {
             try

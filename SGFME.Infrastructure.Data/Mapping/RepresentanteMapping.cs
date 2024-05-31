@@ -54,10 +54,15 @@ namespace SGFME.Infrastructure.Data.Mapping
 
             builder.Property(p => p.cnsNumero).IsRequired() 
                 .HasColumnType("varchar(150)") 
-                .HasColumnName("cnsNumero");  
+                .HasColumnName("cnsNumero");
+
+            // Definir a relação com Status
+            builder.HasOne(r => r.status)
+                .WithMany(s => s.representante)
+                .HasForeignKey(r => r.idStatus)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
-            
 
 
 
