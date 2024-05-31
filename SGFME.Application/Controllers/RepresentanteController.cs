@@ -43,7 +43,7 @@ namespace SGFME.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Representante>>> Create(RepresentanteDTO request)
+        public async Task<ActionResult<Representante>> Create(RepresentanteDTO request)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -52,7 +52,6 @@ namespace SGFME.Application.Controllers
                     // Convertendo RepresentanteDTO para Representante
                     var novoRepresentante = new Representante
                     {
-                        id = request.id,
                         nomeCompleto = request.nomeCompleto,
                         dataNascimento = request.dataNascimento,
                         dataCadastro = request.dataCadastro,
@@ -62,7 +61,7 @@ namespace SGFME.Application.Controllers
                         rgUfEmissao = request.rgUfEmissao,
                         cnsNumero = request.cnsNumero,
                         cpfNumero = request.cpfNumero,
-                        // Inicializa as listas de contatos e endereços
+                        idStatus = request.idStatus, // Associação com Status
                         contato = new List<Contato>(),
                         endereco = new List<Endereco>()
                     };
@@ -116,6 +115,7 @@ namespace SGFME.Application.Controllers
                     var createdRepresentante = await _context.representante
                         .Include(p => p.contato)
                         .Include(p => p.endereco)
+                        .Include(p => p.status)
                         .FirstOrDefaultAsync(e => e.id == novoRepresentante.id);
 
                     return CreatedAtAction(nameof(Create), new { id = createdRepresentante.id }, createdRepresentante);
@@ -127,6 +127,7 @@ namespace SGFME.Application.Controllers
                 }
             }
         }
+
 
         [HttpGet("selecionarContatos/{id}")]
         public async Task<ActionResult<List<Contato>>> GetContatosByRepresentanteId(long id)
@@ -186,6 +187,20 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        [HttpGet("tipoEndereco")]
+        public IActionResult ObterTiposEndereco()
+        {
+            try
+            {
+                var tiposEndereco = _context.tipoendereco.ToList();
+                return Ok(tiposEndereco);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         [HttpGet("todosRepresentantesComContatosEEnderecos")]
         public async Task<ActionResult<List<Representante>>> GetAllRepresentantes()
         {
@@ -193,8 +208,10 @@ namespace SGFME.Application.Controllers
             {
                 var representantes = await _context.representante
                     .Include(m => m.contato)
+                        .ThenInclude(c => c.tipocontato)
                     .Include(m => m.endereco)
-                    .ThenInclude(e => e.tipoendereco)
+                        .ThenInclude(e => e.tipoendereco)
+                    .Include(m => m.status)
                     .ToListAsync();
 
                 return Ok(representantes);
@@ -205,8 +222,10 @@ namespace SGFME.Application.Controllers
             }
         }
 
+
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, RepresentanteDTO request)
+        public async Task<IActionResult> Update(long id, RepresentanteDTO request)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -231,6 +250,7 @@ namespace SGFME.Application.Controllers
                     representante.rgUfEmissao = request.rgUfEmissao;
                     representante.cnsNumero = request.cnsNumero;
                     representante.cpfNumero = request.cpfNumero;
+                    representante.idStatus = request.idStatus; // Associação com Status
 
                     // Atualizando os contatos
                     _context.contato.RemoveRange(representante.contato);
@@ -294,6 +314,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
@@ -327,6 +348,8 @@ namespace SGFME.Application.Controllers
             }
         }
 
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRepresentanteById(int id)
         {
@@ -334,8 +357,10 @@ namespace SGFME.Application.Controllers
             {
                 var representante = await _context.representante
                     .Include(m => m.contato)
+                    .ThenInclude(c => c.tipocontato) // Incluir tipocontato
                     .Include(m => m.endereco)
-                    .ThenInclude(e => e.tipoendereco)
+                    .ThenInclude(e => e.tipoendereco) // Incluir tipoendereco
+                    .Include(m => m.status) // Incluir status
                     .FirstOrDefaultAsync(m => m.id == id);
 
                 if (representante == null)
@@ -350,6 +375,23 @@ namespace SGFME.Application.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar o representante.");
             }
         }
+
+
+
+        [HttpGet("tipoStatus")]
+        public IActionResult ObterTiposStatus()
+        {
+            try
+            {
+                var tiposStatus = _context.status.ToList();
+                return Ok(tiposStatus);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
 
         [HttpGet]
         public IActionResult SelecionarTodos()

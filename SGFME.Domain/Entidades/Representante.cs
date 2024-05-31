@@ -16,8 +16,9 @@ namespace SGFME.Domain.Entidades
         public string rgOrgaoExpedidor { get; set; }
         public string rgUfEmissao { get; set; }
         public string cnsNumero { get; set; }
-        public string cpfNumero { get; set; } 
-        
+        public string cpfNumero { get; set; }
+        public long idStatus { get; set; } 
+        public virtual Status status { get; set; } 
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
         public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
 

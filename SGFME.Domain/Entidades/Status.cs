@@ -9,5 +9,6 @@ namespace SGFME.Domain.Entidades
     public class Status : BaseEntity
     {
         public string nome { get; set; }
+        public virtual ICollection<Representante> representante { get; set; } = new List<Representante>();
     }
 }
