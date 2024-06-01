@@ -9,5 +9,9 @@ namespace SGFME.Domain.Entidades
     public class CorRaca : BaseEntity
     {
         public string nome { get; set; }
+
+
+        //Relação com Paciente
+        public virtual ICollection<Paciente> paciente { get; set; } = new List<Paciente>();
     }
 }

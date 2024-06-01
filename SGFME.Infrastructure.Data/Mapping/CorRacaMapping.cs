@@ -16,8 +16,13 @@ namespace SGFME.Infrastructure.Data.Mapping
             builder.ToTable("CorRaca"); //nome da table no banco
             builder.HasKey(p => p.id); //definição de chave primaria
             builder.Property(p => p.nome).IsRequired() //campo requerido
-                .HasColumnType("varchar(150)")  //tipo da coluna
+                .HasColumnType("varchar(255)")  //tipo da coluna
                 .HasColumnName("nome");  //nome da coluna no bd
+
+            builder.HasMany(s => s.paciente)
+                .WithOne(r => r.corraca)
+                .HasForeignKey(r => r.idCorRaca)
+                .OnDelete(DeleteBehavior.Restrict); // Definir o comportamento de deleção
 
         }
     }

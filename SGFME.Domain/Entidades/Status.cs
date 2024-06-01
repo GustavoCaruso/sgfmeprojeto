@@ -10,5 +10,10 @@ namespace SGFME.Domain.Entidades
     {
         public string nome { get; set; }
         public virtual ICollection<Representante> representante { get; set; } = new List<Representante>();
+
+
+
+        //Relação com Paciente
+        public virtual ICollection<Paciente> paciente { get; set; } = new List<Paciente>();
     }
 }
