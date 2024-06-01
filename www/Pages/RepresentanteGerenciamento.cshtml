@@ -4,23 +4,43 @@
     ViewData["Title"] = "Gerenciamento de Representantes";
 }
 
-<table id="tabelaRepresentante" class="table table-striped table-hover table-bordered">
-    <thead class="table-dark">
-        <tr>
-            <th scope="col">Código</th>
-            <th scope="col">Nome Completo</th>
-            <th scope="col">Data de Nascimento</th>
-            <th scope="col">RG Número</th>
-            <th scope="col">Contatos</th>
-            <th scope="col">Endereços</th>
-            <th scope="col">Status</th>
-            <th scope="col">Visualizar</th>
-            <th scope="col">Excluir</th>
-        </tr>
-    </thead>
-    <tbody id="tabela">
-    </tbody>
-</table>
+<style>
+    .top-right-button {
+        position: absolute;
+        top: 10px; /* ajuste a posição superior conforme necessário */
+        right: 10px; /* ajuste a posição direita conforme necessário */
+        width: 150px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.90rem;
+    }
+
+    .container {
+        position: relative; /* para que o botão se alinhe dentro deste contêiner */
+    }
+</style>
+
+<div class="container">
+    <button type="button" class="btn btn-success top-right-button" onclick="location.href='/RepresentanteCadastro'">
+        Cadastrar Novo Representante
+    </button>
+    <table id="tabelaRepresentante" class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Nome Completo</th>
+                <th scope="col">Data de Nascimento</th>
+                <th scope="col">RG Número</th>
+                <th scope="col">Contatos</th>
+                <th scope="col">Endereços</th>
+                <th scope="col">Status</th>
+                <th scope="col">Visualizar</th>
+                <th scope="col">Excluir</th>
+            </tr>
+        </thead>
+        <tbody id="tabela">
+        </tbody>
+    </table>
+</div>
 
 <table style="display:none">
     <tr id="linhaExemplo">
@@ -35,6 +55,7 @@
         <td><a href="#" class="excluir btn btn-danger btn-sm">Excluir</a></td>
     </tr>
 </table>
+<button type="button" class="btn btn-primary" onclick="location.href='/index'">Voltar</button>
 
 @section Scripts
 {
