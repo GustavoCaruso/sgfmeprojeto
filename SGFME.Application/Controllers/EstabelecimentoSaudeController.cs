@@ -166,7 +166,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("todos")]
         public async Task<ActionResult<List<EstabelecimentoSaude>>> GetAllEstabelecimentos()
         {
             try
@@ -344,7 +344,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("todosModelos")]
         public IActionResult SelecionarTodos()
         {
             return Execute(() => _baseService.Get<EstabelecimentoSaudeModel>());
