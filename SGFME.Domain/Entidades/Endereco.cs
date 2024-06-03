@@ -26,5 +26,8 @@ namespace SGFME.Domain.Entidades
 
         public long? idRepresentante { get; set; } // Chave estrangeira
         public virtual Representante representante { get; set; } // Propriedade de navegação
+
+        public long? idMedico { get; set; } // Chave estrangeira
+        public virtual Medico medico { get; set; } // Propriedade de navegação
     }
 }

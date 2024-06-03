@@ -7,6 +7,8 @@ namespace SGFME.Application.Models
     {
         public long id { get; set; }
         public string nome { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Medico> medico { get; set; } = new List<Medico>();
 
         [JsonIgnore]
         public virtual ICollection<Representante> representante { get; set; } = new List<Representante>();

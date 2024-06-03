@@ -43,41 +43,76 @@ namespace SGFME.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Medico>>> Create(MedicoDTO request)
+        public async Task<ActionResult<Medico>> Create(MedicoDTO request)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    // Convertendo MedicoDTO para Medico
                     var novoMedico = new Medico
                     {
                         id = request.id,
                         nomeCompleto = request.nomeCompleto,
                         dataNascimento = request.dataNascimento,
                         crm = request.crm,
-                        // Inicializa a lista de contatos
-                        contato = new List<Contato>()
+                        dataCadastro = request.dataCadastro,
+                        nomeMae = request.nomeMae,
+                        rgNumero = request.rgNumero,
+                        rgDataEmissao = request.rgDataEmissao,
+                        rgOrgaoExpedidor = request.rgOrgaoExpedidor,
+                        rgUfEmissao = request.rgUfEmissao,
+                        cnsNumero = request.cnsNumero,
+                        cpfNumero = request.cpfNumero,
+                        nomeConjuge = request.nomeConjuge,
+                        naturalidadeCidade = request.naturalidadeCidade,
+                        naturalidadeUf = request.naturalidadeUf,
+                        idStatus = request.idStatus,
+                        idSexo = request.idSexo,
+                        idEstadoCivil = request.idEstadoCivil,
+                        idCorRaca = request.idCorRaca,
+                        contato = new List<Contato>(),
+                        endereco = new List<Endereco>()
                     };
+
+                    // Adicionando contatos
                     foreach (var contatoDto in request.contato)
                     {
                         var contato = new Contato
                         {
                             valor = contatoDto.valor,
-                            idTipoContato = contatoDto.idTipoContato, // Define o tipo de contato
+                            idTipoContato = contatoDto.idTipoContato,
                             medico = novoMedico,
-                            discriminator = "Medico", // Define o discriminador
+                            discriminator = "Medico"
                         };
                         novoMedico.contato.Add(contato);
                     }
 
+                    // Adicionando endereços
+                    foreach (var enderecoDto in request.endereco)
+                    {
+                        var endereco = new Endereco
+                        {
+                            idTipoEndereco = enderecoDto.idTipoEndereco,
+                            logradouro = enderecoDto.logradouro,
+                            numero = enderecoDto.numero,
+                            complemento = enderecoDto.complemento,
+                            bairro = enderecoDto.bairro,
+                            cidade = enderecoDto.cidade,
+                            uf = enderecoDto.uf,
+                            cep = enderecoDto.cep,
+                            pontoReferencia = enderecoDto.pontoReferencia,
+                            medico = novoMedico,
+                            discriminator = "Medico"
+                        };
+                        novoMedico.endereco.Add(endereco);
+                    }
+
                     // Validar a entrada usando FluentValidation
                     var validator = new MedicoValidator();
-                    var validationResult = await validator.ValidateAsync(novoMedico); // Passando o novoMedico ao invés de request
+                    var validationResult = await validator.ValidateAsync(novoMedico);
 
                     if (!validationResult.IsValid)
                     {
-                        // Se a entrada não for válida, retornar uma resposta de erro com as mensagens de validação
                         return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
                     }
 
@@ -86,7 +121,12 @@ namespace SGFME.Application.Controllers
                     await transaction.CommitAsync();
 
                     var createdMedico = await _context.medico
-                        .Include(p => p.contato)
+                        .Include(m => m.contato)
+                        .Include(m => m.endereco)
+                        .Include(m => m.status)
+                        .Include(m => m.sexo)
+                        .Include(m => m.corraca)
+                        .Include(m => m.estadocivil)
                         .FirstOrDefaultAsync(e => e.id == novoMedico.id);
 
                     return CreatedAtAction(nameof(Create), new { id = createdMedico.id }, createdMedico);
@@ -94,14 +134,10 @@ namespace SGFME.Application.Controllers
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    // Log the exception (consider using a logging framework)
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao criar Médico.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao criar Medico.");
                 }
             }
         }
-
-
-
 
         [HttpGet("selecionarContatos/{id}")]
         public async Task<ActionResult<List<Contato>>> GetContatosByMedicoId(long id)
@@ -125,6 +161,28 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        [HttpGet("selecionarEnderecos/{id}")]
+        public async Task<ActionResult<List<Endereco>>> GetEnderecosByMedicoId(long id)
+        {
+            try
+            {
+                var medico = await _context.medico
+                    .Include(m => m.endereco)
+                    .FirstOrDefaultAsync(m => m.id == id);
+
+                if (medico == null)
+                {
+                    return NotFound("Médico não encontrado.");
+                }
+
+                return Ok(medico.endereco);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar endereços.");
+            }
+        }
+
         [HttpGet("tipoContato")]
         public IActionResult ObterTiposContato()
         {
@@ -139,19 +197,34 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        [HttpGet("tipoEndereco")]
+        public IActionResult ObterTiposEndereco()
+        {
+            try
+            {
+                var tiposEndereco = _context.tipoendereco.ToList();
+                return Ok(tiposEndereco);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
 
-
-
-
-
-        [HttpGet("todosMedicosComContatos")]
+        [HttpGet("todosMedicosComContatosEEnderecos")]
         public async Task<ActionResult<List<Medico>>> GetAllMedicos()
         {
             try
             {
                 var medicos = await _context.medico
                     .Include(m => m.contato)
-                    .ThenInclude(c => c.tipocontato)
+                        .ThenInclude(c => c.tipocontato)
+                    .Include(m => m.endereco)
+                        .ThenInclude(e => e.tipoendereco)
+                    .Include(m => m.status)
+                    .Include(m => m.sexo)
+                    .Include(m => m.corraca)
+                    .Include(m => m.estadocivil)
                     .ToListAsync();
 
                 return Ok(medicos);
@@ -162,19 +235,8 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, MedicoDTO request)
+        public async Task<IActionResult> Update(long id, MedicoDTO request)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -182,6 +244,7 @@ namespace SGFME.Application.Controllers
                 {
                     var medico = await _context.medico
                         .Include(m => m.contato)
+                        .Include(m => m.endereco)
                         .FirstOrDefaultAsync(m => m.id == id);
 
                     if (medico == null)
@@ -190,8 +253,23 @@ namespace SGFME.Application.Controllers
                     }
 
                     medico.nomeCompleto = request.nomeCompleto;
-                    medico.dataNascimento = request.dataNascimento;
                     medico.crm = request.crm;
+                    medico.nomeMae = request.nomeMae;
+                    medico.nomeConjuge = request.nomeConjuge;
+                    medico.naturalidadeCidade = request.naturalidadeCidade;
+                    medico.naturalidadeUf = request.naturalidadeUf;
+                    medico.dataNascimento = request.dataNascimento;
+                    medico.dataCadastro = request.dataCadastro;
+                    medico.rgNumero = request.rgNumero;
+                    medico.rgDataEmissao = request.rgDataEmissao;
+                    medico.rgOrgaoExpedidor = request.rgOrgaoExpedidor;
+                    medico.rgUfEmissao = request.rgUfEmissao;
+                    medico.cnsNumero = request.cnsNumero;
+                    medico.cpfNumero = request.cpfNumero;
+                    medico.idStatus = request.idStatus; // Associação com Status
+                    medico.idCorRaca = request.idCorRaca;
+                    medico.idSexo = request.idSexo;
+                    medico.idEstadoCivil = request.idEstadoCivil;
 
                     // Atualizando os contatos
                     _context.contato.RemoveRange(medico.contato);
@@ -207,6 +285,29 @@ namespace SGFME.Application.Controllers
                             discriminator = "Medico"
                         };
                         medico.contato.Add(contato);
+                    }
+
+                    // Atualizando os endereços
+                    _context.endereco.RemoveRange(medico.endereco);
+                    medico.endereco.Clear();
+
+                    foreach (var enderecoDto in request.endereco)
+                    {
+                        var endereco = new Endereco
+                        {
+                            idTipoEndereco = enderecoDto.idTipoEndereco,
+                            logradouro = enderecoDto.logradouro,
+                            numero = enderecoDto.numero,
+                            complemento = enderecoDto.complemento,
+                            bairro = enderecoDto.bairro,
+                            cidade = enderecoDto.cidade,
+                            uf = enderecoDto.uf,
+                            cep = enderecoDto.cep,
+                            pontoReferencia = enderecoDto.pontoReferencia,
+                            medico = medico,
+                            discriminator = "Medico"
+                        };
+                        medico.endereco.Add(endereco);
                     }
 
                     // Validar a entrada usando FluentValidation
@@ -227,13 +328,11 @@ namespace SGFME.Application.Controllers
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar Médico.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar Medico.");
                 }
             }
         }
 
-
-        // Método para excluir um médico
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
@@ -243,6 +342,7 @@ namespace SGFME.Application.Controllers
                 {
                     var medicoExistente = await _context.medico
                         .Include(m => m.contato)
+                        .Include(m => m.endereco)
                         .FirstOrDefaultAsync(m => m.id == id);
 
                     if (medicoExistente == null)
@@ -251,6 +351,7 @@ namespace SGFME.Application.Controllers
                     }
 
                     _context.contato.RemoveRange(medicoExistente.contato);
+                    _context.endereco.RemoveRange(medicoExistente.endereco);
                     _context.medico.Remove(medicoExistente);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -265,7 +366,6 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMedicoById(int id)
         {
@@ -273,7 +373,13 @@ namespace SGFME.Application.Controllers
             {
                 var medico = await _context.medico
                     .Include(m => m.contato)
-                    .ThenInclude(c => c.tipocontato) // Assuming tipoContato is the navigation property
+                    .ThenInclude(c => c.tipocontato) // Incluir tipocontato
+                    .Include(m => m.endereco)
+                    .ThenInclude(e => e.tipoendereco) // Incluir tipoendereco
+                    .Include(m => m.status) // Incluir status
+                    .Include(m => m.sexo) // Incluir status
+                    .Include(m => m.estadocivil) // Incluir status
+                    .Include(m => m.corraca) // Incluir status
                     .FirstOrDefaultAsync(m => m.id == id);
 
                 if (medico == null)
@@ -289,15 +395,66 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
-
-
-        [HttpGet]
-        public IActionResult selecionarTodos()
+        [HttpGet("tipoStatus")]
+        public IActionResult ObterTiposStatus()
         {
-            //select * from produtos
-            return Execute(() => _baseService.Get<MedicoModel>());
+            try
+            {
+                var tiposStatus = _context.status.ToList();
+                return Ok(tiposStatus);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
+        [HttpGet("tipoSexo")]
+        public IActionResult ObterTiposSexo()
+        {
+            try
+            {
+                var tiposSexo = _context.sexo.ToList();
+                return Ok(tiposSexo);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoEstadoCivil")]
+        public IActionResult ObterTiposEstadoCivil()
+        {
+            try
+            {
+                var tiposEstadoCivil = _context.estadocivil.ToList();
+                return Ok(tiposEstadoCivil);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoCorRaca")]
+        public IActionResult ObterTiposCorRaca()
+        {
+            try
+            {
+                var tiposCorRaca = _context.corraca.ToList();
+                return Ok(tiposCorRaca);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult SelecionarTodos()
+        {
+            return Execute(() => _baseService.Get<MedicoModel>());
+        }
     }
 }

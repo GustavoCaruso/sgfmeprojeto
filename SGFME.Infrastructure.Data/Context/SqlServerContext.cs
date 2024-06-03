@@ -34,15 +34,16 @@ namespace SGFME.Infrastructure.Data.Context
         public DbSet<Medico> medico { get; set; }//Replicar para as próximas entidades
         public DbSet<Representante> representante { get; set; }
         public DbSet<Medicamento> medicamento { get; set; }
+        public DbSet<Especialidade> especialidade { get; set; }
 
 
-         
+
 
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv40;integrated security=true;TrustServerCertificate=True;";
+            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv42;integrated security=true;TrustServerCertificate=True;";
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(stringConexao)
@@ -75,6 +76,7 @@ namespace SGFME.Infrastructure.Data.Context
 
             modelBuilder.Entity<Representante>(new RepresentanteMapping().Configure);   
             modelBuilder.Entity<Medicamento>(new MedicamentoMapping().Configure);
+            modelBuilder.Entity<Especialidade>(new EspecialidadeMapping().Configure);
 
         }
     }
