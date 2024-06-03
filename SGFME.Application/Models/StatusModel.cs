@@ -16,5 +16,8 @@ namespace SGFME.Application.Models
 
         [JsonIgnore]
         public virtual ICollection<Paciente> paciente { get; set; } = new List<Paciente>();
+
+        [JsonIgnore]
+        public virtual ICollection<EstabelecimentoSaude> estabelecimentosaude { get; set; } = new List<EstabelecimentoSaude>();
     }
 }

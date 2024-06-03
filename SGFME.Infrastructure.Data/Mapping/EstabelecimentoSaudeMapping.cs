@@ -29,6 +29,13 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .HasColumnType("varchar(255)")  //tipo da coluna
                 .HasColumnName("cnes");  //nome da coluna no bd
 
+
+            // Definir a relação com Status
+            builder.HasOne(r => r.status)
+                .WithMany(s => s.estabelecimentosaude)
+                .HasForeignKey(r => r.idStatus)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
