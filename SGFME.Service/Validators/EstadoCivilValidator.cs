@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SGFME.Service.Validators
 {
-    public class EstadoCivilValidator : AbstractValidator<EstadoCivil>
+    public class EstadoCivilValidator :AbstractValidator<EstadoCivil>
     {
         public EstadoCivilValidator()
         {
