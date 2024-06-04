@@ -175,6 +175,7 @@ $(document).ready(function () {
 
     $("#btnAdicionarEndereco").click(function () {
         const idTipoEndereco = $("#selectTipoEndereco").val();
+        const tipoEndereco = $("#selectTipoEndereco option:selected").text(); // Pega o nome do tipo de endereço
         const logradouro = $("#txtLogradouro").val();
         const numero = $("#txtNumero").val();
         const complemento = $("#txtComplemento").val();
@@ -185,7 +186,7 @@ $(document).ready(function () {
         const pontoReferencia = $("#txtPontoReferencia").val();
 
         if (logradouro && numero && bairro && cidade && uf && cep) {
-            enderecos.push({ idTipoEndereco, logradouro, numero, complemento, bairro, cidade, uf, cep, pontoReferencia });
+            enderecos.push({ idTipoEndereco, tipo: tipoEndereco, logradouro, numero, complemento, bairro, cidade, uf, cep, pontoReferencia });
             atualizarTabelaEnderecos();
             $("#txtLogradouro").val('');
             $("#txtNumero").val('');
@@ -226,7 +227,7 @@ $(document).ready(function () {
 
         enderecos.forEach((endereco, index) => {
             const linha = `<tr>
-                <td>${endereco.idTipoEndereco}</td>
+                <td>${endereco.tipo}</td>
                 <td>${endereco.logradouro}</td>
                 <td>${endereco.numero}</td>
                 <td>${endereco.complemento}</td>
@@ -419,6 +420,7 @@ $(document).ready(function () {
 
                 enderecos = jsonResult.endereco.map(e => ({
                     idTipoEndereco: e.idTipoEndereco,
+                    tipo: e.tipoendereco.nome, // Adiciona o nome do tipo de endereço
                     logradouro: e.logradouro,
                     numero: e.numero,
                     complemento: e.complemento,
