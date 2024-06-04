@@ -38,22 +38,35 @@ $(document).ready(function () {
         excluir(codigo);
     });
 
+    // Adiciona eventos blur para validação campo por campo
+    $("#txtnomeCompleto").blur(function () {
+        validarCampo($(this));
+    });
+
+    $("#txtdataNascimento").blur(function () {
+        validarCampo($(this));
+    });
+
+    $("#txtrgNumero").blur(function () {
+        validarCampo($(this));
+    });
+
+    function validarCampo(campo) {
+        if (!campo.val().trim()) {
+            campo.addClass('is-invalid');
+        } else {
+            campo.removeClass('is-invalid');
+        }
+    }
+
     function validarCampos() {
         let isValid = true;
-        $(".form-control").removeClass('is-invalid');
-
-        if (!$("#txtnomeCompleto").val().trim()) {
-            $("#txtnomeCompleto").addClass('is-invalid');
-            isValid = false;
-        }
-        if (!$("#txtdataNascimento").val().trim()) {
-            $("#txtdataNascimento").addClass('is-invalid');
-            isValid = false;
-        }
-        if (!$("#txtrgNumero").val().trim()) {
-            $("#txtrgNumero").addClass('is-invalid');
-            isValid = false;
-        }
+        $(".form-control").each(function () {
+            validarCampo($(this));
+            if ($(this).hasClass('is-invalid')) {
+                isValid = false;
+            }
+        });
 
         if (contatos.length === 0) {
             $("#mensagemValidacao").text("Por favor, adicione pelo menos um contato.");

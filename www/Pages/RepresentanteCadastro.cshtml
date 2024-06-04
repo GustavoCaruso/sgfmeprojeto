@@ -12,11 +12,8 @@
         </div>
         <div class="col">
             <h1>Cadastro de Representante</h1>
-            
         </div>
         <button type="button" class="btn btn-dark" style="width: 150px; padding: 0.25rem 0.5rem; font-size: 0.90rem;" onclick="location.href='/RepresentanteGerenciamento'">Gerenciamento de Representante</button>
-
-
     </div>
     <hr />
     <div class="col-md-2">
@@ -106,7 +103,6 @@
     </div>
 
     <h2>Contatos</h2>
-    
 
     <div class="col-md-2">
         <label for="selectTipoContato">Tipo de Contato</label>
@@ -134,10 +130,7 @@
     </table>
     <div id="mensagemValidacao" style="color: red;"></div>
 
-    
-
     <h2>Endereços</h2>
-    
 
     <div class="col-md-2">
         <label for="selectTipoEndereco">Tipo de Endereço</label>
@@ -188,6 +181,7 @@
 
     <table class="table" id="enderecoTable">
         <thead>
+
             <tr>
                 <th scope="col">Tipo</th>
                 <th scope="col">Logradouro</th>
@@ -205,8 +199,6 @@
     </table>
     <div id="mensagemValidacaoEndereco" style="color: red;"></div>
 
-
-
     <div class="col-12">
         <button type="button" class="btn btn-primary" onclick="location.href='/RepresentanteGerenciamento'">Voltar</button>
         <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
@@ -218,3 +210,4 @@
 @section Scripts {
     <script src="~/js/Representante.js"></script>
 }
+    <script>
