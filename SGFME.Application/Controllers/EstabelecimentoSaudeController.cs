@@ -166,16 +166,44 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        [HttpGet("todos")]
+        [HttpGet("tipoContato")]
+        public IActionResult ObterTiposContato()
+        {
+            try
+            {
+                var tiposContato = _context.tipocontato.ToList();
+                return Ok(tiposContato);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoEndereco")]
+        public IActionResult ObterTiposEndereco()
+        {
+            try
+            {
+                var tiposEndereco = _context.tipoendereco.ToList();
+                return Ok(tiposEndereco);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("todosEstabelecimentosComContatosEEnderecos")]
         public async Task<ActionResult<List<EstabelecimentoSaude>>> GetAllEstabelecimentos()
         {
             try
             {
                 var estabelecimentos = await _context.estabelecimentosaude
                     .Include(e => e.contato)
-                    .ThenInclude(c => c.tipocontato)
+                        .ThenInclude(c => c.tipocontato)
                     .Include(e => e.endereco)
-                    .ThenInclude(e => e.tipoendereco)
+                        .ThenInclude(e => e.tipoendereco)
                     .Include(e => e.status)
                     .ToListAsync();
 
@@ -344,7 +372,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        [HttpGet("todosModelos")]
+        [HttpGet]
         public IActionResult SelecionarTodos()
         {
             return Execute(() => _baseService.Get<EstabelecimentoSaudeModel>());

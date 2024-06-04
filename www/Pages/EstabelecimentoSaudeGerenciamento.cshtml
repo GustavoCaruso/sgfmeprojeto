@@ -1,41 +1,65 @@
 ﻿@page
 @model www.Pages.EstabelecimentoSaudeGerenciamentoModel
 @{
+    ViewData["Title"] = "Gerenciamento de Estabelecimentos de Saúde";
 }
 
+<style>
+    .top-right-button {
+        position: absolute;
+        top: 10px; /* ajuste a posição superior conforme necessário */
+        right: 10px; /* ajuste a posição direita conforme necessário */
+        width: 200px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.90rem;
+    }
 
-<div class="row align-items-center">
-    <div class="col-auto">
-        <i class="fas fa-hospital fa-3x mb-3"></i>
-    </div>
-    <div class="col">
-        <h1>Gerenciamento de Estabelecimento de Saúde</h1>
-        <hr />
-    </div>
+    .container {
+        position: relative;
+    }
+</style>
+
+<div class="container">
+    <button type="button" class="btn btn-success top-right-button" onclick="location.href='/EstabelecimentoSaudeCadastro'">
+        Cadastrar Novo Estabelecimento
+    </button>
+    <table id="tabelaEstabelecimentoSaude" class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Nome Fantasia</th>
+                <th scope="col">Razão Social</th>
+                <th scope="col">CNES</th>
+                <th scope="col">Contatos</th>
+                <th scope="col">Endereços</th>
+                <th scope="col">Status</th>
+                <th scope="col">Visualizar</th>
+                <th scope="col">Excluir</th>
+            </tr>
+        </thead>
+        <tbody id="tabela">
+        </tbody>
+    </table>
 </div>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Código</th>
-            <th scope="col">Nome Fantasia</th>
-            <th scope="col">Visualizar</th>
-            <th scope="col">Excluir</th>
-        </tr>
-    </thead>
-    <tbody id="tabela">
-    </tbody>
-</table>
 
 <table style="display:none">
     <tr id="linhaExemplo">
         <th scope="row" class="codigo"></th>
         <td class="nomeFantasia"></td>
-        <td><a href="#" class="alterar">Visualizar</a></td>
-        <td><a href="#" class="excluir">Excluir</a></td>
+        <td class="razaoSocial"></td>
+        <td class="cnes"></td>
+        <td class="contatos"></td>
+        <td class="enderecos"></td>
+        <td class="status"></td>
+        <td><a href="#" class="alterar btn btn-info btn-sm">Visualizar</a></td>
+        <td><a href="#" class="excluir btn btn-danger btn-sm">Excluir</a></td>
     </tr>
 </table>
+<div class="container">
+    <button type="button" class="btn btn-primary" onclick="location.href='/index'">Voltar</button>
+</div>
 
-@section Scripts {
+@section Scripts
+{
     <script src="~/js/EstabelecimentoSaude.js"></script>
 }
