@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace SGFME.Domain.Entidades
 {
-    public class Profissao : BaseEntity
+    public class Especialidade : BaseEntity
     {
         public string nome { get; set; }
-
-
-
-
-        //Relação com Paciente
-        public virtual ICollection<Paciente> paciente { get; set; } = new List<Paciente>();
     }
 }

@@ -77,6 +77,18 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
+            builder.HasOne(p => p.medico).WithMany(c => c.endereco)
+                .HasConstraintName("fk_medico_endereco")
+                .HasForeignKey(p => p.idMedico)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
+            builder.HasOne(p => p.estabelecimentosaude).WithMany(c => c.endereco)
+               .HasConstraintName("fk_estabelecimentosaude_endereco")
+               .HasForeignKey(p => p.idEstabelecimentoSaude)
+               .OnDelete(DeleteBehavior.NoAction)
+               .IsRequired(false);
+
         }
     }
 }

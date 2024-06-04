@@ -9,21 +9,19 @@ using System.Threading.Tasks;
 
 namespace SGFME.Infrastructure.Data.Mapping
 {
-    public class ProfissaoMapping : IEntityTypeConfiguration<Profissao>
+    public class EspecialidadeMapping : IEntityTypeConfiguration<Especialidade>
     {
-        public void Configure(EntityTypeBuilder<Profissao> builder)
+        public void Configure(EntityTypeBuilder<Especialidade> builder)
         {
-            builder.ToTable("Profissao"); //nome da table no banco
+            builder.ToTable("Especialidade"); //nome da table no banco
+
             builder.HasKey(p => p.id); //definição de chave primaria
+
             builder.Property(p => p.nome).IsRequired() //campo requerido
                 .HasColumnType("varchar(255)")  //tipo da coluna
                 .HasColumnName("nome");  //nome da coluna no bd
 
-            builder.HasMany(s => s.paciente)
-                .WithOne(r => r.profissao)
-                .HasForeignKey(r => r.idProfissao)
-                .OnDelete(DeleteBehavior.Restrict); // Definir o comportamento de deleção
-
+            
         }
     }
 }
