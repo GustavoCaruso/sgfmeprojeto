@@ -9,14 +9,11 @@ using System.Threading.Tasks;
 
 namespace SGFME.Infrastructure.Data.Mapping
 {
-    public class MedicamentoMapping : IEntityTypeConfiguration<Medicamento>
+    public class VersaoCidMapping : IEntityTypeConfiguration<VersaoCid>
     {
-
-        public void Configure(EntityTypeBuilder<Medicamento> builder)
+        public void Configure(EntityTypeBuilder<VersaoCid> builder)
         {
-
-
-            builder.ToTable("Medicamento"); //nome da table no banco
+            builder.ToTable("VersaoCid"); //nome da table no banco
 
             builder.HasKey(p => p.id); //definição de chave primaria
 
@@ -24,12 +21,12 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .HasColumnType("varchar(255)")  //tipo da coluna
                 .HasColumnName("nome");  //nome da coluna no bd
 
-           
-            builder.HasOne(r => r.status)
-                .WithMany(s => s.medicamento)
-                .HasForeignKey(r => r.idStatus)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Definir a relação com Representante
+            builder.HasMany(s => s.cid)
+                .WithOne(r => r.versaocid)
+                .HasForeignKey(r => r.idVersaoCid)
+                .OnDelete(DeleteBehavior.Restrict); // Definir o comportamento de deleção
+
         }
     }
 }
-

@@ -1,4 +1,4 @@
-﻿const urlAPI = "https://localhost:7034/";
+﻿const urlAPI = "https://localhost:44309/";
 
 $(document).ready(function () {
     let contatos = [];

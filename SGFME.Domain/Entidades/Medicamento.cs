@@ -9,5 +9,7 @@ namespace SGFME.Domain.Entidades
     public class Medicamento : BaseEntity
     {
         public string nome { get; set; }
+        public long idStatus { get; set; }
+        public virtual Status status { get; set; }
     }
 }

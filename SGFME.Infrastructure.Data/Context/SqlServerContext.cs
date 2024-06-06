@@ -35,6 +35,7 @@ namespace SGFME.Infrastructure.Data.Context
         public DbSet<Representante> representante { get; set; }
         public DbSet<Medicamento> medicamento { get; set; }
         public DbSet<Especialidade> especialidade { get; set; }
+        public DbSet<VersaoCid> versaocid { get; set; }
 
 
 
@@ -43,7 +44,7 @@ namespace SGFME.Infrastructure.Data.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv43;integrated security=true;TrustServerCertificate=True;";
+            var stringConexao = @"Server=DELLG3GUSTAVO;DataBase=SGFMEv44;integrated security=true;TrustServerCertificate=True;";
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(stringConexao)
@@ -77,6 +78,7 @@ namespace SGFME.Infrastructure.Data.Context
             modelBuilder.Entity<Representante>(new RepresentanteMapping().Configure);   
             modelBuilder.Entity<Medicamento>(new MedicamentoMapping().Configure);
             modelBuilder.Entity<Especialidade>(new EspecialidadeMapping().Configure);
+            modelBuilder.Entity<VersaoCid>(new VersaoCidMapping().Configure);
 
         }
     }

@@ -106,6 +106,9 @@ namespace SGFME.Application
                 config.CreateMap<Medicamento, MedicamentoModel>();
                 config.CreateMap<MedicamentoModel, Medicamento>();
 
+                config.CreateMap<VersaoCid, VersaoCidModel>();
+                config.CreateMap<VersaoCidModel, VersaoCid>();
+
 
 
 
@@ -166,6 +169,9 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<Medicamento>, BaseService<Medicamento>>();
             services.AddScoped<IBaseRepository<Medicamento>, BaseRepository<Medicamento>>();
+
+            services.AddScoped<IBaseService<VersaoCid>, BaseService<VersaoCid>>();
+            services.AddScoped<IBaseRepository<VersaoCid>, BaseRepository<VersaoCid>>();
 
         }
 

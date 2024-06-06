@@ -8,5 +8,7 @@ namespace SGFME.Domain.Entidades
 {
     public class VersaoCid : BaseEntity
     {
+        public string nome { get; set; }
+        public virtual ICollection<Cid> cid { get; set; } = new List<Cid>();
     }
 }

@@ -10,5 +10,11 @@ namespace SGFME.Domain.Entidades
     {
         public string codigo { get; set; }
         public string descricao { get; set; }
+
+        public long idStatus { get; set; }
+        public virtual Status status { get; set; }
+
+        public long idVersaoCid { get; set; }
+        public virtual VersaoCid versaocid { get; set; }
     }
 }
