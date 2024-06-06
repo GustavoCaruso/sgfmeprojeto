@@ -12,16 +12,29 @@
         </div>
         <div class="col">
             <h1>Cadastro de Representante</h1>
-            
         </div>
-        <button type="button" class="btn btn-dark" style="width: 150px; padding: 0.25rem 0.5rem; font-size: 0.90rem;" onclick="location.href='/RepresentanteGerenciamento'">Gerenciamento de Representante</button>
-
-
+        <button type="button" class="btn btn-dark" style="width: 150px; padding: 0.25rem 0.5rem; font-size: 0.90rem;"
+                onclick="location.href='/RepresentanteGerenciamento'">
+            Gerenciamento de Representante
+        </button>
     </div>
     <hr />
+
     <div class="col-md-2">
         <label for="txtid" class="form-label">Código</label>
         <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
+    </div>
+
+    <div class="col-md-2">
+        <label for="txtdataCadastro" class="form-label">Data de Cadastro</label>
+        <input type="date" class="form-control" id="txtdataCadastro" disabled>
+    </div>
+
+    <div class="col-md-2">
+        <label for="selectStatus" class="form-label">Status</label>
+        <select class="form-control" id="selectStatus" required>
+            <option value="0">Selecione um status</option>
+        </select>
     </div>
 
     <div class="col-md-6">
@@ -44,6 +57,57 @@
         <label for="txtidade" class="form-label">Idade</label>
         <input type="text" class="form-control" id="txtidade" placeholder="Idade" disabled>
     </div>
+
+    
+
+
+    <div class="col-md-2">
+        <label for="selectSexo" class="form-label">Sexo</label>
+        <select class="form-control" id="selectSexo" required>
+            <option value="0">Selecione um sexo</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <label for="selectCorRaca" class="form-label">Cor/Raça</label>
+        <select class="form-control" id="selectCorRaca" required>
+            <option value="0">Selecione uma cor/raça</option>
+        </select>
+    </div>
+
+
+
+
+    <div class="col-md-2">
+        <label for="selectEstadoCivil" class="form-label">Estado Civil</label>
+        <select class="form-control" id="selectEstadoCivil" required>
+            <option value="0">Selecione um estado civil</option>
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label for="txtnomeConjuge" class="form-label">Nome do Cônjuge</label>
+        <input type="text" class="form-control" id="txtnomeConjuge" placeholder="Nome do Cônjuge">
+    </div>
+
+
+
+    <div class="col-md-2">
+        <label for="selectNaturalidadeUf" class="form-label">Naturalidade - UF</label>
+        <select class="form-control" id="selectNaturalidadeUf" required>
+            <option value="0">Selecione um estado</option>
+        </select>
+    </div>
+
+
+    <div class="col-md-4">
+        <label for="selectNaturalidadeCidade" class="form-label">Naturalidade - Cidade</label>
+        <select class="form-control" id="selectNaturalidadeCidade" required>
+            <option value="0">Selecione uma cidade</option>
+        </select>
+    </div>
+
+
 
     <div class="col-md-2">
         <label for="txtrgNumero" class="form-label">RG Número</label>
@@ -71,7 +135,9 @@
 
     <div class="col-md-2">
         <label for="txtrgUfEmissao" class="form-label">RG UF de Emissão</label>
-        <input type="text" class="form-control" id="txtrgUfEmissao" placeholder="RG UF de Emissão" required>
+        <select class="form-control" id="selectRgUfEmissao" required>
+            <option value="0">Selecione um estado</option>
+        </select>
         <div class="invalid-feedback">
             Por favor, insira a UF de emissão do RG.
         </div>
@@ -87,33 +153,40 @@
 
     <div class="col-md-2">
         <label for="txtcpfNumero" class="form-label">CPF Número</label>
-        <input type="text" class="form-control" id="txtcpfNumero" placeholder="CPF Número" required>
+        <input type="text" class="form-control numeric-only" id="txtcpfNumero" placeholder="CPF Número" required inputmode="numeric">
         <div class="invalid-feedback">
             Por favor, insira o número do CPF.
         </div>
     </div>
 
-    <div class="col-md-2">
-        <label for="txtdataCadastro" class="form-label">Data de Cadastro</label>
-        <input type="date" class="form-control" id="txtdataCadastro" disabled>
-    </div>
+
 
     <div class="col-md-2">
-        <label for="selectStatus" class="form-label">Status</label>
-        <select class="form-control" id="selectStatus" required>
-            <!-- Opções serão carregadas aqui -->
+        <label for="selectProfissao" class="form-label">Profissão</label>
+        <select class="form-control" id="selectProfissao" required>
+            <option value="">Selecione uma Profissão</option>
         </select>
     </div>
 
+    <div class="col-md-6">
+        <label for="txtnomeMae" class="form-label">Nome da Mãe</label>
+        <input type="text" class="form-control" id="txtnomeMae" placeholder="Nome da Mãe" required>
+        <div class="invalid-feedback">
+            Por favor, insira o nome da mãe.
+        </div>
+    </div>
+
+
+
     <h2>Contatos</h2>
-    
 
     <div class="col-md-2">
         <label for="selectTipoContato">Tipo de Contato</label>
         <select class="form-control" id="selectTipoContato" required>
-            <!-- Opções serão carregadas aqui -->
+            <option value="0">Selecione um tipo de contato</option>
         </select>
     </div>
+
     <div class="col-md-3">
         <label for="txtValorContato">Valor do Contato</label>
         <input type="text" class="form-control" id="txtValorContato" placeholder="Valor do Contato" required>
@@ -122,6 +195,7 @@
     <div class="col-12">
         <button type="button" class="btn btn-primary" id="btnAdicionarContato">Adicionar Contato</button>
     </div>
+
     <table class="table" id="contatoTable">
         <thead>
             <tr>
@@ -134,54 +208,59 @@
     </table>
     <div id="mensagemValidacao" style="color: red;"></div>
 
-    
-
     <h2>Endereços</h2>
-    
 
     <div class="col-md-2">
         <label for="selectTipoEndereco">Tipo de Endereço</label>
         <select class="form-control" id="selectTipoEndereco" required>
-            <!-- Opções serão carregadas aqui -->
+            <option value="0">Selecione um tipo de endereço</option>
         </select>
     </div>
+
     <div class="col-md-6">
         <label for="txtLogradouro">Logradouro</label>
         <input type="text" class="form-control" id="txtLogradouro" placeholder="Logradouro" required>
     </div>
+
     <div class="col-md-2">
         <label for="txtNumero">Número</label>
         <input type="text" class="form-control" id="txtNumero" placeholder="Número" required>
     </div>
+
     <div class="col-md-2">
         <label for="txtComplemento">Complemento</label>
         <input type="text" class="form-control" id="txtComplemento" placeholder="Complemento">
     </div>
+
     <div class="col-md-4">
         <label for="txtBairro">Bairro</label>
         <input type="text" class="form-control" id="txtBairro" placeholder="Bairro" required>
     </div>
+
     <div class="col-md-2">
         <label for="selectEstado">Estado</label>
         <select class="form-control" id="selectEstado" required>
-            <option value="">Selecione um estado</option>
+            <option value="0">Selecione um estado</option>
         </select>
     </div>
 
     <div class="col-md-6">
         <label for="selectMunicipio">Município</label>
         <select class="form-control" id="selectMunicipio" required>
-            <option value="">Selecione um município</option>
+            <option value="0">Selecione um município</option>
         </select>
     </div>
+
     <div class="col-md-2">
         <label for="txtCep">CEP</label>
         <input type="text" class="form-control" id="txtCep" placeholder="CEP" required>
     </div>
+
     <div class="col-md-6">
         <label for="txtPontoReferencia">Ponto de Referência</label>
         <input type="text" class="form-control" id="txtPontoReferencia" placeholder="Ponto de Referência">
     </div>
+
     <div class="col-12">
         <button type="button" class="btn btn-primary" id="btnAdicionarEndereco">Adicionar Endereço</button>
     </div>
@@ -204,7 +283,6 @@
         <tbody></tbody>
     </table>
     <div id="mensagemValidacaoEndereco" style="color: red;"></div>
-
 
     <div class="col-12">
         <button type="button" class="btn btn-primary" onclick="location.href='/RepresentanteGerenciamento'">Voltar</button>

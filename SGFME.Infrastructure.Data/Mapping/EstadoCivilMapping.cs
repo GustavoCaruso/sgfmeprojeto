@@ -29,6 +29,11 @@ namespace SGFME.Infrastructure.Data.Mapping
                .HasForeignKey(r => r.idEstadoCivil)
                .OnDelete(DeleteBehavior.Restrict); // Definir o comportamento de deleção
 
+            builder.HasMany(s => s.representante)
+               .WithOne(r => r.estadocivil)
+               .HasForeignKey(r => r.idEstadoCivil)
+               .OnDelete(DeleteBehavior.Restrict); // Definir o comportamento de deleção
+
         }
     }
 }

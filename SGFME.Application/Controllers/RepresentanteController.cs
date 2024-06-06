@@ -52,16 +52,25 @@ namespace SGFME.Application.Controllers
                     // Convertendo RepresentanteDTO para Representante
                     var novoRepresentante = new Representante
                     {
+                        id = request.id,
                         nomeCompleto = request.nomeCompleto,
                         dataNascimento = request.dataNascimento,
                         dataCadastro = request.dataCadastro,
+                        nomeMae = request.nomeMae,
                         rgNumero = request.rgNumero,
                         rgDataEmissao = request.rgDataEmissao,
                         rgOrgaoExpedidor = request.rgOrgaoExpedidor,
                         rgUfEmissao = request.rgUfEmissao,
                         cnsNumero = request.cnsNumero,
                         cpfNumero = request.cpfNumero,
-                        idStatus = request.idStatus, // Associação com Status
+                        nomeConjuge = request.nomeConjuge,
+                        naturalidadeCidade = request.naturalidadeCidade,
+                        naturalidadeUf = request.naturalidadeUf,
+                        idStatus = request.idStatus,
+                        idSexo = request.idSexo,
+                        idEstadoCivil = request.idEstadoCivil,
+                        idProfissao = request.idProfissao,
+                        idCorRaca = request.idCorRaca,
                         contato = new List<Contato>(),
                         endereco = new List<Endereco>()
                     };
@@ -116,6 +125,10 @@ namespace SGFME.Application.Controllers
                         .Include(p => p.contato)
                         .Include(p => p.endereco)
                         .Include(p => p.status)
+                        .Include(p => p.sexo)
+                        .Include(p => p.corraca)
+                        .Include(p => p.profissao)
+                        .Include(p => p.estadocivil)
                         .FirstOrDefaultAsync(e => e.id == novoRepresentante.id);
 
                     return CreatedAtAction(nameof(Create), new { id = createdRepresentante.id }, createdRepresentante);
@@ -207,11 +220,15 @@ namespace SGFME.Application.Controllers
             try
             {
                 var representantes = await _context.representante
-                    .Include(m => m.contato)
+                   .Include(m => m.contato)
                         .ThenInclude(c => c.tipocontato)
                     .Include(m => m.endereco)
                         .ThenInclude(e => e.tipoendereco)
                     .Include(m => m.status)
+                    .Include(m => m.sexo)
+                    .Include(m => m.corraca)
+                    .Include(m => m.profissao)
+                    .Include(m => m.estadocivil)
                     .ToListAsync();
 
                 return Ok(representantes);
@@ -242,6 +259,10 @@ namespace SGFME.Application.Controllers
                     }
 
                     representante.nomeCompleto = request.nomeCompleto;
+                    representante.nomeMae = request.nomeMae;
+                    representante.nomeConjuge = request.nomeConjuge;
+                    representante.naturalidadeCidade = request.naturalidadeCidade;
+                    representante.naturalidadeUf = request.naturalidadeUf;
                     representante.dataNascimento = request.dataNascimento;
                     representante.dataCadastro = request.dataCadastro;
                     representante.rgNumero = request.rgNumero;
@@ -251,6 +272,10 @@ namespace SGFME.Application.Controllers
                     representante.cnsNumero = request.cnsNumero;
                     representante.cpfNumero = request.cpfNumero;
                     representante.idStatus = request.idStatus; // Associação com Status
+                    representante.idCorRaca = request.idCorRaca;
+                    representante.idProfissao = request.idProfissao;
+                    representante.idSexo = request.idSexo;
+                    representante.idEstadoCivil = request.idEstadoCivil;
 
                     // Atualizando os contatos
                     _context.contato.RemoveRange(representante.contato);
@@ -361,6 +386,10 @@ namespace SGFME.Application.Controllers
                     .Include(m => m.endereco)
                     .ThenInclude(e => e.tipoendereco) // Incluir tipoendereco
                     .Include(m => m.status) // Incluir status
+                    .Include(m => m.sexo) // Incluir status
+                    .Include(m => m.estadocivil) // Incluir status
+                    .Include(m => m.profissao) // Incluir status
+                    .Include(m => m.corraca) // Incluir status
                     .FirstOrDefaultAsync(m => m.id == id);
 
                 if (representante == null)
@@ -385,6 +414,66 @@ namespace SGFME.Application.Controllers
             {
                 var tiposStatus = _context.status.ToList();
                 return Ok(tiposStatus);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+
+
+
+        [HttpGet("tipoSexo")]
+        public IActionResult ObterTiposSexo()
+        {
+            try
+            {
+                var tiposSexo = _context.sexo.ToList();
+                return Ok(tiposSexo);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoEstadoCivil")]
+        public IActionResult ObterTiposEstadoCivil()
+        {
+            try
+            {
+                var tiposEstadoCivil = _context.estadocivil.ToList();
+                return Ok(tiposEstadoCivil);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoCorRaca")]
+        public IActionResult ObterTiposCorRaca()
+        {
+            try
+            {
+                var tiposCorRaca = _context.corraca.ToList();
+                return Ok(tiposCorRaca);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoProfissao")]
+        public IActionResult ObterTiposProfissao()
+        {
+            try
+            {
+                var tiposProfissao = _context.profissao.ToList();
+                return Ok(tiposProfissao);
             }
             catch (Exception ex)
             {

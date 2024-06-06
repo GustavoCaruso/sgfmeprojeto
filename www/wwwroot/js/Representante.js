@@ -1,8 +1,15 @@
 ﻿const urlAPI = "https://localhost:44309/";
 
 $(document).ready(function () {
+
+    // Apenas números nos campos CPF, CNS e RG
+    $(".numeric-only").on("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
     let contatos = [];
     let enderecos = [];
+    let RepresentanteDados;
 
     if ($("#tabela").length > 0) {
         carregarRepresentantes();
@@ -72,92 +79,84 @@ $(document).ready(function () {
         return isValid;
     }
 
-    // Chamada AJAX para carregar estados do IBGE
-    $.ajax({
-        url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
-        method: "GET",
-        success: function (data) {
-            const selectEstado = $("#selectEstado");
-            data.forEach(estado => {
-                const option = `<option value="${estado.sigla}">${estado.sigla}</option>`;
-                selectEstado.append(option);
-            });
-        },
-        error: function () {
-            alert("Erro ao carregar os estados.");
-        }
-    });
+    // Função para carregar os estados do IBGE
+    function carregarEstados(selectElement) {
+        return $.ajax({
+            url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
+            method: "GET",
+            success: function (data) {
+                selectElement.empty();
+                data.forEach(estado => {
+                    const option = `<option value="${estado.sigla}">${estado.sigla}</option>`;
+                    selectElement.append(option);
+                });
+            },
+            error: function () {
+                alert("Erro ao carregar os estados.");
+            }
+        });
+    }
 
-    // Carregar municípios ao selecionar um estado
-    $("#selectEstado").change(function () {
-        const estadoSigla = $(this).val();
+    function carregarMunicipios(estadoSigla, selectElement, cidadeSelecionada = null) {
         if (estadoSigla) {
-            const estado = $("#selectEstado option:selected").text();
-            $.ajax({
+            return $.ajax({
                 url: `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoSigla}/municipios`,
                 method: "GET",
                 success: function (data) {
-                    const selectMunicipio = $("#selectMunicipio");
-                    selectMunicipio.empty();
+                    selectElement.empty();
                     data.forEach(municipio => {
-                        const option = `<option value="${municipio.id}">${municipio.nome}</option>`;
-                        selectMunicipio.append(option);
+                        const option = `<option value="${municipio.nome}">${municipio.nome}</option>`;
+                        selectElement.append(option);
                     });
+                    if (cidadeSelecionada) {
+                        selectElement.val(cidadeSelecionada);
+                    }
                 },
                 error: function () {
                     alert("Erro ao carregar os municípios.");
                 }
             });
         } else {
-            $("#selectMunicipio").empty();
+            selectElement.empty();
         }
+    }
+
+    carregarEstados($("#selectEstado"));
+    carregarEstados($("#selectNaturalidadeUf"));
+    carregarEstados($("#selectRgUfEmissao"));
+
+    $("#selectEstado").change(function () {
+        carregarMunicipios($(this).val(), $("#selectMunicipio"));
     });
 
-    $.ajax({
-        url: urlAPI + "api/Representante/tipoContato",
-        method: "GET",
-        success: function (data) {
-            const selectTipoContato = $("#selectTipoContato");
-            data.forEach(tipo => {
-                const option = `<option value="${tipo.id}">${tipo.nome}</option>`;
-                selectTipoContato.append(option);
-            });
-        },
-        error: function () {
-            alert("Erro ao carregar os tipos de contato.");
-        }
+    $("#selectNaturalidadeUf").change(function () {
+        carregarMunicipios($(this).val(), $("#selectNaturalidadeCidade"));
     });
 
-    $.ajax({
-        url: urlAPI + "api/Representante/tipoEndereco",
-        method: "GET",
-        success: function (data) {
-            const selectTipoEndereco = $("#selectTipoEndereco");
-            data.forEach(tipo => {
-                const option = `<option value="${tipo.id}">${tipo.nome}</option>`;
-                selectTipoEndereco.append(option);
-            });
-        },
-        error: function () {
-            alert("Erro ao carregar os tipos de endereço.");
-        }
-    });
+    function carregarOpcoes(apiEndpoint, selectElement) {
+        $.ajax({
+            url: urlAPI + apiEndpoint,
+            method: "GET",
+            success: function (data) {
+                selectElement.empty();
+                data.forEach(item => {
+                    const option = `<option value="${item.id}">${item.nome}</option>`;
+                    selectElement.append(option);
+                });
+            },
+            error: function () {
+                alert("Erro ao carregar os dados.");
+            }
+        });
+    }
 
-    // Adicionar chamada AJAX para carregar os status
-    $.ajax({
-        url: urlAPI + "api/Representante/tipoStatus",
-        method: "GET",
-        success: function (data) {
-            const selectStatus = $("#selectStatus");
-            data.forEach(status => {
-                const option = `<option value="${status.id}">${status.nome}</option>`;
-                selectStatus.append(option);
-            });
-        },
-        error: function () {
-            alert("Erro ao carregar os status.");
-        }
-    });
+    carregarOpcoes("api/Representante/tipoContato", $("#selectTipoContato"));
+    carregarOpcoes("api/Representante/tipoEndereco", $("#selectTipoEndereco"));
+    carregarOpcoes("api/Representante/tipoStatus", $("#selectStatus"));
+    carregarOpcoes("api/Representante/tipoSexo", $("#selectSexo"));
+    carregarOpcoes("api/Representante/tipoProfissao", $("#selectProfissao"));
+    carregarOpcoes("api/Representante/tipoCorRaca", $("#selectCorRaca"));
+    carregarOpcoes("api/Representante/tipoEstadoCivil", $("#selectEstadoCivil"));
 
     $("#btnAdicionarContato").click(function () {
         const tipoContato = $("#selectTipoContato option:selected").text();
@@ -256,24 +255,23 @@ $(document).ready(function () {
                 rgNumero: $("#txtrgNumero").val(),
                 rgDataEmissao: $("#txtrgDataEmissao").val(),
                 rgOrgaoExpedidor: $("#txtrgOrgaoExpedidor").val(),
-                rgUfEmissao: $("#txtrgUfEmissao").val(),
+                rgUfEmissao: $("#selectRgUfEmissao").val(),
                 cnsNumero: $("#txtcnsNumero").val(),
                 cpfNumero: $("#txtcpfNumero").val(),
+                nomeMae: $("#txtnomeMae").val(),
+                nomeConjuge: $("#txtnomeConjuge").val(),
+                naturalidadeCidade: $("#selectNaturalidadeCidade").val(),
+                naturalidadeUf: $("#selectNaturalidadeUf").val(),
+               
                 dataCadastro: $("#txtdataCadastro").val(),  // não pode ser modificado pelo usuário
-                idStatus: $("#selectStatus").val(),  // Adiciona o status do representante
+                idStatus: $("#selectStatus").val(),
+                idSexo: $("#selectSexo").val(),
+                idProfissao: $("#selectProfissao").val(),
+                idCorRaca: $("#selectCorRaca").val(),
+                idEstadoCivil: $("#selectEstadoCivil").val(),
                 contato: contatos,
                 endereco: enderecos
             };
-
-            if (contatos.length === 0) {
-                $("#mensagemValidacao").text("Por favor, adicione pelo menos um contato.");
-                return; // Não prossegue com o salvamento dos dados se a validação falhar
-            }
-
-            if (enderecos.length === 0) {
-                $("#mensagemValidacaoEndereco").text("Por favor, adicione pelo menos um endereço.");
-                return; // Não prossegue com o salvamento dos dados se a validação falhar
-            }
 
             $.ajax({
                 type: obj.id == "0" ? "POST" : "PUT",
@@ -315,13 +313,22 @@ $(document).ready(function () {
         $("#txtrgNumero").val('');
         $("#txtrgDataEmissao").val('');
         $("#txtrgOrgaoExpedidor").val('');
-        $("#txtrgUfEmissao").val('');
+        $("#selectRgUfEmissao").val('');
         $("#txtcnsNumero").val('');
         $("#txtcpfNumero").val('');
         $("#txtid").val('0');
         $("#txtdataCadastro").val(new Date().toISOString().split('T')[0]);
         $("#txtidade").val('');
+        $("#txtnomeMae").val('');
+        $("#txtnomeConjuge").val('');
+        $("#selectNaturalidadeCidade").val('');
+        $("#selectNaturalidadeUf").val('');
+        
         $("#selectStatus").val('');
+        $("#selectSexo").val('');
+        $("#selectProfissao").val('');
+        $("#selectCorRaca").val('');
+        $("#selectEstadoCivil").val('');
         contatos = [];
         enderecos = [];
         atualizarTabelaContatos();
@@ -367,7 +374,7 @@ $(document).ready(function () {
                 });
             },
             error: function () {
-                alert("Erro ao carregar representantes.");
+                alert("Erro ao carregar Representantes.");
             }
         });
     }
@@ -382,7 +389,7 @@ $(document).ready(function () {
                 location.reload(); // Recarrega a página para atualizar a tabela
             },
             error: function (xhr, textStatus, errorThrown) {
-                alert("Erro ao excluir o representante: " + errorThrown);
+                alert("Erro ao excluir o Representante: " + errorThrown);
             }
         });
     }
@@ -395,6 +402,7 @@ $(document).ready(function () {
             data: {},
             dataType: "json",
             success: function (jsonResult) {
+                RepresentanteDados = jsonResult;
                 $("#txtid").val(jsonResult.id);
                 $("#txtnomeCompleto").val(jsonResult.nomeCompleto);
                 // Formatar e definir a data de nascimento
@@ -404,11 +412,19 @@ $(document).ready(function () {
                 $("#txtrgNumero").val(jsonResult.rgNumero);
                 $("#txtrgDataEmissao").val(new Date(jsonResult.rgDataEmissao).toISOString().split('T')[0]);
                 $("#txtrgOrgaoExpedidor").val(jsonResult.rgOrgaoExpedidor);
-                $("#txtrgUfEmissao").val(jsonResult.rgUfEmissao);
+                $("#selectRgUfEmissao").val(jsonResult.rgUfEmissao);
                 $("#txtcnsNumero").val(jsonResult.cnsNumero);
                 $("#txtcpfNumero").val(jsonResult.cpfNumero);
                 $("#txtdataCadastro").val(new Date(jsonResult.dataCadastro).toISOString().split('T')[0]);
                 $("#selectStatus").val(jsonResult.idStatus);
+                $("#selectSexo").val(jsonResult.idSexo);
+                $("#selectProfissao").val(jsonResult.idProfissao);
+                $("#selectCorRaca").val(jsonResult.idCorRaca);
+                $("#selectEstadoCivil").val(jsonResult.idEstadoCivil);
+                $("#txtnomeMae").val(jsonResult.nomeMae);
+                $("#txtnomeConjuge").val(jsonResult.nomeConjuge);
+                $("#selectNaturalidadeUf").val(jsonResult.naturalidadeUf);
+                
 
                 contatos = jsonResult.contato.map(c => ({
                     idTipoContato: c.idTipoContato,
@@ -429,6 +445,9 @@ $(document).ready(function () {
                     pontoReferencia: e.pontoReferencia
                 }));
                 atualizarTabelaEnderecos();
+
+                // Carregar os municípios depois de definir o estado
+                carregarMunicipios(jsonResult.naturalidadeUf, $("#selectNaturalidadeCidade"), jsonResult.naturalidadeCidade);
 
                 // Calcular idade e definir no campo
                 let idade = calcularIdade(dataNascimento);

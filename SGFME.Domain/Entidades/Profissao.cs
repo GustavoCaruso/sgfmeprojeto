@@ -15,5 +15,6 @@ namespace SGFME.Domain.Entidades
 
         //Relação com Paciente
         public virtual ICollection<Paciente> paciente { get; set; } = new List<Paciente>();
+        public virtual ICollection<Representante> representante { get; set; } = new List<Representante>();
     }
 }

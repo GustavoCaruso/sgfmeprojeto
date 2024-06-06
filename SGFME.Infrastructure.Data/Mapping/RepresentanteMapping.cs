@@ -18,48 +18,107 @@ namespace SGFME.Infrastructure.Data.Mapping
             builder.HasKey(prop => prop.id);
 
             builder.Property(prop => prop.nomeCompleto)
-            .HasConversion(prop => prop.ToString(), prop => prop)
-            .IsRequired()
-            .HasColumnName("nomeCompleto")
-            .HasColumnType("varchar(150)");
+                .HasConversion(prop => prop.ToString(), prop => prop)
+                .IsRequired()
+                .HasColumnName("nomeCompleto")
+                .HasColumnType("varchar(255)");
+
+           
 
             builder.Property(prop => prop.dataNascimento)
-            .IsRequired()
-            .HasColumnName("dataNascimento")
-            .HasColumnType("datetime");
+                .IsRequired()
+                .HasColumnName("dataNascimento")
+                .HasColumnType("datetime");
 
             builder.Property(p => p.dataCadastro)
                 .HasColumnType("datetime")
                 .HasColumnName("dataCadastro");
 
-            builder.Property(p => p.rgNumero).IsRequired() 
-                .HasColumnType("varchar(150)")  
-                .HasColumnName("rgNumero");  
+            builder.Property(prop => prop.nomeMae)
+                .HasConversion(prop => prop.ToString(), prop => prop)
+                .IsRequired()
+                .HasColumnName("nomeMae")
+                .HasColumnType("varchar(255)");
+
+
+
+            builder.Property(p => p.rgNumero).IsRequired() //campo requerido
+                .HasColumnType("varchar(255)")  //tipo da coluna
+                .HasColumnName("rgNumero");  //nome da coluna no bd
 
             builder.Property(p => p.rgDataEmissao)
                 .HasColumnType("datetime")
                 .HasColumnName("rgDataEmissao");
 
-            builder.Property(p => p.rgOrgaoExpedidor).IsRequired() 
-                .HasColumnType("varchar(150)")  
-                .HasColumnName("rgOrgaoExpedidor");  
+            builder.Property(p => p.rgOrgaoExpedidor).IsRequired() //campo requerido
+                .HasColumnType("varchar(255)")  //tipo da coluna
+                .HasColumnName("rgOrgaoExpedidor");  //nome da coluna no bd
 
-            builder.Property(p => p.rgUfEmissao).IsRequired() 
-                .HasColumnType("varchar(150)")  
-                .HasColumnName("rgUfEmissao");  
+            builder.Property(p => p.rgUfEmissao).IsRequired() //campo requerido
+                .HasColumnType("varchar(255)")  //tipo da coluna
+                .HasColumnName("rgUfEmissao");  //nome da coluna no bd
 
-            builder.Property(p => p.cpfNumero).IsRequired() 
-                .HasColumnType("varchar(150)")  
-                .HasColumnName("cpfNumero");  
 
-            builder.Property(p => p.cnsNumero).IsRequired() 
-                .HasColumnType("varchar(150)") 
-                .HasColumnName("cnsNumero");
+
+
+            builder.Property(p => p.cpfNumero).IsRequired() //campo requerido
+                .HasColumnType("varchar(255)")  //tipo da coluna
+                .HasColumnName("cpfNumero");  //nome da coluna no bd
+
+
+            builder.Property(p => p.cnsNumero).IsRequired() //campo requerido
+                .HasColumnType("varchar(255)")  //tipo da coluna
+                .HasColumnName("cnsNumero");  //nome da coluna no bd
+
+
+
+
+            builder.Property(p => p.nomeConjuge) //campo requerido
+               .HasColumnType("varchar(255)")  //tipo da coluna
+               .HasColumnName("nomeConjuge");  //nome da coluna no bd
+
+
+            builder.Property(prop => prop.naturalidadeCidade)
+                .HasConversion(prop => prop.ToString(), prop => prop)
+                .IsRequired()
+                .HasColumnName("naturalidadeCidade")
+                .HasColumnType("varchar(255)");
+
+            builder.Property(prop => prop.naturalidadeUf)
+                .HasConversion(prop => prop.ToString(), prop => prop)
+                .IsRequired()
+                .HasColumnName("naturalidadeUf")
+                .HasColumnType("varchar(255)");
+
+
+
+
+            //Relações com as demais tabelas
 
             // Definir a relação com Status
             builder.HasOne(r => r.status)
                 .WithMany(s => s.representante)
                 .HasForeignKey(r => r.idStatus)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.sexo)
+                .WithMany(s => s.representante)
+                .HasForeignKey(r => r.idSexo)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.profissao)
+                .WithMany(s => s.representante)
+                .HasForeignKey(r => r.idProfissao)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.corraca)
+                .WithMany(s => s.representante)
+                .HasForeignKey(r => r.idCorRaca)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.estadocivil)
+                .WithMany(s => s.representante)
+                .HasForeignKey(r => r.idEstadoCivil)
                 .OnDelete(DeleteBehavior.Restrict);
 
 
