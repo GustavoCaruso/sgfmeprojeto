@@ -83,8 +83,19 @@
             </div>
 
             <div class="col-md-2">
-                <label for="txtidade" class="form-label">Idade</label>
-                <input type="text" class="form-control" id="txtidade" placeholder="Idade" disabled>
+                <label for="txtpeso" class="form-label">Peso</label>
+                <input type="text" class="form-control" id="txtpeso" placeholder="Peso" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o peso.
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <label for="txtaltura" class="form-label">Altura</label>
+                <input type="text" class="form-control" id="txtaltura" placeholder="Altura" required>
+                <div class="invalid-feedback">
+                    Por favor, insira a altura.
+                </div>
             </div>
 
             <div class="col-md-2">
@@ -202,24 +213,6 @@
                 <input type="text" class="form-control" id="txtnomeMae" placeholder="Nome da Mãe" maxlength="100" required>
                 <div class="invalid-feedback">
                     Por favor, insira o nome da mãe (máximo 100 caracteres).
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-2">
-                <label for="txtpeso" class="form-label">Peso (kg)</label>
-                <input type="text" class="form-control numeric-only" id="txtpeso" placeholder="Peso" maxlength="5">
-                <div class="invalid-feedback">
-                    Por favor, insira o peso (máximo 5 caracteres).
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <label for="txtaltura" class="form-label">Altura (cm)</label>
-                <input type="text" class="form-control numeric-only" id="txtaltura" placeholder="Altura" maxlength="3">
-                <div class="invalid-feedback">
-                    Por favor, insira a altura (máximo 3 caracteres).
                 </div>
             </div>
         </div>
