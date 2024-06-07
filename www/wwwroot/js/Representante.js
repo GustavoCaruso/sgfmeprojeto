@@ -1,53 +1,60 @@
-﻿const urlAPI = "https://localhost:7034/";
-
-$(document).ready(function () {
-    // Apenas números nos campos CPF, CNS e RG
-    $(".numeric-only").on("input", function () {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
-
-    $("#txtrgNumero").on("input", function () {
-        this.value = this.value.replace(/[^A-Za-z0-9]/g, '');
-    });
+﻿document.addEventListener('DOMContentLoaded', function () {
+    const urlAPI = "https://localhost:7034/";
 
     let contatos = [];
     let enderecos = [];
     let RepresentanteDados;
 
-    if ($("#tabela").length > 0) {
-        carregarRepresentantes();
-    } else if ($("#txtid").length > 0) {
-        let params = new URLSearchParams(window.location.search);
-        let id = params.get('id');
-        if (id) {
-            visualizar(id);
-        } else {
-            // Alimenta o campo dataCadastro com a data atual
-            let dataAtual = new Date().toISOString().split('T')[0];
-            $("#txtdataCadastro").val(dataAtual);
-        }
+    // Seletores dos elementos
+    var selects = [
+        'selectStatus', 'selectSexo', 'selectCorRaca', 'selectEstadoCivil',
+        'selectNaturalidadeUf', 'selectNaturalidadeCidade', 'selectRgUfEmissao',
+        'selectProfissao', 'selectTipoContato', 'selectTipoEndereco',
+        'selectEstado', 'selectMunicipio'
+    ];
+
+    // Função de validação dos selects
+    function validateSelects() {
+        let isValid = true;
+
+        selects.forEach(function (selectId) {
+            const selectElement = document.getElementById(selectId);
+            if (selectElement && selectElement.value === '0') {
+                selectElement.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                selectElement.classList.remove('is-invalid');
+            }
+        });
+
+        return isValid;
     }
 
-    $("#txtdataNascimento").change(function () {
-        let dataNascimento = new Date($(this).val());
-        let idade = calcularIdade(dataNascimento);
-        $("#txtidade").val(idade);
+    // Adicionar evento ao botão de salvar
+    document.getElementById('btnsalvar').addEventListener('click', function (event) {
+        if (!validateSelects() || !validarCampos()) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('mensagemValidacao').textContent = 'Por favor, preencha todos os campos obrigatórios corretamente.';
+        } else {
+            document.getElementById('mensagemValidacao').textContent = '';
+            salvarFormulario();
+        }
     });
 
-    $("#btnlimpar").click(function () {
-        limparFormulario();
+    // Remover a mensagem de erro ao alterar a seleção
+    selects.forEach(function (selectId) {
+        const selectElement = document.getElementById(selectId);
+        if (selectElement) {
+            selectElement.addEventListener('change', function () {
+                if (selectElement.value !== '0') {
+                    selectElement.classList.remove('is-invalid');
+                }
+            });
+        }
     });
 
-    $(document).on("click", ".alterar", function (elemento) {
-        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        window.location.href = "/RepresentanteCadastro?id=" + codigo;
-    });
-
-    $(document).on("click", ".excluir", function (elemento) {
-        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        excluir(codigo);
-    });
-
+    // Função para validar outros campos do formulário
     function validarCampos() {
         let isValid = true;
         $(".form-control").removeClass('is-invalid');
@@ -71,6 +78,7 @@ $(document).ready(function () {
             const elemento = $(campo.id);
             if (!elemento.val().trim() || (campo.maxLength && elemento.val().trim().length > campo.maxLength) || (campo.pattern && !campo.pattern.test(elemento.val().trim()))) {
                 elemento.addClass('is-invalid');
+                elemento.next('.invalid-feedback').text(campo.mensagem);
                 isValid = false;
             }
         });
@@ -98,7 +106,7 @@ $(document).ready(function () {
             method: "GET",
             success: function (data) {
                 selectElement.empty();
-                selectElement.append('<option value="">Selecione um estado</option>');
+                selectElement.append('<option value="0">Selecione um estado</option>');
                 data.sort((a, b) => a.sigla.localeCompare(b.sigla));
                 data.forEach(estado => {
                     const option = `<option value="${estado.sigla}">${estado.sigla}</option>`;
@@ -118,7 +126,7 @@ $(document).ready(function () {
                 method: "GET",
                 success: function (data) {
                     selectElement.empty();
-                    selectElement.append('<option value="">Selecione um município</option>');
+                    selectElement.append('<option value="0">Selecione um município</option>');
                     data.forEach(municipio => {
                         const option = `<option value="${municipio.nome}">${municipio.nome}</option>`;
                         selectElement.append(option);
@@ -154,7 +162,7 @@ $(document).ready(function () {
             method: "GET",
             success: function (data) {
                 selectElement.empty();
-                selectElement.append(`<option value="">${mensagemPadrao}</option>`);
+                selectElement.append(`<option value="0">${mensagemPadrao}</option>`);
                 data.forEach(item => {
                     const option = `<option value="${item.id}">${item.nome}</option>`;
                     selectElement.append(option);
@@ -179,7 +187,7 @@ $(document).ready(function () {
         const valorContato = $("#txtValorContato").val();
         const idTipoContato = $("#selectTipoContato").val();
 
-        if (!idTipoContato) {
+        if (!idTipoContato || idTipoContato === '0') {
             alert("Por favor, selecione um tipo de contato.");
             return;
         }
@@ -205,7 +213,7 @@ $(document).ready(function () {
         const cep = $("#txtCep").val();
         const pontoReferencia = $("#txtPontoReferencia").val();
 
-        if (!idTipoEndereco) {
+        if (!idTipoEndereco || idTipoEndereco === '0') {
             alert("Por favor, selecione um tipo de endereço.");
             return;
         }
@@ -217,8 +225,8 @@ $(document).ready(function () {
             $("#txtNumero").val('');
             $("#txtComplemento").val('');
             $("#txtBairro").val('');
-            $("#selectMunicipio").val('');
-            $("#selectEstado").val('');
+            $("#selectMunicipio").val('0');
+            $("#selectEstado").val('0');
             $("#txtCep").val('');
             $("#txtPontoReferencia").val('');
         } else {
@@ -273,66 +281,64 @@ $(document).ready(function () {
         });
     }
 
-    $("#btnsalvar").click(function () {
-        if (validarCampos()) {
-            const obj = {
-                id: $("#txtid").val(),
-                nomeCompleto: $("#txtnomeCompleto").val(),
-                dataNascimento: $("#txtdataNascimento").val(),
-                rgNumero: $("#txtrgNumero").val(),
-                rgDataEmissao: $("#txtrgDataEmissao").val(),
-                rgOrgaoExpedidor: $("#txtrgOrgaoExpedidor").val(),
-                rgUfEmissao: $("#selectRgUfEmissao").val(),
-                cnsNumero: $("#txtcnsNumero").val(),
-                cpfNumero: $("#txtcpfNumero").val(),
-                nomeMae: $("#txtnomeMae").val(),
-                nomeConjuge: $("#txtnomeConjuge").val(),
-                naturalidadeCidade: $("#selectNaturalidadeCidade").val(),
-                naturalidadeUf: $("#selectNaturalidadeUf").val(),
+    function salvarFormulario() {
+        const obj = {
+            id: $("#txtid").val(),
+            nomeCompleto: $("#txtnomeCompleto").val(),
+            dataNascimento: $("#txtdataNascimento").val(),
+            rgNumero: $("#txtrgNumero").val(),
+            rgDataEmissao: $("#txtrgDataEmissao").val(),
+            rgOrgaoExpedidor: $("#txtrgOrgaoExpedidor").val(),
+            rgUfEmissao: $("#selectRgUfEmissao").val(),
+            cnsNumero: $("#txtcnsNumero").val(),
+            cpfNumero: $("#txtcpfNumero").val(),
+            nomeMae: $("#txtnomeMae").val(),
+            nomeConjuge: $("#txtnomeConjuge").val(),
+            naturalidadeCidade: $("#selectNaturalidadeCidade").val(),
+            naturalidadeUf: $("#selectNaturalidadeUf").val(),
 
-                dataCadastro: $("#txtdataCadastro").val(),  // não pode ser modificado pelo usuário
-                idStatus: $("#selectStatus").val(),
-                idSexo: $("#selectSexo").val(),
-                idProfissao: $("#selectProfissao").val(),
-                idCorRaca: $("#selectCorRaca").val(),
-                idEstadoCivil: $("#selectEstadoCivil").val(),
-                contato: contatos,
-                endereco: enderecos
-            };
+            dataCadastro: $("#txtdataCadastro").val(),  // não pode ser modificado pelo usuário
+            idStatus: $("#selectStatus").val(),
+            idSexo: $("#selectSexo").val(),
+            idProfissao: $("#selectProfissao").val(),
+            idCorRaca: $("#selectCorRaca").val(),
+            idEstadoCivil: $("#selectEstadoCivil").val(),
+            contato: contatos,
+            endereco: enderecos
+        };
 
-            $.ajax({
-                type: obj.id == "0" ? "POST" : "PUT",
-                url: urlAPI + "api/Representante" + (obj.id != "0" ? "/" + obj.id : ""),
-                contentType: "application/json;charset=utf-8",
-                data: JSON.stringify(obj),
-                dataType: "json",
-                success: function () {
-                    limparFormulario();
-                    alert("Dados Salvos com sucesso!");
+        $.ajax({
+            type: obj.id == "0" ? "POST" : "PUT",
+            url: urlAPI + "api/Representante" + (obj.id != "0" ? "/" + obj.id : ""),
+            contentType: "application/json;charset=utf-8",
+            data: JSON.stringify(obj),
+            dataType: "json",
+            success: function () {
+                limparFormulario();
+                alert("Dados Salvos com sucesso!");
 
-                    if ($("#tabela").length > 0) {
-                        carregarRepresentantes();
-                    }
-                },
-                error: function (jqXHR, textStatus) {
-                    if (jqXHR.status === 400) {
-                        var errors = jqXHR.responseJSON.errors;
-                        var message = "";
-                        for (var key in errors) {
-                            if (errors.hasOwnProperty(key)) {
-                                errors[key].forEach(function (errorMessage) {
-                                    message += errorMessage + "\n";
-                                });
-                            }
-                        }
-                        alert(message);
-                    } else {
-                        alert("Erro ao salvar os dados: " + textStatus);
-                    }
+                if ($("#tabela").length > 0) {
+                    carregarRepresentantes();
                 }
-            });
-        }
-    });
+            },
+            error: function (jqXHR, textStatus) {
+                if (jqXHR.status === 400) {
+                    var errors = jqXHR.responseJSON.errors;
+                    var message = "";
+                    for (var key in errors) {
+                        if (errors.hasOwnProperty(key)) {
+                            errors[key].forEach(function (errorMessage) {
+                                message += errorMessage + "\n";
+                            });
+                        }
+                    }
+                    alert(message);
+                } else {
+                    alert("Erro ao salvar os dados: " + textStatus);
+                }
+            }
+        });
+    }
 
     function limparFormulario() {
         $("#txtnomeCompleto").val('');
@@ -340,7 +346,7 @@ $(document).ready(function () {
         $("#txtrgNumero").val('');
         $("#txtrgDataEmissao").val('');
         $("#txtrgOrgaoExpedidor").val('');
-        $("#selectRgUfEmissao").val('');
+        $("#selectRgUfEmissao").val('0');
         $("#txtcnsNumero").val('');
         $("#txtcpfNumero").val('');
         $("#txtid").val('0');
@@ -348,14 +354,14 @@ $(document).ready(function () {
         $("#txtidade").val('');
         $("#txtnomeMae").val('');
         $("#txtnomeConjuge").val('');
-        $("#selectNaturalidadeCidade").val('');
-        $("#selectNaturalidadeUf").val('');
+        $("#selectNaturalidadeCidade").val('0');
+        $("#selectNaturalidadeUf").val('0');
 
-        $("#selectStatus").val('');
-        $("#selectSexo").val('');
-        $("#selectProfissao").val('');
-        $("#selectCorRaca").val('');
-        $("#selectEstadoCivil").val('');
+        $("#selectStatus").val('0');
+        $("#selectSexo").val('0');
+        $("#selectProfissao").val('0');
+        $("#selectCorRaca").val('0');
+        $("#selectEstadoCivil").val('0');
         contatos = [];
         enderecos = [];
         atualizarTabelaContatos();
@@ -498,5 +504,45 @@ $(document).ready(function () {
         return idade;
     }
 
-    carregarRepresentantes();
+    if ($("#tabela").length > 0) {
+        carregarRepresentantes();
+    } else if ($("#txtid").length > 0) {
+        let params = new URLSearchParams(window.location.search);
+        let id = params.get('id');
+        if (id) {
+            visualizar(id);
+        } else {
+            let dataAtual = new Date().toISOString().split('T')[0];
+            $("#txtdataCadastro").val(dataAtual);
+        }
+    }
+
+    $("#txtdataNascimento").change(function () {
+        let dataNascimento = new Date($(this).val());
+        let idade = calcularIdade(dataNascimento);
+        $("#txtidade").val(idade);
+    });
+
+    $("#btnlimpar").click(function () {
+        limparFormulario();
+    });
+
+    $(document).on("click", ".alterar", function (elemento) {
+        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
+        window.location.href = "/RepresentanteCadastro?id=" + codigo;
+    });
+
+    $(document).on("click", ".excluir", function (elemento) {
+        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
+        excluir(codigo);
+    });
+
+    // Apenas números nos campos CPF, CNS e RG
+    $(".numeric-only").on("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    $("#txtrgNumero").on("input", function () {
+        this.value = this.value.replace(/[^A-Za-z0-9]/g, '');
+    });
 });
