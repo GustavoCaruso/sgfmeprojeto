@@ -1,9 +1,13 @@
-﻿const urlAPI = "https://localhost:44309/";
+﻿const urlAPI = "https://localhost:7034/";
 
 $(document).ready(function () {
     // Apenas números nos campos CPF, CNS e RG
     $(".numeric-only").on("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    $("#txtrgNumero").on("input", function () {
+        this.value = this.value.replace(/[^A-Za-z0-9]/g, '');
     });
 
     let contatos = [];
@@ -48,18 +52,28 @@ $(document).ready(function () {
         let isValid = true;
         $(".form-control").removeClass('is-invalid');
 
-        if (!$("#txtnomeCompleto").val().trim()) {
-            $("#txtnomeCompleto").addClass('is-invalid');
-            isValid = false;
-        }
-        if (!$("#txtdataNascimento").val().trim()) {
-            $("#txtdataNascimento").addClass('is-invalid');
-            isValid = false;
-        }
-        if (!$("#txtrgNumero").val().trim()) {
-            $("#txtrgNumero").addClass('is-invalid');
-            isValid = false;
-        }
+        const camposObrigatorios = [
+            { id: "#txtnomeCompleto", mensagem: "Por favor, insira o nome completo.", maxLength: 100 },
+            { id: "#txtdataNascimento", mensagem: "Por favor, insira a data de nascimento." },
+            { id: "#txtrgNumero", mensagem: "Por favor, insira o número do RG.", pattern: /^[A-Za-z0-9]{9}$/ },
+            { id: "#txtrgDataEmissao", mensagem: "Por favor, insira a data de emissão do RG." },
+            { id: "#txtrgOrgaoExpedidor", mensagem: "Por favor, insira o órgão expedidor do RG." },
+            { id: "#selectRgUfEmissao", mensagem: "Por favor, selecione a UF de emissão do RG." },
+            { id: "#txtcnsNumero", mensagem: "Por favor, insira o número do CNS.", pattern: /^\d{15}$/ },
+            { id: "#txtcpfNumero", mensagem: "Por favor, insira o número do CPF.", pattern: /^\d{11}$/ },
+            { id: "#txtnomeMae", mensagem: "Por favor, insira o nome da mãe.", maxLength: 100 },
+            { id: "#txtnomeConjuge", mensagem: "Por favor, insira o nome do cônjuge.", maxLength: 100 },
+            { id: "#selectNaturalidadeUf", mensagem: "Por favor, selecione a naturalidade - UF." },
+            { id: "#selectNaturalidadeCidade", mensagem: "Por favor, selecione a naturalidade - Cidade." }
+        ];
+
+        camposObrigatorios.forEach(campo => {
+            const elemento = $(campo.id);
+            if (!elemento.val().trim() || (campo.maxLength && elemento.val().trim().length > campo.maxLength) || (campo.pattern && !campo.pattern.test(elemento.val().trim()))) {
+                elemento.addClass('is-invalid');
+                isValid = false;
+            }
+        });
 
         if (contatos.length === 0) {
             $("#mensagemValidacao").text("Por favor, adicione pelo menos um contato.");
