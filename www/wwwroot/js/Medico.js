@@ -389,7 +389,7 @@ $(document).ready(function () {
             contentType: "application/json;charset=utf-8",
             success: function () {
                 alert('Exclusão efetuada!');
-                location.reload(); // Recarrega a página para atualizar a tabela
+                location.reload(); 
             },
             error: function (xhr, textStatus, errorThrown) {
                 alert("Erro ao excluir o médico: " + errorThrown);
