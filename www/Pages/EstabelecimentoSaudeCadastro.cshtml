@@ -63,9 +63,9 @@
 
             <div class="col-md-6">
                 <label for="txtnomeFantasia" class="form-label">Nome Fantasia</label>
-                <input type="text" class="form-control" id="txtnomeFantasia" placeholder="Nome Fantasia" required>
+                <input type="text" class="form-control" id="txtnomeFantasia" placeholder="Nome Fantasia" maxlength="75" required>
                 <div class="invalid-feedback">
-                    Por favor, insira o nome fantasia.
+                    Por favor, insira o nome fantasia (máximo 75 caracteres).
                 </div>
             </div>
         </div>
@@ -73,17 +73,17 @@
         <div class="row">
             <div class="col-md-6">
                 <label for="txtrazaoSocial" class="form-label">Razão Social</label>
-                <input type="text" class="form-control" id="txtrazaoSocial" placeholder="Razão Social" required>
+                <input type="text" class="form-control" id="txtrazaoSocial" placeholder="Razão Social" maxlength="75" required>
                 <div class="invalid-feedback">
-                    Por favor, insira a razão social.
+                    Por favor, insira a razão social (máximo 75 caracteres).
                 </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtcnes" class="form-label">CNES</label>
-                <input type="text" class="form-control numeric-only" id="txtcnes" placeholder="CNES" required>
+                <input type="text" class="form-control numeric-only" id="txtcnes" placeholder="CNES" maxlength="7" required>
                 <div class="invalid-feedback">
-                    Por favor, insira o número do CNES.
+                    Por favor, insira o número do CNES (7 caracteres).
                 </div>
             </div>
         </div>
@@ -136,22 +136,34 @@
 
             <div class="col-md-6">
                 <label for="txtLogradouro">Logradouro</label>
-                <input type="text" class="form-control" id="txtLogradouro" placeholder="Logradouro" required>
+                <input type="text" class="form-control" id="txtLogradouro" placeholder="Logradouro" maxlength="75" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o logradouro (máximo 75 caracteres).
+                </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtNumero">Número</label>
-                <input type="text" class="form-control" id="txtNumero" placeholder="Número" required>
+                <input type="text" class="form-control" id="txtNumero" placeholder="Número" maxlength="15" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o número (máximo 15 caracteres).
+                </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtComplemento">Complemento</label>
-                <input type="text" class="form-control" id="txtComplemento" placeholder="Complemento">
+                <input type="text" class="form-control" id="txtComplemento" placeholder="Complemento" maxlength="30">
+                <div class="invalid-feedback">
+                    Por favor, insira o complemento (máximo 30 caracteres).
+                </div>
             </div>
 
             <div class="col-md-4">
                 <label for="txtBairro">Bairro</label>
-                <input type="text" class="form-control" id="txtBairro" placeholder="Bairro" required>
+                <input type="text" class="form-control" id="txtBairro" placeholder="Bairro" maxlength="75" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o bairro (máximo 75 caracteres).
+                </div>
             </div>
 
             <div class="col-md-2">
@@ -170,12 +182,18 @@
 
             <div class="col-md-2">
                 <label for="txtCep">CEP</label>
-                <input type="text" class="form-control" id="txtCep" placeholder="CEP" required>
+                <input type="text" class="form-control numeric-only" id="txtCep" placeholder="CEP" maxlength="8" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o CEP (8 caracteres).
+                </div>
             </div>
 
             <div class="col-md-6">
                 <label for="txtPontoReferencia">Ponto de Referência</label>
-                <input type="text" class="form-control" id="txtPontoReferencia" placeholder="Ponto de Referência">
+                <input type="text" class="form-control" id="txtPontoReferencia" placeholder="Ponto de Referência" maxlength="75">
+                <div class="invalid-feedback">
+                    Por favor, insira o ponto de referência (máximo 75 caracteres).
+                </div>
             </div>
 
             <div class="col-12 btn-margin">

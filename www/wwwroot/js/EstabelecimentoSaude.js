@@ -40,15 +40,15 @@ $(document).ready(function () {
         let isValid = true;
         $(".form-control").removeClass('is-invalid');
 
-        if (!$("#txtnomeFantasia").val().trim()) {
+        if (!$("#txtnomeFantasia").val().trim() || $("#txtnomeFantasia").val().length > 75) {
             $("#txtnomeFantasia").addClass('is-invalid');
             isValid = false;
         }
-        if (!$("#txtrazaoSocial").val().trim()) {
+        if (!$("#txtrazaoSocial").val().trim() || $("#txtrazaoSocial").val().length > 75) {
             $("#txtrazaoSocial").addClass('is-invalid');
             isValid = false;
         }
-        if (!$("#txtcnes").val().trim()) {
+        if (!$("#txtcnes").val().trim() || $("#txtcnes").val().length !== 7) {
             $("#txtcnes").addClass('is-invalid');
             isValid = false;
         }
@@ -182,6 +182,31 @@ $(document).ready(function () {
 
         if (!idTipoEndereco) {
             alert("Por favor, selecione um tipo de endereço.");
+            return;
+        }
+
+        if (logradouro.length > 75) {
+            $("#txtLogradouro").addClass('is-invalid');
+            return;
+        }
+
+        if (numero.length > 15) {
+            $("#txtNumero").addClass('is-invalid');
+            return;
+        }
+
+        if (complemento.length > 30) {
+            $("#txtComplemento").addClass('is-invalid');
+            return;
+        }
+
+        if (cep.length > 8) {
+            $("#txtCep").addClass('is-invalid');
+            return;
+        }
+
+        if (pontoReferencia.length > 75) {
+            $("#txtPontoReferencia").addClass('is-invalid');
             return;
         }
 

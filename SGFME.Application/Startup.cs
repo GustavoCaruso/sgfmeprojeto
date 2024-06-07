@@ -26,6 +26,11 @@ namespace SGFME.Application
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // Adiciona suporte para Razor Pages
+            services.AddRazorPages(options =>
+            {
+                options.RootDirectory = "/www/Pages"; // Define o diretório raiz das páginas Razor
+            });
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -186,7 +191,7 @@ namespace SGFME.Application
             }
 
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles(); // Serve arquivos estáticos da pasta wwwroot por padrão
             app.UseRouting();
 
             app.UseCors(builder =>
@@ -206,6 +211,7 @@ namespace SGFME.Application
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages(); // Configura o uso de páginas Razor
             });
         }
     }
