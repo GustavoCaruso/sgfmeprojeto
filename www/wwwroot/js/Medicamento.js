@@ -5,16 +5,15 @@ $(document).ready(function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
 
+    let medicamentoDados;
+
     if ($("#tabela").length > 0) {
-        carregarCids();
+        carregarMedicamentos();
     } else if ($("#txtid").length > 0) {
         let params = new URLSearchParams(window.location.search);
         let id = params.get('id');
         if (id) {
             visualizar(id);
-        } else {
-            let dataAtual = new Date().toISOString().split('T')[0];
-            $("#txtdataCadastro").val(dataAtual);
         }
     }
 
@@ -24,7 +23,7 @@ $(document).ready(function () {
 
     $(document).on("click", ".alterar", function (elemento) {
         let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        window.location.href = "/CidCadastro?id=" + codigo;
+        window.location.href = "/MedicamentoCadastro?id=" + codigo;
     });
 
     $(document).on("click", ".excluir", function (elemento) {
@@ -36,20 +35,12 @@ $(document).ready(function () {
         let isValid = true;
         $(".form-control").removeClass('is-invalid');
 
-        if (!$("#txtcodigo").val().trim()) {
-            $("#txtcodigo").addClass('is-invalid');
-            isValid = false;
-        }
-        if (!$("#txtdescricao").val().trim()) {
-            $("#txtdescricao").addClass('is-invalid');
+        if (!$("#txtnome").val().trim()) {
+            $("#txtnome").addClass('is-invalid');
             isValid = false;
         }
         if (!$("#selectStatus").val().trim() || $("#selectStatus").val() === "0") {
             $("#selectStatus").addClass('is-invalid');
-            isValid = false;
-        }
-        if (!$("#selectVersaoCid").val().trim() || $("#selectVersaoCid").val() === "0") {
-            $("#selectVersaoCid").addClass('is-invalid');
             isValid = false;
         }
 
@@ -78,23 +69,19 @@ $(document).ready(function () {
         });
     }
 
-    carregarOpcoes("api/Cid/tipoStatus", $("#selectStatus"), "Selecione um status");
-    carregarOpcoes("api/Cid/tipoVersaoCid", $("#selectVersaoCid"), "Selecione uma versão");
+    carregarOpcoes("api/Medicamento/tipoStatus", $("#selectStatus"), "Selecione um status");
 
     $("#btnsalvar").click(function () {
         if (validarCampos()) {
             const obj = {
                 id: $("#txtid").val(),
-                codigo: $("#txtcodigo").val(),
-                descricao: $("#txtdescricao").val(),
-                idStatus: $("#selectStatus").val(),
-                idVersaoCid: $("#selectVersaoCid").val(),
-                dataCadastro: $("#txtdataCadastro").val()
+                nome: $("#txtnome").val(),
+                idStatus: $("#selectStatus").val()
             };
 
             $.ajax({
                 type: obj.id == "0" ? "POST" : "PUT",
-                url: urlAPI + "api/Cid" + (obj.id != "0" ? "/" + obj.id : ""),
+                url: urlAPI + "api/Medicamento" + (obj.id != "0" ? "/" + obj.id : ""),
                 contentType: "application/json;charset=utf-8",
                 data: JSON.stringify(obj),
                 dataType: "json",
@@ -103,7 +90,7 @@ $(document).ready(function () {
                     alert("Dados Salvos com sucesso!");
 
                     if ($("#tabela").length > 0) {
-                        carregarCids();
+                        carregarMedicamentos();
                     }
                 },
                 error: function (jqXHR, textStatus) {
@@ -127,33 +114,28 @@ $(document).ready(function () {
     });
 
     function limparFormulario() {
-        $("#txtcodigo").val('');
-        $("#txtdescricao").val('');
-        $("#selectStatus").val('');
-        $("#selectVersaoCid").val('');
+        $("#txtnome").val('');
         $("#txtid").val('0');
-        $("#txtdataCadastro").val(new Date().toISOString().split('T')[0]);
+        $("#selectStatus").val('');
     }
 
-    function carregarCids() {
+    function carregarMedicamentos() {
         $.ajax({
-            url: urlAPI + "api/Cid/todosCids",
+            url: urlAPI + "api/Medicamento/todosMedicamentos",
             method: "GET",
             success: function (data) {
                 $("#tabela").empty();
                 $.each(data, function (index, item) {
                     var linha = $("#linhaExemplo").clone().removeAttr("id").removeAttr("style");
                     $(linha).find(".codigo").html(item.id);
-                    $(linha).find(".codigoCid").html(item.codigo);
-                    $(linha).find(".descricao").html(item.descricao);
+                    $(linha).find(".nome").html(item.nome);
                     $(linha).find(".status").html(item.status ? item.status.nome : "Não Definido");
-                    $(linha).find(".versaoCid").html(item.versaocid ? item.versaocid.nome : "Não Definido");
 
                     $(linha).show();
                     $("#tabela").append(linha);
                 });
 
-                $('#tabelaCid').DataTable({
+                $('#tabelaMedicamento').DataTable({
                     language: {
                         url: '/js/pt-BR.json'
                     },
@@ -161,7 +143,7 @@ $(document).ready(function () {
                 });
             },
             error: function () {
-                alert("Erro ao carregar CIDs.");
+                alert("Erro ao carregar medicamentos.");
             }
         });
     }
@@ -169,14 +151,14 @@ $(document).ready(function () {
     function excluir(codigo) {
         $.ajax({
             type: "DELETE",
-            url: urlAPI + "api/Cid/" + codigo,
+            url: urlAPI + "api/Medicamento/" + codigo,
             contentType: "application/json;charset=utf-8",
             success: function () {
                 alert('Exclusão efetuada!');
                 location.reload();
             },
             error: function (xhr, textStatus, errorThrown) {
-                alert("Erro ao excluir o CID: " + errorThrown);
+                alert("Erro ao excluir o medicamento: " + errorThrown);
             }
         });
     }
@@ -184,23 +166,19 @@ $(document).ready(function () {
     function visualizar(codigo) {
         $.ajax({
             type: "GET",
-            url: urlAPI + "api/Cid/" + codigo,
+            url: urlAPI + "api/Medicamento/" + codigo,
             contentType: "application/json;charset=utf-8",
             data: {},
             dataType: "json",
             success: function (jsonResult) {
+                medicamentoDados = jsonResult;
                 $("#txtid").val(jsonResult.id);
-                $("#txtcodigo").val(jsonResult.codigo);
-                $("#txtdescricao").val(jsonResult.descricao);
+                $("#txtnome").val(jsonResult.nome);
                 $("#selectStatus").val(jsonResult.idStatus);
-                $("#selectVersaoCid").val(jsonResult.idVersaoCid);
-                $("#txtdataCadastro").val(new Date(jsonResult.dataCadastro).toISOString().split('T')[0]);
             },
             error: function (response) {
                 alert("Erro ao carregar os dados: " + response);
             }
         });
     }
-
-    carregarCids();
 });

@@ -7,6 +7,10 @@ using SGFME.Domain.Entidades;
 using SGFME.Domain.Interfaces;
 using SGFME.Infrastructure.Data.Context;
 using SGFME.Service.Validators;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SGFME.Application.Controllers
 {
@@ -14,7 +18,7 @@ namespace SGFME.Application.Controllers
     [ApiController]
     public class MedicamentoController : ControllerBase
     {
-        private IBaseService<Medicamento> _baseService;
+        private readonly IBaseService<Medicamento> _baseService;
         private readonly SqlServerContext _context;
 
         public MedicamentoController(IBaseService<Medicamento> baseService, SqlServerContext context)
@@ -22,7 +26,8 @@ namespace SGFME.Application.Controllers
             _baseService = baseService;
             _context = context;
         }
-        //Adicionar método para executar comando e retornar IActionResult
+
+        // Método para executar comando e retornar IActionResult
         private IActionResult Execute(Func<object> func)
         {
             try
@@ -36,7 +41,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        //EndPoint para criar um Medicamento:
+        // EndPoint para criar um Medicamento
         [HttpPost]
         public async Task<ActionResult<Medicamento>> Create(MedicamentoDTO request)
         {
@@ -44,16 +49,12 @@ namespace SGFME.Application.Controllers
             {
                 try
                 {
-
                     var novoMedicamento = new Medicamento
                     {
                         id = request.id,
                         nome = request.nome,
                         idStatus = request.idStatus
-                        
                     };
-
-
 
                     // Validar a entrada usando FluentValidation
                     var validator = new MedicamentoValidator();
@@ -69,13 +70,10 @@ namespace SGFME.Application.Controllers
                     await transaction.CommitAsync();
 
                     var createdMedicamento = await _context.medicamento
-
                         .Include(p => p.status)
-                        
-
                         .FirstOrDefaultAsync(e => e.id == novoMedicamento.id);
 
-                    return CreatedAtAction(nameof(Create), new { id = createdMedicamento.id }, createdMedicamento);
+                    return CreatedAtAction(nameof(GetMedicamentoById), new { id = createdMedicamento.id }, createdMedicamento);
                 }
                 catch (Exception ex)
                 {
@@ -91,10 +89,7 @@ namespace SGFME.Application.Controllers
             try
             {
                 var medicamentos = await _context.medicamento
-
                     .Include(m => m.status)
-                    
-
                     .ToListAsync();
 
                 return Ok(medicamentos);
@@ -112,24 +107,15 @@ namespace SGFME.Application.Controllers
             {
                 try
                 {
-                    var medicamento = await _context.medicamento
-                        .FirstOrDefaultAsync(m => m.id == id);
+                    var medicamento = await _context.medicamento.FirstOrDefaultAsync(m => m.id == id);
 
                     if (medicamento == null)
                     {
-                        return NotFound("medicamento não encontrado.");
+                        return NotFound("Medicamento não encontrado.");
                     }
 
                     medicamento.nome = request.nome;
-                   
-
                     medicamento.idStatus = request.idStatus; // Associação com Status
-                   
-
-
-
-
-
 
                     // Validar a entrada usando FluentValidation
                     var validator = new MedicamentoValidator();
@@ -154,7 +140,6 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
@@ -162,21 +147,18 @@ namespace SGFME.Application.Controllers
             {
                 try
                 {
-                    var medicamentoExistente = await _context.medicamento
-
-                        .FirstOrDefaultAsync(m => m.id == id);
+                    var medicamentoExistente = await _context.medicamento.FirstOrDefaultAsync(m => m.id == id);
 
                     if (medicamentoExistente == null)
                     {
-                        return NotFound("medicamento não encontrado.");
+                        return NotFound("Medicamento não encontrado.");
                     }
-
 
                     _context.medicamento.Remove(medicamentoExistente);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return Ok("medicamento excluído com sucesso.");
+                    return Ok("Medicamento excluído com sucesso.");
                 }
                 catch (Exception ex)
                 {
@@ -187,20 +169,17 @@ namespace SGFME.Application.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetmedicamentoById(int id)
+        public async Task<IActionResult> GetMedicamentoById(int id)
         {
             try
             {
                 var medicamento = await _context.medicamento
-
-                    .Include(m => m.status) // Incluir status
-                    
-
+                    .Include(m => m.status)
                     .FirstOrDefaultAsync(m => m.id == id);
 
                 if (medicamento == null)
                 {
-                    return NotFound("medicamento não encontrado.");
+                    return NotFound("Medicamento não encontrado.");
                 }
 
                 return Ok(medicamento);
@@ -210,8 +189,6 @@ namespace SGFME.Application.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar o medicamento.");
             }
         }
-
-
 
         [HttpGet("tipoStatus")]
         public IActionResult ObterTiposStatus()
@@ -227,22 +204,10 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
-
-
-
-       
-
-
-
-
         [HttpGet]
         public IActionResult SelecionarTodos()
         {
             return Execute(() => _baseService.Get<MedicamentoModel>());
         }
     }
-
-
 }
-

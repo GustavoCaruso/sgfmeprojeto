@@ -1,4 +1,79 @@
 ﻿@page
 @model www.Pages.MedicamentoCadastroModel
 @{
+    ViewData["Title"] = "Cadastro de Medicamento";
+}
+
+<style>
+    .section {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+    }
+
+    .section-title {
+        margin-bottom: 20px;
+    }
+
+    .btn-margin {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+</style>
+
+<form id="medicamentoForm" class="row g-3">
+
+    <div class="row align-items-center mb-3">
+        <div class="col-auto">
+            <i class="fas fa-pills fa-3x"></i>
+        </div>
+        <div class="col">
+            <h1>Cadastro de Medicamento</h1>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-dark"
+                    onclick="location.href='/MedicamentoGerenciamento'">
+                Gerenciamento de Medicamentos
+            </button>
+        </div>
+    </div>
+    <hr />
+
+    <div class="section">
+        <h2 class="section-title">Informações do Medicamento</h2>
+        <div class="row">
+            <div class="col-md-2">
+                <label for="txtid" class="form-label">Código</label>
+                <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
+            </div>
+
+            <div class="col-md-6">
+                <label for="txtnome" class="form-label">Nome do Medicamento</label>
+                <input type="text" class="form-control" id="txtnome" placeholder="Nome do Medicamento" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o nome do medicamento.
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <label for="selectStatus" class="form-label">Status</label>
+                <select class="form-control" id="selectStatus" required>
+                    <option value="0">Selecione um status</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <button type="button" class="btn btn-primary" onclick="location.href='/MedicamentoGerenciamento'">Voltar</button>
+        <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
+        <button type="button" id="btnlimpar" class="btn btn-primary">Limpar</button>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script src="~/js/Medicamento.js"></script>
 }
