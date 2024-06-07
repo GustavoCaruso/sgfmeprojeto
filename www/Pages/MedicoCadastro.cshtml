@@ -16,6 +16,11 @@
     .section-title {
         margin-bottom: 20px;
     }
+
+    .btn-margin {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
 </style>
 
 <form id="medicoForm" class="row g-3">
@@ -30,7 +35,7 @@
         <div class="col-auto">
             <button type="button" class="btn btn-dark"
                     onclick="location.href='/MedicoGerenciamento'">
-                Gerenciamento de Médico
+                Gerenciamento de Médicos
             </button>
         </div>
     </div>
@@ -125,7 +130,7 @@
             <div class="col-md-4">
                 <label for="selectNaturalidadeCidade" class="form-label">Naturalidade - Cidade</label>
                 <select class="form-control" id="selectNaturalidadeCidade" required>
-                    <option value="0">Selecione uma cidade</option>
+                    <option value="0">Selecione um município</option>
                 </select>
             </div>
 
@@ -204,7 +209,7 @@
                 <input type="text" class="form-control" id="txtValorContato" placeholder="Valor do Contato" required>
             </div>
 
-            <div class="col-12">
+            <div class="col-12 btn-margin">
                 <button type="button" class="btn btn-primary" id="btnAdicionarContato">Adicionar Contato</button>
             </div>
         </div>
@@ -278,7 +283,7 @@
                 <input type="text" class="form-control" id="txtPontoReferencia" placeholder="Ponto de Referência">
             </div>
 
-            <div class="col-12">
+            <div class="col-12 btn-margin">
                 <button type="button" class="btn btn-primary" id="btnAdicionarEndereco">Adicionar Endereço</button>
             </div>
         </div>

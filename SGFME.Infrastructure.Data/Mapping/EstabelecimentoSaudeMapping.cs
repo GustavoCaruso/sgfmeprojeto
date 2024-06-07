@@ -29,6 +29,10 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .HasColumnType("varchar(255)")  //tipo da coluna
                 .HasColumnName("cnes");  //nome da coluna no bd
 
+            builder.Property(p => p.dataCadastro)
+                .HasColumnType("datetime")
+                .HasColumnName("dataCadastro");
+
 
             // Definir a relação com Status
             builder.HasOne(r => r.status)

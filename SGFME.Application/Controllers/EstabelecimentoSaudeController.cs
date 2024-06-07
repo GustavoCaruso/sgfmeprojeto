@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SGFME.Application.DTOs;
-using SGFME.Application.Models;
 using SGFME.Domain.Entidades;
 using SGFME.Domain.Interfaces;
 using SGFME.Infrastructure.Data.Context;
@@ -19,7 +18,7 @@ namespace SGFME.Application.Controllers
     [ApiController]
     public class EstabelecimentoSaudeController : ControllerBase
     {
-        private IBaseService<EstabelecimentoSaude> _baseService;
+        private readonly IBaseService<EstabelecimentoSaude> _baseService;
         private readonly SqlServerContext _context;
 
         public EstabelecimentoSaudeController(IBaseService<EstabelecimentoSaude> baseService, SqlServerContext context)
@@ -28,7 +27,6 @@ namespace SGFME.Application.Controllers
             _context = context;
         }
 
-        // Adicionar método para executar comando e retornar IActionResult
         private IActionResult Execute(Func<object> func)
         {
             try
@@ -55,12 +53,12 @@ namespace SGFME.Application.Controllers
                         nomeFantasia = request.nomeFantasia,
                         razaoSocial = request.razaoSocial,
                         cnes = request.cnes,
+                        dataCadastro = request.dataCadastro,
                         idStatus = request.idStatus,
                         contato = new List<Contato>(),
                         endereco = new List<Endereco>()
                     };
 
-                    // Adicionando contatos
                     foreach (var contatoDto in request.contato)
                     {
                         var contato = new Contato
@@ -73,7 +71,6 @@ namespace SGFME.Application.Controllers
                         novoEstabelecimento.contato.Add(contato);
                     }
 
-                    // Adicionando endereços
                     foreach (var enderecoDto in request.endereco)
                     {
                         var endereco = new Endereco
@@ -93,7 +90,6 @@ namespace SGFME.Application.Controllers
                         novoEstabelecimento.endereco.Add(endereco);
                     }
 
-                    // Validar a entrada usando FluentValidation
                     var validator = new EstabelecimentoSaudeValidator();
                     var validationResult = await validator.ValidateAsync(novoEstabelecimento);
 
@@ -235,9 +231,9 @@ namespace SGFME.Application.Controllers
                     estabelecimento.nomeFantasia = request.nomeFantasia;
                     estabelecimento.razaoSocial = request.razaoSocial;
                     estabelecimento.cnes = request.cnes;
+                    estabelecimento.dataCadastro = request.dataCadastro;
                     estabelecimento.idStatus = request.idStatus;
 
-                    // Atualizando os contatos
                     _context.contato.RemoveRange(estabelecimento.contato);
                     estabelecimento.contato.Clear();
 
@@ -253,7 +249,6 @@ namespace SGFME.Application.Controllers
                         estabelecimento.contato.Add(contato);
                     }
 
-                    // Atualizando os endereços
                     _context.endereco.RemoveRange(estabelecimento.endereco);
                     estabelecimento.endereco.Clear();
 
@@ -276,7 +271,6 @@ namespace SGFME.Application.Controllers
                         estabelecimento.endereco.Add(endereco);
                     }
 
-                    // Validar a entrada usando FluentValidation
                     var validator = new EstabelecimentoSaudeValidator();
                     var validationResult = await validator.ValidateAsync(estabelecimento);
 
@@ -375,7 +369,7 @@ namespace SGFME.Application.Controllers
         [HttpGet]
         public IActionResult SelecionarTodos()
         {
-            return Execute(() => _baseService.Get<EstabelecimentoSaudeModel>());
+            return Execute(() => _baseService.Get<EstabelecimentoSaude>());
         }
     }
 }
