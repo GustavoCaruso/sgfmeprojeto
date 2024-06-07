@@ -59,13 +59,16 @@
                 <select class="form-control" id="selectStatus" required>
                     <option value="0">Selecione um status</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um status.
+                </div>
             </div>
 
             <div class="col-md-6">
                 <label for="txtnomeCompleto" class="form-label">Nome Completo</label>
-                <input type="text" class="form-control" id="txtnomeCompleto" placeholder="Nome Completo" required>
+                <input type="text" class="form-control" id="txtnomeCompleto" placeholder="Nome Completo" maxlength="100" required>
                 <div class="invalid-feedback">
-                    Por favor, insira o nome completo.
+                    Por favor, insira o nome completo (máximo 100 caracteres).
                 </div>
             </div>
         </div>
@@ -97,6 +100,9 @@
                 <select class="form-control" id="selectSexo" required>
                     <option value="0">Selecione um sexo</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um sexo.
+                </div>
             </div>
 
             <div class="col-md-2">
@@ -104,6 +110,9 @@
                 <select class="form-control" id="selectCorRaca" required>
                     <option value="0">Selecione uma cor/raça</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione uma cor/raça.
+                </div>
             </div>
 
             <div class="col-md-2">
@@ -111,11 +120,17 @@
                 <select class="form-control" id="selectEstadoCivil" required>
                     <option value="0">Selecione um estado civil</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um estado civil.
+                </div>
             </div>
 
             <div class="col-md-4">
                 <label for="txtnomeConjuge" class="form-label">Nome do Cônjuge</label>
-                <input type="text" class="form-control" id="txtnomeConjuge" placeholder="Nome do Cônjuge">
+                <input type="text" class="form-control" id="txtnomeConjuge" placeholder="Nome do Cônjuge" maxlength="100">
+                <div class="invalid-feedback">
+                    Por favor, insira o nome do cônjuge (máximo 100 caracteres).
+                </div>
             </div>
         </div>
 
@@ -125,6 +140,9 @@
                 <select class="form-control" id="selectNaturalidadeUf" required>
                     <option value="0">Selecione um estado</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um estado.
+                </div>
             </div>
 
             <div class="col-md-4">
@@ -132,13 +150,16 @@
                 <select class="form-control" id="selectNaturalidadeCidade" required>
                     <option value="0">Selecione um município</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um município.
+                </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtrgNumero" class="form-label">RG Número</label>
-                <input type="text" class="form-control" id="txtrgNumero" placeholder="RG Número" required>
+                <input type="text" class="form-control" id="txtrgNumero" placeholder="RG Número" maxlength="9" required>
                 <div class="invalid-feedback">
-                    Por favor, insira o número do RG.
+                    Por favor, insira o número do RG (máximo 9 caracteres).
                 </div>
             </div>
 
@@ -164,31 +185,31 @@
                     <option value="0">Selecione um estado</option>
                 </select>
                 <div class="invalid-feedback">
-                    Por favor, insira a UF de emissão do RG.
+                    Por favor, selecione a UF de emissão do RG.
                 </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtcnsNumero" class="form-label">CNS Número</label>
-                <input type="text" class="form-control" id="txtcnsNumero" placeholder="CNS Número" required>
+                <input type="text" class="form-control numeric-only" id="txtcnsNumero" placeholder="CNS Número" maxlength="15" required>
                 <div class="invalid-feedback">
-                    Por favor, insira o número do CNS.
+                    Por favor, insira o número do CNS (15 caracteres).
                 </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtcpfNumero" class="form-label">CPF Número</label>
-                <input type="text" class="form-control numeric-only" id="txtcpfNumero" placeholder="CPF Número" required inputmode="numeric">
+                <input type="text" class="form-control numeric-only" id="txtcpfNumero" placeholder="CPF Número" maxlength="11" required>
                 <div class="invalid-feedback">
-                    Por favor, insira o número do CPF.
+                    Por favor, insira o número do CPF (11 caracteres).
                 </div>
             </div>
 
             <div class="col-md-6">
                 <label for="txtnomeMae" class="form-label">Nome da Mãe</label>
-                <input type="text" class="form-control" id="txtnomeMae" placeholder="Nome da Mãe" required>
+                <input type="text" class="form-control" id="txtnomeMae" placeholder="Nome da Mãe" maxlength="100" required>
                 <div class="invalid-feedback">
-                    Por favor, insira o nome da mãe.
+                    Por favor, insira o nome da mãe (máximo 100 caracteres).
                 </div>
             </div>
         </div>
@@ -202,11 +223,17 @@
                 <select class="form-control" id="selectTipoContato" required>
                     <option value="0">Selecione um tipo de contato</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um tipo de contato.
+                </div>
             </div>
 
             <div class="col-md-3">
                 <label for="txtValorContato">Valor do Contato</label>
                 <input type="text" class="form-control" id="txtValorContato" placeholder="Valor do Contato" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o valor do contato.
+                </div>
             </div>
 
             <div class="col-12 btn-margin">
@@ -237,26 +264,41 @@
                 <select class="form-control" id="selectTipoEndereco" required>
                     <option value="0">Selecione um tipo de endereço</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um tipo de endereço.
+                </div>
             </div>
 
             <div class="col-md-6">
                 <label for="txtLogradouro">Logradouro</label>
-                <input type="text" class="form-control" id="txtLogradouro" placeholder="Logradouro" required>
+                <input type="text" class="form-control" id="txtLogradouro" placeholder="Logradouro" maxlength="100" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o logradouro (máximo 100 caracteres).
+                </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtNumero">Número</label>
-                <input type="text" class="form-control" id="txtNumero" placeholder="Número" required>
+                <input type="text" class="form-control" id="txtNumero" placeholder="Número" maxlength="10" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o número (máximo 10 caracteres alfanuméricos).
+                </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtComplemento">Complemento</label>
-                <input type="text" class="form-control" id="txtComplemento" placeholder="Complemento">
+                <input type="text" class="form-control" id="txtComplemento" placeholder="Complemento" maxlength="30" pattern="[A-Za-z ]*">
+                <div class="invalid-feedback">
+                    Por favor, insira o complemento (somente letras, máximo 30 caracteres).
+                </div>
             </div>
 
             <div class="col-md-4">
                 <label for="txtBairro">Bairro</label>
-                <input type="text" class="form-control" id="txtBairro" placeholder="Bairro" required>
+                <input type="text" class="form-control" id="txtBairro" placeholder="Bairro" maxlength="70" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o bairro (máximo 70 caracteres).
+                </div>
             </div>
 
             <div class="col-md-2">
@@ -264,6 +306,9 @@
                 <select class="form-control" id="selectEstado" required>
                     <option value="0">Selecione um estado</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um estado.
+                </div>
             </div>
 
             <div class="col-md-6">
@@ -271,16 +316,25 @@
                 <select class="form-control" id="selectMunicipio" required>
                     <option value="0">Selecione um município</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um município.
+                </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtCep">CEP</label>
-                <input type="text" class="form-control" id="txtCep" placeholder="CEP" required>
+                <input type="text" class="form-control numeric-only" id="txtCep" placeholder="CEP" maxlength="8" required>
+                <div class="invalid-feedback">
+                    Por favor, insira o CEP (8 caracteres).
+                </div>
             </div>
 
             <div class="col-md-6">
                 <label for="txtPontoReferencia">Ponto de Referência</label>
-                <input type="text" class="form-control" id="txtPontoReferencia" placeholder="Ponto de Referência">
+                <input type="text" class="form-control" id="txtPontoReferencia" placeholder="Ponto de Referência" maxlength="100">
+                <div class="invalid-feedback">
+                    Por favor, insira o ponto de referência (máximo 100 caracteres).
+                </div>
             </div>
 
             <div class="col-12 btn-margin">

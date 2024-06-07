@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
 
-
     <style>
         body {
             background: #eee;
@@ -93,87 +92,87 @@
                         <i class="fas fa-home"></i> Início
                     </a>
                 </li>
-                <li class="nav-item @(Model.ActivePage == "PacienteCadastro" || Model.ActivePage == "PacienteGerenciamento" ? "active" : "")">
+                <li class="nav-item">
                     <a href="#submenuPaciente" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-user-injured"></i> Paciente</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
-                    <ul class="collapse nav flex-column ms-1 @(Model.ActivePage == "PacienteCadastro" || Model.ActivePage == "PacienteGerenciamento" ? "show" : "")" id="submenuPaciente" data-bs-parent="#menu">
+                    <ul class="collapse nav flex-column ms-1" id="submenuPaciente" data-bs-parent="#menu">
                         <li class="w-100">
-                            <a href="/PacienteCadastro" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "PacienteCadastro" ? "active" : "")">Cadastrar Paciente</a>
+                            <a href="/PacienteCadastro" class="text-decoration-none px-3 py-2 d-block">Cadastrar Paciente</a>
                         </li>
                         <li>
-                            <a href="/PacienteGerenciamento" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "PacienteGerenciamento" ? "active" : "")">Gerenciar Paciente</a>
+                            <a href="/PacienteGerenciamento" class="text-decoration-none px-3 py-2 d-block">Gerenciar Paciente</a>
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item @(Model.ActivePage == "EstabelecimentoSaudeCadastro" || Model.ActivePage == "EstabelecimentoSaudeGerenciamento" ? "active" : "")">
+                <li class="nav-item">
                     <a href="#submenu1" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-hospital"></i> Estabelecimento de Saúde</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
-                    <ul class="collapse nav flex-column ms-1 @(Model.ActivePage == "EstabelecimentoSaudeCadastro" || Model.ActivePage == "EstabelecimentoSaudeGerenciamento" ? "show" : "")" id="submenu1" data-bs-parent="#menu">
+                    <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                         <li class="w-100">
-                            <a href="/EstabelecimentoSaudeCadastro" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "EstabelecimentoSaudeCadastro" ? "active" : "")">Cadastrar Estabelecimento</a>
+                            <a href="/EstabelecimentoSaudeCadastro" class="text-decoration-none px-3 py-2 d-block">Cadastrar Estabelecimento</a>
                         </li>
                         <li>
-                            <a href="/EstabelecimentoSaudeGerenciamento" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "EstabelecimentoSaudeGerenciamento" ? "active" : "")">Gerenciar Estabelecimento</a>
+                            <a href="/EstabelecimentoSaudeGerenciamento" class="text-decoration-none px-3 py-2 d-block">Gerenciar Estabelecimento</a>
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item @(Model.ActivePage == "MedicoCadastro" || Model.ActivePage == "MedicoGerenciamento" ? "active" : "")">
+                <li class="nav-item">
                     <a href="#submenuMedico" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-user-md"></i> Médico</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
-                    <ul class="collapse nav flex-column ms-1 @(Model.ActivePage == "MedicoCadastro" || Model.ActivePage == "MedicoGerenciamento" ? "show" : "")" id="submenuMedico" data-bs-parent="#menu">
+                    <ul class="collapse nav flex-column ms-1" id="submenuMedico" data-bs-parent="#menu">
                         <li class="w-100">
-                            <a href="/MedicoCadastro" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "MedicoCadastro" ? "active" : "")">Cadastrar Médico</a>
+                            <a href="/MedicoCadastro" class="text-decoration-none px-3 py-2 d-block">Cadastrar Médico</a>
                         </li>
                         <li>
-                            <a href="/MedicoGerenciamento" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "MedicoGerenciamento" ? "active" : "")">Gerenciar Médico</a>
+                            <a href="/MedicoGerenciamento" class="text-decoration-none px-3 py-2 d-block">Gerenciar Médico</a>
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item @(Model.ActivePage == "RepresentanteCadastro" || Model.ActivePage == "RepresentanteGerenciamento" ? "active" : "")">
-                    <a href="#submenu3" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
+                <li class="nav-item">
+                    <a href="#submenu3" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between alinhamento-center">
                         <span><i class="fas fa-user-friends"></i> Representante</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
-                    <ul class="collapse nav flex-column ms-1 @(Model.ActivePage == "RepresentanteCadastro" || Model.ActivePage == "RepresentanteGerenciamento" ? "show" : "")" id="submenu3" data-bs-parent="#menu">
+                    <ul class="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">
                         <li class="w-100">
-                            <a href="/RepresentanteCadastro" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "RepresentanteCadastro" ? "active" : "")">Cadastrar Representante</a>
+                            <a href="/RepresentanteCadastro" class="text-decoration-none px-3 py-2 d-block">Cadastrar Representante</a>
                         </li>
                         <li>
-                            <a href="/RepresentanteGerenciamento" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "RepresentanteGerenciamento" ? "active" : "")">Gerenciar Representante</a>
+                            <a href="/RepresentanteGerenciamento" class="text-decoration-none px-3 py-2 d-block">Gerenciar Representante</a>
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item @(Model.ActivePage == "CidCadastro" || Model.ActivePage == "CidGerenciamento" ? "active" : "")">
-                    <a href="#submenu4" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-diagnoses"></i> CID</span>
+                <li class="nav-item">
+                    <a href="#submenu4" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between alinhamento-center">
+                        <span><i class="fas  fa-diagnoses"></i> CID</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
-                    <ul class="collapse nav flex-column ms-1 @(Model.ActivePage == "CidCadastro" || Model.ActivePage == "CidGerenciamento" ? "show" : "")" id="submenu4" data-bs-parent="#menu">
+                    <ul class="collapse nav flex-column ms-1" id="submenu4" data-bs-parent="#menu">
                         <li class="w-100">
-                            <a href="/CidCadastro" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "CidCadastro" ? "active" : "")">Cadastrar CID</a>
+                            <a href="/CidCadastro" class="text-decoration-none px-3 py-2 d-block">Cadastrar CID</a>
                         </li>
                         <li>
-                            <a href="/CidGerenciamento" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "CidGerenciamento" ? "active" : "")">Gerenciar CID</a>
+                            <a href="/CidGerenciamento" class="text-decoration-none px-3 py-2 d-block">Gerenciar CID</a>
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item @(Model.ActivePage == "MedicamentoCadastro" || Model.ActivePage == "MedicamentoGerenciamento" ? "active" : "")">
-                    <a href="#submenu5" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
+                <li class="nav-item">
+                    <a href="#submenu5" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between alinhamento-center">
                         <span><i class="fas fa-pills"></i> Medicamento</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
-                    <ul class="collapse nav flex-column ms-1 @(Model.ActivePage == "MedicamentoCadastro" || Model.ActivePage == "MedicamentoGerenciamento" ? "show" : "")" id="submenu5" data-bs-parent="#menu">
+                    <ul class="collapse nav flex-column ms-1" id="submenu5" data-bs-parent="#menu">
                         <li class="w-100">
-                            <a href="/MedicamentoCadastro" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "MedicamentoCadastro" ? "active" : "")">Cadastrar Medicamento</a>
+                            <a href="/MedicamentoCadastro" class="text-decoration-none px-3 py-2 d-block">Cadastrar Medicamento</a>
                         </li>
                         <li>
-                            <a href="/MedicamentoGerenciamento" class="text-decoration-none px-3 py-2 d-block @(Model.ActivePage == "MedicamentoGerenciamento" ? "active" : "")">Gerenciar Medicamento</a>
+                            <a href="/MedicamentoGerenciamento" class="text-decoration-none px-3 py-2 d-block">Gerenciar Medicamento</a>
                         </li>
                     </ul>
                 </li>
@@ -222,7 +221,7 @@
     </div>
 
     <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -244,12 +243,14 @@
                 $('.sidebar').removeClass('active');
             });
 
-            // Initialize the dropdowns
-            $('.collapse').collapse();
-        });
+            // Initialize Bootstrap components properly
+            $('[data-bs-toggle="collapse"]').each(function() {
+                $(this).collapse();
+            });
 
+            // Additional initialization
+        });
     </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
