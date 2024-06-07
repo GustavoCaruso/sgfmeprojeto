@@ -1,87 +1,90 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
-    const urlAPI = "https://localhost:7034/";
+﻿const urlAPI = "https://localhost:7034/";
+
+$(document).ready(function () {
+    // Inicializa os campos select com "Selecione uma opção"
+    $("select").prepend('<option value="" selected>Selecione uma opção</option>');
+
+    // Apenas números nos campos CPF, CNS e RG
+    $(".numeric-only").on("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Limitar o tamanho dos campos
+    $("#txtnomeCompleto, #txtnomeConjuge, #txtnomeMae").attr('maxlength', 100);
+    $("#txtcnsNumero").attr('maxlength', 15);
+    $("#txtrgNumero").attr('maxlength', 9);
+    $("#txtcpfNumero").attr('maxlength', 11);
+    $("#txtLogradouro").attr('maxlength', 100);
+    $("#txtNumero").attr('maxlength', 10);
+    $("#txtComplemento").attr('maxlength', 30);
+    $("#txtBairro").attr('maxlength', 70);
+    $("#txtCep").attr('maxlength', 8);
+    $("#txtPontoReferencia").attr('maxlength', 100);
 
     let contatos = [];
     let enderecos = [];
     let RepresentanteDados;
 
-    // Seletores dos elementos
-    var selects = [
-        'selectStatus', 'selectSexo', 'selectCorRaca', 'selectEstadoCivil',
-        'selectNaturalidadeUf', 'selectNaturalidadeCidade', 'selectRgUfEmissao',
-        'selectProfissao', 'selectTipoContato', 'selectTipoEndereco',
-        'selectEstado', 'selectMunicipio'
-    ];
-
-    // Função de validação dos selects
-    function validateSelects() {
-        let isValid = true;
-
-        selects.forEach(function (selectId) {
-            const selectElement = document.getElementById(selectId);
-            if (selectElement && selectElement.value === '0') {
-                selectElement.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                selectElement.classList.remove('is-invalid');
-            }
-        });
-
-        return isValid;
+    if ($("#tabela").length > 0) {
+        carregarRepresentantes();
+    } else if ($("#txtid").length > 0) {
+        let params = new URLSearchParams(window.location.search);
+        let id = params.get('id');
+        if (id) {
+            visualizar(id);
+        } else {
+            // Alimenta o campo dataCadastro com a data atual
+            let dataAtual = new Date().toISOString().split('T')[0];
+            $("#txtdataCadastro").val(dataAtual);
+        }
     }
 
-    // Adicionar evento ao botão de salvar
-    document.getElementById('btnsalvar').addEventListener('click', function (event) {
-        if (!validateSelects() || !validarCampos()) {
-            event.preventDefault();
-            event.stopPropagation();
-            document.getElementById('mensagemValidacao').textContent = 'Por favor, preencha todos os campos obrigatórios corretamente.';
-        } else {
-            document.getElementById('mensagemValidacao').textContent = '';
-            salvarFormulario();
-        }
+    $("#txtdataNascimento").change(function () {
+        let dataNascimento = new Date($(this).val());
+        let idade = calcularIdade(dataNascimento);
+        $("#txtidade").val(idade);
     });
 
-    // Remover a mensagem de erro ao alterar a seleção
-    selects.forEach(function (selectId) {
-        const selectElement = document.getElementById(selectId);
-        if (selectElement) {
-            selectElement.addEventListener('change', function () {
-                if (selectElement.value !== '0') {
-                    selectElement.classList.remove('is-invalid');
-                }
-            });
-        }
+    $("#btnlimpar").click(function () {
+        limparFormulario();
     });
 
-    // Função para validar outros campos do formulário
+    $(document).on("click", ".alterar", function (elemento) {
+        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
+        window.location.href = "/RepresentanteCadastro?id=" + codigo;
+    });
+
+    $(document).on("click", ".excluir", function (elemento) {
+        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
+        excluir(codigo);
+    });
+
     function validarCampos() {
         let isValid = true;
         $(".form-control").removeClass('is-invalid');
 
-        const camposObrigatorios = [
-            { id: "#txtnomeCompleto", mensagem: "Por favor, insira o nome completo.", maxLength: 100 },
-            { id: "#txtdataNascimento", mensagem: "Por favor, insira a data de nascimento." },
-            { id: "#txtrgNumero", mensagem: "Por favor, insira o número do RG.", pattern: /^[A-Za-z0-9]{9}$/ },
-            { id: "#txtrgDataEmissao", mensagem: "Por favor, insira a data de emissão do RG." },
-            { id: "#txtrgOrgaoExpedidor", mensagem: "Por favor, insira o órgão expedidor do RG." },
-            { id: "#selectRgUfEmissao", mensagem: "Por favor, selecione a UF de emissão do RG." },
-            { id: "#txtcnsNumero", mensagem: "Por favor, insira o número do CNS.", pattern: /^\d{15}$/ },
-            { id: "#txtcpfNumero", mensagem: "Por favor, insira o número do CPF.", pattern: /^\d{11}$/ },
-            { id: "#txtnomeMae", mensagem: "Por favor, insira o nome da mãe.", maxLength: 100 },
-            { id: "#txtnomeConjuge", mensagem: "Por favor, insira o nome do cônjuge.", maxLength: 100 },
-            { id: "#selectNaturalidadeUf", mensagem: "Por favor, selecione a naturalidade - UF." },
-            { id: "#selectNaturalidadeCidade", mensagem: "Por favor, selecione a naturalidade - Cidade." }
-        ];
+        function adicionarErro(id) {
+            $(id).addClass('is-invalid');
+            isValid = false;
+        }
 
-        camposObrigatorios.forEach(campo => {
-            const elemento = $(campo.id);
-            if (!elemento.val().trim() || (campo.maxLength && elemento.val().trim().length > campo.maxLength) || (campo.pattern && !campo.pattern.test(elemento.val().trim()))) {
-                elemento.addClass('is-invalid');
-                elemento.next('.invalid-feedback').text(campo.mensagem);
-                isValid = false;
-            }
-        });
+        if (!$("#txtnomeCompleto").val().trim()) adicionarErro("#txtnomeCompleto");
+        if (!$("#txtdataNascimento").val().trim()) adicionarErro("#txtdataNascimento");
+        if (!$("#txtrgNumero").val().trim() || $("#txtrgNumero").val().length != 9) adicionarErro("#txtrgNumero");
+        if (!$("#txtcpfNumero").val().trim() || $("#txtcpfNumero").val().length != 11) adicionarErro("#txtcpfNumero");
+        if (!$("#txtcnsNumero").val().trim() || $("#txtcnsNumero").val().length != 15) adicionarErro("#txtcnsNumero");
+        if (!$("#selectStatus").val()) adicionarErro("#selectStatus");
+        if (!$("#selectSexo").val()) adicionarErro("#selectSexo");
+        if (!$("#selectCorRaca").val()) adicionarErro("#selectCorRaca");
+        if (!$("#selectEstadoCivil").val()) adicionarErro("#selectEstadoCivil");
+        if ($("#txtnomeConjuge").val().length > 100) adicionarErro("#txtnomeConjuge");
+        if (!$("#selectNaturalidadeUf").val()) adicionarErro("#selectNaturalidadeUf");
+        if (!$("#selectNaturalidadeCidade").val()) adicionarErro("#selectNaturalidadeCidade");
+        if (!$("#txtrgDataEmissao").val().trim()) adicionarErro("#txtrgDataEmissao");
+        if (!$("#txtrgOrgaoExpedidor").val().trim()) adicionarErro("#txtrgOrgaoExpedidor");
+        if (!$("#selectRgUfEmissao").val()) adicionarErro("#selectRgUfEmissao");
+        if (!$("#txtnomeMae").val().trim()) adicionarErro("#txtnomeMae");
+        if (!$("#selectProfissao").val()) adicionarErro("#selectProfissao");
 
         if (contatos.length === 0) {
             $("#mensagemValidacao").text("Por favor, adicione pelo menos um contato.");
@@ -100,13 +103,17 @@
         return isValid;
     }
 
+    $(".form-control").on("input", function () {
+        $(this).removeClass('is-invalid');
+    });
+
     function carregarEstados(selectElement) {
         return $.ajax({
             url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
             method: "GET",
             success: function (data) {
                 selectElement.empty();
-                selectElement.append('<option value="0">Selecione um estado</option>');
+                selectElement.append('<option value="">Selecione um estado</option>');
                 data.sort((a, b) => a.sigla.localeCompare(b.sigla));
                 data.forEach(estado => {
                     const option = `<option value="${estado.sigla}">${estado.sigla}</option>`;
@@ -126,7 +133,7 @@
                 method: "GET",
                 success: function (data) {
                     selectElement.empty();
-                    selectElement.append('<option value="0">Selecione um município</option>');
+                    selectElement.append('<option value="">Selecione um município</option>');
                     data.forEach(municipio => {
                         const option = `<option value="${municipio.nome}">${municipio.nome}</option>`;
                         selectElement.append(option);
@@ -162,7 +169,7 @@
             method: "GET",
             success: function (data) {
                 selectElement.empty();
-                selectElement.append(`<option value="0">${mensagemPadrao}</option>`);
+                selectElement.append(`<option value="">${mensagemPadrao}</option>`);
                 data.forEach(item => {
                     const option = `<option value="${item.id}">${item.nome}</option>`;
                     selectElement.append(option);
@@ -187,7 +194,7 @@
         const valorContato = $("#txtValorContato").val();
         const idTipoContato = $("#selectTipoContato").val();
 
-        if (!idTipoContato || idTipoContato === '0') {
+        if (!idTipoContato) {
             alert("Por favor, selecione um tipo de contato.");
             return;
         }
@@ -213,7 +220,7 @@
         const cep = $("#txtCep").val();
         const pontoReferencia = $("#txtPontoReferencia").val();
 
-        if (!idTipoEndereco || idTipoEndereco === '0') {
+        if (!idTipoEndereco) {
             alert("Por favor, selecione um tipo de endereço.");
             return;
         }
@@ -225,8 +232,8 @@
             $("#txtNumero").val('');
             $("#txtComplemento").val('');
             $("#txtBairro").val('');
-            $("#selectMunicipio").val('0');
-            $("#selectEstado").val('0');
+            $("#selectMunicipio").val('');
+            $("#selectEstado").val('');
             $("#txtCep").val('');
             $("#txtPontoReferencia").val('');
         } else {
@@ -281,64 +288,66 @@
         });
     }
 
-    function salvarFormulario() {
-        const obj = {
-            id: $("#txtid").val(),
-            nomeCompleto: $("#txtnomeCompleto").val(),
-            dataNascimento: $("#txtdataNascimento").val(),
-            rgNumero: $("#txtrgNumero").val(),
-            rgDataEmissao: $("#txtrgDataEmissao").val(),
-            rgOrgaoExpedidor: $("#txtrgOrgaoExpedidor").val(),
-            rgUfEmissao: $("#selectRgUfEmissao").val(),
-            cnsNumero: $("#txtcnsNumero").val(),
-            cpfNumero: $("#txtcpfNumero").val(),
-            nomeMae: $("#txtnomeMae").val(),
-            nomeConjuge: $("#txtnomeConjuge").val(),
-            naturalidadeCidade: $("#selectNaturalidadeCidade").val(),
-            naturalidadeUf: $("#selectNaturalidadeUf").val(),
+    $("#btnsalvar").click(function () {
+        if (validarCampos()) {
+            const obj = {
+                id: $("#txtid").val(),
+                nomeCompleto: $("#txtnomeCompleto").val(),
+                dataNascimento: $("#txtdataNascimento").val(),
+                rgNumero: $("#txtrgNumero").val(),
+                rgDataEmissao: $("#txtrgDataEmissao").val(),
+                rgOrgaoExpedidor: $("#txtrgOrgaoExpedidor").val(),
+                rgUfEmissao: $("#selectRgUfEmissao").val(),
+                cnsNumero: $("#txtcnsNumero").val(),
+                cpfNumero: $("#txtcpfNumero").val(),
+                nomeMae: $("#txtnomeMae").val(),
+                nomeConjuge: $("#txtnomeConjuge").val(),
+                naturalidadeCidade: $("#selectNaturalidadeCidade").val(),
+                naturalidadeUf: $("#selectNaturalidadeUf").val(),
 
-            dataCadastro: $("#txtdataCadastro").val(),  // não pode ser modificado pelo usuário
-            idStatus: $("#selectStatus").val(),
-            idSexo: $("#selectSexo").val(),
-            idProfissao: $("#selectProfissao").val(),
-            idCorRaca: $("#selectCorRaca").val(),
-            idEstadoCivil: $("#selectEstadoCivil").val(),
-            contato: contatos,
-            endereco: enderecos
-        };
+                dataCadastro: $("#txtdataCadastro").val(),  // não pode ser modificado pelo usuário
+                idStatus: $("#selectStatus").val(),
+                idSexo: $("#selectSexo").val(),
+                idProfissao: $("#selectProfissao").val(),
+                idCorRaca: $("#selectCorRaca").val(),
+                idEstadoCivil: $("#selectEstadoCivil").val(),
+                contato: contatos,
+                endereco: enderecos
+            };
 
-        $.ajax({
-            type: obj.id == "0" ? "POST" : "PUT",
-            url: urlAPI + "api/Representante" + (obj.id != "0" ? "/" + obj.id : ""),
-            contentType: "application/json;charset=utf-8",
-            data: JSON.stringify(obj),
-            dataType: "json",
-            success: function () {
-                limparFormulario();
-                alert("Dados Salvos com sucesso!");
+            $.ajax({
+                type: obj.id == "0" ? "POST" : "PUT",
+                url: urlAPI + "api/Representante" + (obj.id != "0" ? "/" + obj.id : ""),
+                contentType: "application/json;charset=utf-8",
+                data: JSON.stringify(obj),
+                dataType: "json",
+                success: function () {
+                    limparFormulario();
+                    alert("Dados Salvos com sucesso!");
 
-                if ($("#tabela").length > 0) {
-                    carregarRepresentantes();
-                }
-            },
-            error: function (jqXHR, textStatus) {
-                if (jqXHR.status === 400) {
-                    var errors = jqXHR.responseJSON.errors;
-                    var message = "";
-                    for (var key in errors) {
-                        if (errors.hasOwnProperty(key)) {
-                            errors[key].forEach(function (errorMessage) {
-                                message += errorMessage + "\n";
-                            });
-                        }
+                    if ($("#tabela").length > 0) {
+                        carregarRepresentantes();
                     }
-                    alert(message);
-                } else {
-                    alert("Erro ao salvar os dados: " + textStatus);
+                },
+                error: function (jqXHR, textStatus) {
+                    if (jqXHR.status === 400) {
+                        var errors = jqXHR.responseJSON.errors;
+                        var message = "";
+                        for (var key in errors) {
+                            if (errors.hasOwnProperty(key)) {
+                                errors[key].forEach(function (errorMessage) {
+                                    message += errorMessage + "\n";
+                                });
+                            }
+                        }
+                        alert(message);
+                    } else {
+                        alert("Erro ao salvar os dados: " + textStatus);
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
+    });
 
     function limparFormulario() {
         $("#txtnomeCompleto").val('');
@@ -346,7 +355,7 @@
         $("#txtrgNumero").val('');
         $("#txtrgDataEmissao").val('');
         $("#txtrgOrgaoExpedidor").val('');
-        $("#selectRgUfEmissao").val('0');
+        $("#selectRgUfEmissao").val('');
         $("#txtcnsNumero").val('');
         $("#txtcpfNumero").val('');
         $("#txtid").val('0');
@@ -354,14 +363,14 @@
         $("#txtidade").val('');
         $("#txtnomeMae").val('');
         $("#txtnomeConjuge").val('');
-        $("#selectNaturalidadeCidade").val('0');
-        $("#selectNaturalidadeUf").val('0');
+        $("#selectNaturalidadeCidade").val('');
+        $("#selectNaturalidadeUf").val('');
 
-        $("#selectStatus").val('0');
-        $("#selectSexo").val('0');
-        $("#selectProfissao").val('0');
-        $("#selectCorRaca").val('0');
-        $("#selectEstadoCivil").val('0');
+        $("#selectStatus").val('');
+        $("#selectSexo").val('');
+        $("#selectProfissao").val('');
+        $("#selectCorRaca").val('');
+        $("#selectEstadoCivil").val('');
         contatos = [];
         enderecos = [];
         atualizarTabelaContatos();
@@ -504,45 +513,5 @@
         return idade;
     }
 
-    if ($("#tabela").length > 0) {
-        carregarRepresentantes();
-    } else if ($("#txtid").length > 0) {
-        let params = new URLSearchParams(window.location.search);
-        let id = params.get('id');
-        if (id) {
-            visualizar(id);
-        } else {
-            let dataAtual = new Date().toISOString().split('T')[0];
-            $("#txtdataCadastro").val(dataAtual);
-        }
-    }
-
-    $("#txtdataNascimento").change(function () {
-        let dataNascimento = new Date($(this).val());
-        let idade = calcularIdade(dataNascimento);
-        $("#txtidade").val(idade);
-    });
-
-    $("#btnlimpar").click(function () {
-        limparFormulario();
-    });
-
-    $(document).on("click", ".alterar", function (elemento) {
-        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        window.location.href = "/RepresentanteCadastro?id=" + codigo;
-    });
-
-    $(document).on("click", ".excluir", function (elemento) {
-        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        excluir(codigo);
-    });
-
-    // Apenas números nos campos CPF, CNS e RG
-    $(".numeric-only").on("input", function () {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
-
-    $("#txtrgNumero").on("input", function () {
-        this.value = this.value.replace(/[^A-Za-z0-9]/g, '');
-    });
+    carregarRepresentantes();
 });
