@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SGFME.Application.DTOs;
 using SGFME.Application.Models;
 using SGFME.Domain.Entidades;
@@ -49,7 +50,28 @@ namespace SGFME.Application.Controllers
             {
                 try
                 {
-                    
+                    // Verificar se os IDs de chaves estrangeiras existem
+                    if (!_context.corraca.Any(cr => cr.id == request.idCorRaca))
+                    {
+                        return BadRequest($"CorRaca com id {request.idCorRaca} não encontrada.");
+                    }
+                    if (!_context.status.Any(st => st.id == request.idStatus))
+                    {
+                        return BadRequest($"Status com id {request.idStatus} não encontrado.");
+                    }
+                    if (!_context.sexo.Any(sx => sx.id == request.idSexo))
+                    {
+                        return BadRequest($"Sexo com id {request.idSexo} não encontrado.");
+                    }
+                    if (!_context.estadocivil.Any(ec => ec.id == request.idEstadoCivil))
+                    {
+                        return BadRequest($"Estado Civil com id {request.idEstadoCivil} não encontrado.");
+                    }
+                    if (!_context.profissao.Any(pr => pr.id == request.idProfissao))
+                    {
+                        return BadRequest($"Profissão com id {request.idProfissao} não encontrada.");
+                    }
+
                     var novoPaciente = new Paciente
                     {
                         id = request.id,
@@ -110,15 +132,6 @@ namespace SGFME.Application.Controllers
                         novoPaciente.endereco.Add(endereco);
                     }
 
-                    // Validar a entrada usando FluentValidation
-                    var validator = new PacienteValidator();
-                    var validationResult = await validator.ValidateAsync(novoPaciente);
-
-                    if (!validationResult.IsValid)
-                    {
-                        return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
-                    }
-
                     _context.paciente.Add(novoPaciente);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -138,10 +151,16 @@ namespace SGFME.Application.Controllers
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao criar Paciente.");
+                    // Adicione logging detalhado aqui
+                    var innerExceptionMessage = ex.InnerException?.Message ?? "Nenhuma exceção interna";
+                    var fullExceptionMessage = $"Erro ao criar Paciente: {ex.Message} | Exceção interna: {innerExceptionMessage}";
+                    Console.WriteLine(fullExceptionMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, fullExceptionMessage);
                 }
             }
         }
+
+
 
 
         [HttpGet("selecionarContatos/{id}")]
@@ -492,5 +511,6 @@ namespace SGFME.Application.Controllers
             return Execute(() => _baseService.Get<PacienteModel>());
         }
 
+        
     }
 }

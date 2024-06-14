@@ -27,14 +27,13 @@
 
     <div class="row align-items-center mb-3">
         <div class="col-auto">
-            <i class="fas fa-diagnoses fa-3x"></i>
+            <i class="fas fa-file-medical fa-3x"></i>
         </div>
         <div class="col">
             <h1>Cadastro de CID</h1>
         </div>
         <div class="col-auto">
-            <button type="button" class="btn btn-dark"
-                    onclick="location.href='/CidGerenciamento'">
+            <button type="button" class="btn btn-dark" onclick="location.href='/CidGerenciamento'">
                 Gerenciamento de CIDs
             </button>
         </div>
@@ -49,11 +48,19 @@
                 <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <label for="txtcodigo" class="form-label">Código CID</label>
                 <input type="text" class="form-control" id="txtcodigo" placeholder="Código CID" required>
                 <div class="invalid-feedback">
                     Por favor, insira o código do CID.
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <label for="txtdescricao" class="form-label">Descrição</label>
+                <input type="text" class="form-control" id="txtdescricao" placeholder="Descrição" maxlength="100" required>
+                <div class="invalid-feedback">
+                    Por favor, insira a descrição (máximo de 100 caracteres).
                 </div>
             </div>
 
@@ -62,23 +69,24 @@
                 <select class="form-control" id="selectStatus" required>
                     <option value="0">Selecione um status</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um status.
+                </div>
             </div>
 
             <div class="col-md-2">
-                <label for="selectVersaoCid" class="form-label">Versão do CID</label>
+                <label for="selectVersaoCid" class="form-label">Versão CID</label>
                 <select class="form-control" id="selectVersaoCid" required>
                     <option value="0">Selecione uma versão</option>
                 </select>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <label for="txtdescricao" class="form-label">Descrição</label>
-                <input type="text" class="form-control" id="txtdescricao" placeholder="Descrição" required>
                 <div class="invalid-feedback">
-                    Por favor, insira a descrição do CID.
+                    Por favor, selecione uma versão do CID.
                 </div>
+            </div>
+
+            <div class="col-md-3">
+                <label for="txtdataCadastro" class="form-label">Data de Cadastro</label>
+                <input type="date" class="form-control" id="txtdataCadastro" disabled>
             </div>
         </div>
     </div>

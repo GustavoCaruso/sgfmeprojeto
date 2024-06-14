@@ -38,6 +38,10 @@ $(document).ready(function () {
         if (!$("#txtnome").val().trim()) {
             $("#txtnome").addClass('is-invalid');
             isValid = false;
+        } else if ($("#txtnome").val().trim().length > 100) {
+            $("#txtnome").addClass('is-invalid');
+            $("#txtnome").siblings('.invalid-feedback').text('O nome não pode exceder 100 caracteres.');
+            isValid = false;
         }
         if (!$("#selectStatus").val().trim() || $("#selectStatus").val() === "0") {
             $("#selectStatus").addClass('is-invalid');
@@ -47,7 +51,7 @@ $(document).ready(function () {
         return isValid;
     }
 
-    $(".form-control").on("input", function () {
+    $(".form-control").on("input change", function () {
         $(this).removeClass('is-invalid');
     });
 
