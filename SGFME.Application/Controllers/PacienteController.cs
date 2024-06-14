@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SGFME.Application.DTOs;
 using SGFME.Application.Models;
 using SGFME.Domain.Entidades;
@@ -510,5 +511,6 @@ namespace SGFME.Application.Controllers
             return Execute(() => _baseService.Get<PacienteModel>());
         }
 
+        
     }
 }

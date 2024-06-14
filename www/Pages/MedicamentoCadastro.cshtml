@@ -33,8 +33,7 @@
             <h1>Cadastro de Medicamento</h1>
         </div>
         <div class="col-auto">
-            <button type="button" class="btn btn-dark"
-                    onclick="location.href='/MedicamentoGerenciamento'">
+            <button type="button" class="btn btn-dark" onclick="location.href='/MedicamentoGerenciamento'">
                 Gerenciamento de Medicamentos
             </button>
         </div>
@@ -49,9 +48,9 @@
                 <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
             </div>
 
-            <div class="col-md-6">
-                <label for="txtnome" class="form-label">Nome do Medicamento</label>
-                <input type="text" class="form-control" id="txtnome" placeholder="Nome do Medicamento" required>
+            <div class="col-md-8">
+                <label for="txtnome" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="txtnome" placeholder="Nome do Medicamento" maxlength="100" required>
                 <div class="invalid-feedback">
                     Por favor, insira o nome do medicamento.
                 </div>
@@ -62,6 +61,9 @@
                 <select class="form-control" id="selectStatus" required>
                     <option value="0">Selecione um status</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um status.
+                </div>
             </div>
         </div>
     </div>

@@ -26,7 +26,7 @@ namespace SGFME.Application
 
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -67,7 +67,7 @@ namespace SGFME.Application
                 config.CreateMap<Sexo, SexoModel>();
                 config.CreateMap<SexoModel, Sexo>();
 
-                
+
 
                 config.CreateMap<Status, StatusModel>();
                 config.CreateMap<StatusModel, Status>();
@@ -81,7 +81,7 @@ namespace SGFME.Application
                 config.CreateMap<Endereco, EnderecoModel>();
                 config.CreateMap<EnderecoModel, Endereco>();
 
-               
+
 
                 config.CreateMap<Naturalidade, NaturalidadeModel>();
                 config.CreateMap<NaturalidadeModel, Naturalidade>();
@@ -131,7 +131,7 @@ namespace SGFME.Application
             services.AddScoped<IBaseService<Sexo>, BaseService<Sexo>>();
             services.AddScoped<IBaseRepository<Sexo>, BaseRepository<Sexo>>();
 
-           
+
 
             services.AddScoped<IBaseService<Status>, BaseService<Status>>();
             services.AddScoped<IBaseRepository<Status>, BaseRepository<Status>>();
@@ -145,7 +145,7 @@ namespace SGFME.Application
             services.AddScoped<IBaseService<Endereco>, BaseService<Endereco>>();
             services.AddScoped<IBaseRepository<Endereco>, BaseRepository<Endereco>>();
 
-           
+
 
             services.AddScoped<IBaseService<Naturalidade>, BaseService<Naturalidade>>();
             services.AddScoped<IBaseRepository<Naturalidade>, BaseRepository<Naturalidade>>();
@@ -207,7 +207,7 @@ namespace SGFME.Application
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-               
+
             });
         }
     }

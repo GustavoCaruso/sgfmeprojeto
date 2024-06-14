@@ -40,8 +40,9 @@ $(document).ready(function () {
             $("#txtcodigo").addClass('is-invalid');
             isValid = false;
         }
-        if (!$("#txtdescricao").val().trim()) {
+        if (!$("#txtdescricao").val().trim() || $("#txtdescricao").val().trim().length > 100) {
             $("#txtdescricao").addClass('is-invalid');
+            $("#txtdescricao").siblings('.invalid-feedback').text('A descrição é obrigatória e não pode exceder 100 caracteres.');
             isValid = false;
         }
         if (!$("#selectStatus").val().trim() || $("#selectStatus").val() === "0") {
@@ -56,7 +57,7 @@ $(document).ready(function () {
         return isValid;
     }
 
-    $(".form-control").on("input", function () {
+    $(".form-control").on("input change", function () {
         $(this).removeClass('is-invalid');
     });
 
