@@ -7,6 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Pages\CidCadastro.cshtml.cs" />
+    <Content Include="Pages\CidGerenciamento.cshtml.cs" />
+    <Content Include="Pages\Error.cshtml.cs" />
+    <Content Include="Pages\EstabelecimentoSaudeCadastro.cshtml.cs" />
+    <Content Include="Pages\EstabelecimentoSaudeGerenciamento.cshtml.cs" />
+    <Content Include="Pages\Index.cshtml.cs" />
+    <Content Include="Pages\MedicamentoCadastro.cshtml.cs" />
+    <Content Include="Pages\MedicamentoGerenciamento.cshtml.cs" />
+    <Content Include="Pages\MedicoCadastro.cshtml.cs" />
+    <Content Include="Pages\MedicoGerenciamento.cshtml.cs" />
+    <Content Include="Pages\PacienteCadastro.cshtml.cs" />
+    <Content Include="Pages\PacienteGerenciamento.cshtml.cs" />
+    <Content Include="Pages\Privacy.cshtml.cs" />
+    <Content Include="Pages\RepresentanteCadastro.cshtml.cs" />
+    <Content Include="Pages\RepresentanteGerenciamento.cshtml.cs" />
+    <Content Include="Pages\Shared\_Layout.cshtml.css" />
+    <Content Include="Pages\TipoContato.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SGFME.Application\SGFME.Application.csproj" />
   </ItemGroup>
 
