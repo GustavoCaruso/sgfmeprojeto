@@ -1,4 +1,4 @@
-﻿const urlAPI = "https://localhost:44309/";
+﻿const urlAPI = "https://localhost:7034/";
 
 $(document).ready(function () {
     $(".numeric-only").on("input", function () {
