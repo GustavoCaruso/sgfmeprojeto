@@ -13,7 +13,7 @@ namespace SGFME.Infrastructure.Data.Mapping
     {
         public void Configure(EntityTypeBuilder<EstabelecimentoSaude> builder)
         {
-            builder.ToTable("EstabelecimentoSaude"); //nome da table no banco
+            builder.ToTable("EstabelecimentoSaude"); 
 
             builder.HasKey(p => p.id); //definição de chave primaria
 
