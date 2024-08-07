@@ -81,7 +81,7 @@ namespace SGFME.Infrastructure.Data.Context
             modelBuilder.Entity<Representante>(new RepresentanteMapping().Configure);   
             modelBuilder.Entity<Medicamento>(new MedicamentoMapping().Configure);
             modelBuilder.Entity<Especialidade>(new EspecialidadeMapping().Configure);
-            modelBuilder.Entity<VersaoCid>(new VersaoCidMapping().Configure);
+            modelBuilder.Entity<VersaoCid>(new VersaoCidMapping().Configure); //teste
 
         }
     }
