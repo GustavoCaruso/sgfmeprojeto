@@ -78,7 +78,7 @@ namespace SGFME.Infrastructure.Data.Context
             modelBuilder.Entity<EstabelecimentoSaude>(new EstabelecimentoSaudeMapping().Configure);//Replicar para as próximas entidades
             modelBuilder.Entity<Medico>(new MedicoMapping().Configure);//Replicar para as próximas entidades
 
-            modelBuilder.Entity<Representante>(new RepresentanteMapping().Configure);   
+            modelBuilder.Entity<Representante>(new RepresentanteMapping().Configure);   //teste1
             modelBuilder.Entity<Medicamento>(new MedicamentoMapping().Configure);
             modelBuilder.Entity<Especialidade>(new EspecialidadeMapping().Configure);
             modelBuilder.Entity<VersaoCid>(new VersaoCidMapping().Configure); //teste
