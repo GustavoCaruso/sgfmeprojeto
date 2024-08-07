@@ -1,7 +1,7 @@
 ﻿const urlAPI = "https://localhost:44309/";
 
 $(document).ready(function () {
-    // Apenas números nos campos CPF, CNS e RG
+    
     $(".numeric-only").on("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
