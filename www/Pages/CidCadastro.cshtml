@@ -50,7 +50,7 @@
 
             <div class="col-md-3">
                 <label for="txtcodigo" class="form-label">Código CID</label>
-                <input type="text" class="form-control" id="txtcodigo" placeholder="Código CID" required>
+                <input type="text" class="form-control" id="txtcodigo" placeholder="Código CID" maxlength="15" required>
                 <div class="invalid-feedback">
                     Por favor, insira o código do CID.
                 </div>
@@ -60,7 +60,7 @@
                 <label for="txtdescricao" class="form-label">Descrição</label>
                 <input type="text" class="form-control" id="txtdescricao" placeholder="Descrição" maxlength="100" required>
                 <div class="invalid-feedback">
-                    Por favor, insira a descrição (máximo de 100 caracteres).
+                    Por favor, insira a descrição.
                 </div>
             </div>
 
@@ -82,11 +82,6 @@
                 <div class="invalid-feedback">
                     Por favor, selecione uma versão do CID.
                 </div>
-            </div>
-
-            <div class="col-md-3">
-                <label for="txtdataCadastro" class="form-label">Data de Cadastro</label>
-                <input type="date" class="form-control" id="txtdataCadastro" disabled>
             </div>
         </div>
     </div>

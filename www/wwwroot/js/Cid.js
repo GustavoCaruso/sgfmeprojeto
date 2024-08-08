@@ -12,9 +12,6 @@ $(document).ready(function () {
         let id = params.get('id');
         if (id) {
             visualizar(id);
-        } else {
-            let dataAtual = new Date().toISOString().split('T')[0];
-            $("#txtdataCadastro").val(dataAtual);
         }
     }
 
@@ -36,21 +33,34 @@ $(document).ready(function () {
         let isValid = true;
         $(".form-control").removeClass('is-invalid');
 
+        // Validação do campo código CID
         if (!$("#txtcodigo").val().trim()) {
             $("#txtcodigo").addClass('is-invalid');
+            $("#txtcodigo").siblings('.invalid-feedback').text('O código do CID é obrigatório.');
             isValid = false;
         }
+
+        // Validação do campo descrição
         if (!$("#txtdescricao").val().trim() || $("#txtdescricao").val().trim().length > 100) {
             $("#txtdescricao").addClass('is-invalid');
-            $("#txtdescricao").siblings('.invalid-feedback').text('A descrição é obrigatória e não pode exceder 100 caracteres.');
+            let feedbackMessage = $("#txtdescricao").val().trim().length > 100 ?
+                'A descrição não pode exceder 100 caracteres.' :
+                'A descrição é obrigatória.';
+            $("#txtdescricao").siblings('.invalid-feedback').text(feedbackMessage);
             isValid = false;
         }
+
+        // Validação do campo status
         if (!$("#selectStatus").val().trim() || $("#selectStatus").val() === "0") {
             $("#selectStatus").addClass('is-invalid');
+            $("#selectStatus").siblings('.invalid-feedback').text('O status é obrigatório.');
             isValid = false;
         }
+
+        // Validação do campo versão CID
         if (!$("#selectVersaoCid").val().trim() || $("#selectVersaoCid").val() === "0") {
             $("#selectVersaoCid").addClass('is-invalid');
+            $("#selectVersaoCid").siblings('.invalid-feedback').text('A versão do CID é obrigatória.');
             isValid = false;
         }
 
@@ -61,7 +71,7 @@ $(document).ready(function () {
         $(this).removeClass('is-invalid');
     });
 
-    function carregarOpcoes(apiEndpoint, selectElement, mensagemPadrao) {
+    function carregarOpcoes(apiEndpoint, selectElement, mensagemPadrao, callback) {
         $.ajax({
             url: urlAPI + apiEndpoint,
             method: "GET",
@@ -72,6 +82,7 @@ $(document).ready(function () {
                     const option = `<option value="${item.id}">${item.nome}</option>`;
                     selectElement.append(option);
                 });
+                if (callback) callback();
             },
             error: function () {
                 alert("Erro ao carregar os dados.");
@@ -79,8 +90,10 @@ $(document).ready(function () {
         });
     }
 
-    carregarOpcoes("api/Cid/tipoStatus", $("#selectStatus"), "Selecione um status");
-    carregarOpcoes("api/Cid/tipoVersaoCid", $("#selectVersaoCid"), "Selecione uma versão");
+    function inicializarSelects(callback) {
+        carregarOpcoes("api/Cid/tipoStatus", $("#selectStatus"), "Selecione um status", callback);
+        carregarOpcoes("api/Cid/tipoVersaoCid", $("#selectVersaoCid"), "Selecione uma versão", callback);
+    }
 
     $("#btnsalvar").click(function () {
         if (validarCampos()) {
@@ -89,8 +102,7 @@ $(document).ready(function () {
                 codigo: $("#txtcodigo").val(),
                 descricao: $("#txtdescricao").val(),
                 idStatus: $("#selectStatus").val(),
-                idVersaoCid: $("#selectVersaoCid").val(),
-                dataCadastro: $("#txtdataCadastro").val()
+                idVersaoCid: $("#selectVersaoCid").val()
             };
 
             $.ajax({
@@ -133,7 +145,6 @@ $(document).ready(function () {
         $("#selectStatus").val('');
         $("#selectVersaoCid").val('');
         $("#txtid").val('0');
-        $("#txtdataCadastro").val(new Date().toISOString().split('T')[0]);
     }
 
     function carregarCids() {
@@ -183,23 +194,24 @@ $(document).ready(function () {
     }
 
     function visualizar(codigo) {
-        $.ajax({
-            type: "GET",
-            url: urlAPI + "api/Cid/" + codigo,
-            contentType: "application/json;charset=utf-8",
-            data: {},
-            dataType: "json",
-            success: function (jsonResult) {
-                $("#txtid").val(jsonResult.id);
-                $("#txtcodigo").val(jsonResult.codigo);
-                $("#txtdescricao").val(jsonResult.descricao);
-                $("#selectStatus").val(jsonResult.idStatus);
-                $("#selectVersaoCid").val(jsonResult.idVersaoCid);
-                $("#txtdataCadastro").val(new Date(jsonResult.dataCadastro).toISOString().split('T')[0]);
-            },
-            error: function (response) {
-                alert("Erro ao carregar os dados: " + response);
-            }
+        inicializarSelects(function () {
+            $.ajax({
+                type: "GET",
+                url: urlAPI + "api/Cid/" + codigo,
+                contentType: "application/json;charset=utf-8",
+                data: {},
+                dataType: "json",
+                success: function (jsonResult) {
+                    $("#txtid").val(jsonResult.id);
+                    $("#txtcodigo").val(jsonResult.codigo);
+                    $("#txtdescricao").val(jsonResult.descricao);
+                    $("#selectStatus").val(jsonResult.idStatus);
+                    $("#selectVersaoCid").val(jsonResult.idVersaoCid);
+                },
+                error: function (response) {
+                    alert("Erro ao carregar os dados: " + response);
+                }
+            });
         });
     }
 
