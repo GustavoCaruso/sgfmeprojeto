@@ -2,7 +2,6 @@
 @model www.Pages.CidGerenciamentoModel
 @{
     ViewData["Title"] = "Gerenciamento de CIDs";
-    
 }
 
 <style>
@@ -19,9 +18,48 @@
         align-items: center;
     }
 
-        .title-icon i {
-            margin-right: 10px;
+    .title-icon i {
+        margin-right: 10px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .codigoCid, .codigo, .status {
+        max-width: 100px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .descricao {
+        max-width: 300px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    @@media (max-width: 768px) {
+        .descricao, .versaoCid, .status {
+            max-width: 150px;
         }
+
+        .top-right-button {
+            float: none;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .title-icon h1 {
+            font-size: 1.5rem;
+        }
+    }
 </style>
 
 <div class="row">
@@ -44,10 +82,9 @@
                     <th scope="col">Código</th>
                     <th scope="col">Código CID</th>
                     <th scope="col">Descrição</th>
-                    <th scope="col">Status</th>
                     <th scope="col">Versão CID</th>
+                    <th scope="col">Status</th>
                     <th scope="col">Visualizar</th>
-                    <th scope="col">Excluir</th>
                 </tr>
             </thead>
             <tbody id="tabela">
@@ -59,14 +96,18 @@
 <table style="display:none">
     <tr id="linhaExemplo">
         <th scope="row" class="codigo"></th>
-        <td class="codigoCid"></td>
-        <td class="descricao"></td>
-        <td class="status"></td>
-        <td class="versaoCid"></td>
+        <td class="codigoCid text-truncate"></td>
+        <td class="descricao text-truncate"></td>
+        <td class="versaoCid text-truncate"></td>
+        <td class="status">
+            <select class="form-select alterar-status">
+                <!-- Os status serão carregados dinamicamente -->
+            </select>
+        </td>
         <td><a href="#" class="alterar btn btn-info btn-sm">Visualizar</a></td>
-        <td><a href="#" class="excluir btn btn-danger btn-sm">Excluir</a></td>
     </tr>
 </table>
+
 <div class="mt-3">
     <button type="button" class="btn btn-primary" onclick="location.href='/index'">Voltar</button>
 </div>

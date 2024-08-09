@@ -14,7 +14,7 @@ namespace SGFME.Application.Controllers
     [ApiController]
     public class CidController : ControllerBase
     {
-        private IBaseService<Cid> _baseService;
+        private readonly IBaseService<Cid> _baseService;
         private readonly SqlServerContext _context;
 
         public CidController(IBaseService<Cid> baseService, SqlServerContext context)
@@ -22,7 +22,8 @@ namespace SGFME.Application.Controllers
             _baseService = baseService;
             _context = context;
         }
-              //Adicionar método para executar comando e retornar IActionResult
+
+        // Método para executar comando e retornar IActionResult
         private IActionResult Execute(Func<object> func)
         {
             try
@@ -36,7 +37,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        //EndPoint para criar um Cid:
+        // EndPoint para criar um Cid
         [HttpPost]
         public async Task<ActionResult<Cid>> Create(CidDTO request)
         {
@@ -44,7 +45,6 @@ namespace SGFME.Application.Controllers
             {
                 try
                 {
-
                     var novoCid = new Cid
                     {
                         id = request.id,
@@ -53,8 +53,6 @@ namespace SGFME.Application.Controllers
                         idStatus = request.idStatus,
                         idVersaoCid = request.idVersaoCid
                     };
-
-
 
                     // Validar a entrada usando FluentValidation
                     var validator = new CidValidator();
@@ -70,10 +68,8 @@ namespace SGFME.Application.Controllers
                     await transaction.CommitAsync();
 
                     var createdCid = await _context.cid
-                        
                         .Include(p => p.status)
                         .Include(p => p.versaocid)
-
                         .FirstOrDefaultAsync(e => e.id == novoCid.id);
 
                     return CreatedAtAction(nameof(Create), new { id = createdCid.id }, createdCid);
@@ -92,10 +88,8 @@ namespace SGFME.Application.Controllers
             try
             {
                 var cids = await _context.cid
-                    
                     .Include(m => m.status)
                     .Include(m => m.versaocid)
-                    
                     .ToListAsync();
 
                 return Ok(cids);
@@ -123,14 +117,8 @@ namespace SGFME.Application.Controllers
 
                     cid.descricao = request.descricao;
                     cid.codigo = request.codigo;
-
                     cid.idStatus = request.idStatus; // Associação com Status
                     cid.idVersaoCid = request.idVersaoCid;
-                    
-
-                    
-
-                    
 
                     // Validar a entrada usando FluentValidation
                     var validator = new CidValidator();
@@ -155,7 +143,6 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
@@ -164,7 +151,6 @@ namespace SGFME.Application.Controllers
                 try
                 {
                     var cidExistente = await _context.cid
-                        
                         .FirstOrDefaultAsync(m => m.id == id);
 
                     if (cidExistente == null)
@@ -172,7 +158,6 @@ namespace SGFME.Application.Controllers
                         return NotFound("Cid não encontrado.");
                     }
 
-                    
                     _context.cid.Remove(cidExistente);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -193,10 +178,8 @@ namespace SGFME.Application.Controllers
             try
             {
                 var cid = await _context.cid
-                    
                     .Include(m => m.status) // Incluir status
                     .Include(m => m.versaocid) // Incluir status
-                    
                     .FirstOrDefaultAsync(m => m.id == id);
 
                 if (cid == null)
@@ -212,8 +195,6 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
-
         [HttpGet("tipoStatus")]
         public IActionResult ObterTiposStatus()
         {
@@ -227,10 +208,6 @@ namespace SGFME.Application.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-
-
-
-
 
         [HttpGet("tipoVersaoCid")]
         public IActionResult ObterTiposVersaoCid()
@@ -246,13 +223,64 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
-
-
         [HttpGet]
         public IActionResult SelecionarTodos()
         {
             return Execute(() => _baseService.Get<CidModel>());
         }
+
+        // Novo método para mudar o status de um CID
+        [HttpPatch("{id}/mudarStatus")]
+        public async Task<IActionResult> MudarStatus(long id, [FromBody] int novoStatusId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var cid = await _context.cid.FirstOrDefaultAsync(m => m.id == id);
+                    if (cid == null)
+                    {
+                        return NotFound(new { Message = "CID não encontrado." });
+                    }
+
+                    var status = await _context.status.FirstOrDefaultAsync(s => s.id == novoStatusId);
+                    if (status == null)
+                    {
+                        return NotFound(new { Message = "Status não encontrado." });
+                    }
+
+                    // Validação de regras de negócio, se aplicável
+                    // if (!cid.CanChangeStatusTo(novoStatusId))
+                    // {
+                    //     return BadRequest(new { Message = "Mudança de status inválida." });
+                    // }
+
+                    cid.idStatus = novoStatusId;
+
+                    // Validação utilizando FluentValidation (se aplicável)
+                    // var validator = new CidValidator();
+                    // var validationResult = await validator.ValidateAsync(cid);
+                    // if (!validationResult.IsValid)
+                    // {
+                    //     return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+                    // }
+
+                    _context.cid.Update(cid);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(cid);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    // Log ex para diagnóstico
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Erro ao mudar o status do CID.", Details = ex.Message });
+                }
+            }
+        }
+
+
+
     }
 }
