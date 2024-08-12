@@ -3,7 +3,17 @@ let statusOptions = '';
 let versaoCidOptions = ''; // Adiciona a variável para armazenar as opções de versão do CID
 
 $(document).ready(function () {
-    carregarOpcoesStatus();
+    carregarOpcoesStatus(() => {
+        carregarOpcoesVersaoCid(() => {
+            if ($("#txtid").length > 0) {
+                let params = new URLSearchParams(window.location.search);
+                let id = params.get('id');
+                if (id) {
+                    visualizar(id);
+                }
+            }
+        });
+    });
 
     $(".numeric-only").on("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
@@ -11,16 +21,6 @@ $(document).ready(function () {
 
     if ($("#tabela").length > 0) {
         carregarCids();
-    } else if ($("#txtid").length > 0) {
-        let params = new URLSearchParams(window.location.search);
-        let id = params.get('id');
-        if (id) {
-            carregarOpcoesStatus(() => {
-                carregarOpcoesVersaoCid(() => {
-                    visualizar(id);
-                });
-            });
-        }
     }
 
     $("#btnlimpar").click(function () {
