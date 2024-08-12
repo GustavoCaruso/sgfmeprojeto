@@ -18,9 +18,9 @@
         align-items: center;
     }
 
-    .title-icon i {
-        margin-right: 10px;
-    }
+        .title-icon i {
+            margin-right: 10px;
+        }
 
     .table-responsive {
         overflow-x: auto;
@@ -28,7 +28,11 @@
 
     .table th, .table td {
         vertical-align: middle;
-        text-align: center;
+        text-align: left; /* Alinhamento à esquerda */
+    }
+
+    .table td {
+        word-wrap: break-word; /* Permite quebra de linha para preencher o espaço */
     }
 
     .codigoCid, .codigo, .status {
@@ -61,6 +65,7 @@
         }
     }
 </style>
+
 
 <div class="row">
     <div class="col title-icon">

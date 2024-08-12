@@ -1,20 +1,23 @@
 ﻿const urlAPI = "https://localhost:7034/";
+let statusOptions = '';
 
 $(document).ready(function () {
+    carregarOpcoesStatus(() => {
+        if ($("#txtid").length > 0) {
+            let params = new URLSearchParams(window.location.search);
+            let id = params.get('id');
+            if (id) {
+                visualizar(id);
+            }
+        }
+    });
+
     $(".numeric-only").on("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
 
-    let medicamentoDados;
-
     if ($("#tabela").length > 0) {
         carregarMedicamentos();
-    } else if ($("#txtid").length > 0) {
-        let params = new URLSearchParams(window.location.search);
-        let id = params.get('id');
-        if (id) {
-            visualizar(id);
-        }
     }
 
     $("#btnlimpar").click(function () {
@@ -26,10 +29,29 @@ $(document).ready(function () {
         window.location.href = "/MedicamentoCadastro?id=" + codigo;
     });
 
-    $(document).on("click", ".excluir", function (elemento) {
+    $(document).on("change", ".alterar-status", function (elemento) {
         let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        excluir(codigo);
+        let novoStatus = $(elemento.target).val();
+        mudarStatus(codigo, novoStatus);
     });
+
+    function carregarOpcoesStatus(callback) {
+        $.ajax({
+            url: urlAPI + "api/Medicamento/tipoStatus",
+            method: "GET",
+            success: function (data) {
+                statusOptions = '';  // Reinicializa a variável statusOptions
+                data.forEach(item => {
+                    statusOptions += `<option value="${item.id}">${item.nome}</option>`;
+                });
+                $("#selectStatus").html(statusOptions);  // Preenche o select no formulário de cadastro
+                if (callback) callback(); // Chama o callback após carregar as opções
+            },
+            error: function () {
+                alert("Erro ao carregar os status.");
+            }
+        });
+    }
 
     function validarCampos() {
         let isValid = true;
@@ -55,25 +77,53 @@ $(document).ready(function () {
         $(this).removeClass('is-invalid');
     });
 
-    function carregarOpcoes(apiEndpoint, selectElement, mensagemPadrao) {
+    function carregarMedicamentos() {
         $.ajax({
-            url: urlAPI + apiEndpoint,
+            url: urlAPI + "api/Medicamento/todosMedicamentos",
             method: "GET",
             success: function (data) {
-                selectElement.empty();
-                selectElement.append(`<option value="">${mensagemPadrao}</option>`);
-                data.forEach(item => {
-                    const option = `<option value="${item.id}">${item.nome}</option>`;
-                    selectElement.append(option);
+                $("#tabela").empty();
+                $.each(data, function (index, item) {
+                    var linha = $("#linhaExemplo").clone().removeAttr("id").removeAttr("style");
+                    $(linha).find(".codigo").html(item.id);
+                    $(linha).find(".nome").html(item.nome);
+                    $(linha).find(".status select").html(statusOptions);  // Preenche o select com as opções de status
+                    $(linha).find(".status select").val(item.idStatus);  // Define o status atual
+
+                    $(linha).show();
+                    $("#tabela").append(linha);
+                });
+
+                $('#tabelaMedicamento').DataTable({
+                    language: {
+                        url: '/js/pt-BR.json'
+                    },
+                    destroy: true
                 });
             },
             error: function () {
-                alert("Erro ao carregar os dados.");
+                alert("Erro ao carregar medicamentos.");
             }
         });
     }
 
-    carregarOpcoes("api/Medicamento/tipoStatus", $("#selectStatus"), "Selecione um status");
+    function mudarStatus(codigo, novoStatus) {
+        console.log("Alterando status para Medicamento:", codigo, "Novo Status:", novoStatus);
+        $.ajax({
+            type: "PATCH",
+            url: urlAPI + "api/Medicamento/" + codigo + "/mudarStatus",
+            contentType: "application/json",
+            data: JSON.stringify(novoStatus),  // Enviando apenas o valor do status
+            dataType: "json",
+            success: function () {
+                alert('Status alterado com sucesso!');
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log("Erro:", xhr.responseText);
+                alert("Erro ao alterar o status do medicamento: " + xhr.responseText);
+            }
+        });
+    }
 
     $("#btnsalvar").click(function () {
         if (validarCampos()) {
@@ -123,50 +173,6 @@ $(document).ready(function () {
         $("#selectStatus").val('');
     }
 
-    function carregarMedicamentos() {
-        $.ajax({
-            url: urlAPI + "api/Medicamento/todosMedicamentos",
-            method: "GET",
-            success: function (data) {
-                $("#tabela").empty();
-                $.each(data, function (index, item) {
-                    var linha = $("#linhaExemplo").clone().removeAttr("id").removeAttr("style");
-                    $(linha).find(".codigo").html(item.id);
-                    $(linha).find(".nome").html(item.nome);
-                    $(linha).find(".status").html(item.status ? item.status.nome : "Não Definido");
-
-                    $(linha).show();
-                    $("#tabela").append(linha);
-                });
-
-                $('#tabelaMedicamento').DataTable({
-                    language: {
-                        url: '/js/pt-BR.json'
-                    },
-                    destroy: true
-                });
-            },
-            error: function () {
-                alert("Erro ao carregar medicamentos.");
-            }
-        });
-    }
-
-    function excluir(codigo) {
-        $.ajax({
-            type: "DELETE",
-            url: urlAPI + "api/Medicamento/" + codigo,
-            contentType: "application/json;charset=utf-8",
-            success: function () {
-                alert('Exclusão efetuada!');
-                location.reload();
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                alert("Erro ao excluir o medicamento: " + errorThrown);
-            }
-        });
-    }
-
     function visualizar(codigo) {
         $.ajax({
             type: "GET",
@@ -175,7 +181,6 @@ $(document).ready(function () {
             data: {},
             dataType: "json",
             success: function (jsonResult) {
-                medicamentoDados = jsonResult;
                 $("#txtid").val(jsonResult.id);
                 $("#txtnome").val(jsonResult.nome);
                 $("#selectStatus").val(jsonResult.idStatus);

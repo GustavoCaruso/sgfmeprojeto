@@ -41,6 +41,43 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        // Novo método para mudar o status de um Medicamento
+        [HttpPatch("{id}/mudarStatus")]
+        public async Task<IActionResult> MudarStatus(long id, [FromBody] int novoStatusId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var medicamento = await _context.medicamento.FirstOrDefaultAsync(m => m.id == id);
+                    if (medicamento == null)
+                    {
+                        return NotFound(new { Message = "Medicamento não encontrado." });
+                    }
+
+                    var status = await _context.status.FirstOrDefaultAsync(s => s.id == novoStatusId);
+                    if (status == null)
+                    {
+                        return NotFound(new { Message = "Status não encontrado." });
+                    }
+
+                    medicamento.idStatus = novoStatusId;
+
+                    _context.medicamento.Update(medicamento);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(medicamento);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    // Log ex para diagnóstico
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Erro ao mudar o status do medicamento.", Details = ex.Message });
+                }
+            }
+        }
+
         // EndPoint para criar um Medicamento
         [HttpPost]
         public async Task<ActionResult<Medicamento>> Create(MedicamentoDTO request)
