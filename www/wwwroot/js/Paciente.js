@@ -258,18 +258,20 @@ $(document).ready(function () {
         tabela.empty();
 
         enderecos.forEach((endereco, index) => {
+            const tipoEnderecoNome = $("#selectTipoEndereco option[value='" + endereco.idTipoEndereco + "']").text();
+
             const linha = `<tr>
-                <td>${endereco.idTipoEndereco}</td>
-                <td>${endereco.logradouro}</td>
-                <td>${endereco.numero}</td>
-                <td>${endereco.complemento}</td>
-                <td>${endereco.bairro}</td>
-                <td>${endereco.cidade}</td>
-                <td>${endereco.uf}</td>
-                <td>${endereco.cep}</td>
-                <td>${endereco.pontoReferencia}</td>
-                <td><button type="button" class="btn btn-danger" data-index="${index}" data-type="endereco">Excluir</button></td>
-            </tr>`;
+            <td>${tipoEnderecoNome}</td>
+            <td>${endereco.logradouro}</td>
+            <td>${endereco.numero}</td>
+            <td>${endereco.complemento}</td>
+            <td>${endereco.bairro}</td>
+            <td>${endereco.cidade}</td>
+            <td>${endereco.uf}</td>
+            <td>${endereco.cep}</td>
+            <td>${endereco.pontoReferencia}</td>
+            <td><button type="button" class="btn btn-danger" data-index="${index}" data-type="endereco">Excluir</button></td>
+        </tr>`;
             tabela.append(linha);
         });
 
@@ -279,6 +281,7 @@ $(document).ready(function () {
             atualizarTabelaEnderecos();
         });
     }
+
 
     $("#btnAdicionarContato").click(function () {
         const tipoContato = $("#selectTipoContato option:selected").text();
