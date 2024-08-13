@@ -78,6 +78,51 @@ $(document).ready(function () {
         $(this).removeClass('is-invalid');
     });
 
+    $("#selectTipoContato").change(function () {
+        const tipoContato = $("#selectTipoContato option:selected").text();
+        const inputContato = $("#txtValorContato");
+
+        inputContato.off("input"); // Remove qualquer máscara ou listener anterior
+        inputContato.val(''); // Limpa o campo
+
+        if (tipoContato === "Celular") {
+            inputContato.attr("maxlength", 11); // Limita a 11 caracteres
+            inputContato.on("input", function () {
+                this.value = this.value.replace(/\D/g, ''); // Permite apenas números
+                this.value = this.value.slice(0, 11); // Garante que não exceda 11 caracteres
+                this.value = aplicarMascara(this.value, "Celular"); // Aplica a máscara
+            });
+        } else if (tipoContato === "Telefone Fixo") {
+            inputContato.attr("maxlength", 10); // Limita a 10 caracteres
+            inputContato.on("input", function () {
+                this.value = this.value.replace(/\D/g, ''); // Permite apenas números
+                this.value = this.value.slice(0, 10); // Garante que não exceda 10 caracteres
+                this.value = aplicarMascara(this.value, "Telefone Fixo"); // Aplica a máscara
+            });
+        } else if (tipoContato === "E-mail") {
+            inputContato.attr("maxlength", 100); // Limita a 100 caracteres
+            inputContato.on("input", function () {
+                const email = this.value;
+                if (!email.includes("@")) {
+                    this.setCustomValidity("E-mail inválido");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+        } else {
+            inputContato.removeAttr("maxlength");
+        }
+    });
+
+    function aplicarMascara(valor, tipoContato) {
+        if (tipoContato === "Celular") {
+            return valor.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+        } else if (tipoContato === "Telefone Fixo") {
+            return valor.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+        }
+        return valor;
+    }
+
     function carregarEstados(selectElement) {
         return $.ajax({
             url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
@@ -282,9 +327,16 @@ $(document).ready(function () {
                 cnes: $("#txtcnes").val(),
                 dataCadastro: $("#txtdataCadastro").val(),
                 idStatus: $("#selectStatus").val(),
-                contato: contatos,
-                endereco: enderecos
+                status: $("#selectStatus option:selected").text() || null,
             };
+
+            if (contatos.length > 0) {
+                obj.contato = contatos;
+            }
+
+            if (enderecos.length > 0) {
+                obj.endereco = enderecos;
+            }
 
             $.ajax({
                 type: obj.id == "0" ? "POST" : "PUT",

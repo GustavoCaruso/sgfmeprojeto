@@ -1,19 +1,7 @@
 ﻿const urlAPI = "https://localhost:7034/";
 
 $(document).ready(function () {
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-    
-=======
-<<<<<<< Updated upstream
-   
-=======
-
->>>>>>> Stashed changes
->>>>>>> 2andre
->>>>>>> 5d8a0b246a19d4d7b3ef8ae50769fb52071f3347
     $(".numeric-only").on("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
@@ -30,7 +18,6 @@ $(document).ready(function () {
         if (id) {
             visualizar(id);
         } else {
-            // Alimenta o campo dataCadastro com a data atual
             let dataAtual = new Date().toISOString().split('T')[0];
             $("#txtdataCadastro").val(dataAtual);
         }
@@ -56,67 +43,108 @@ $(document).ready(function () {
         excluir(codigo);
     });
 
-    function validarCampos() {
-        let isValid = true;
-        $(".form-control").removeClass('is-invalid');
+    async function carregarDadosSelecoes() {
+        try {
+            await Promise.all([
+                carregarEstados($("#selectEstado")),
+                carregarEstados($("#selectNaturalidadeUf")),
+                carregarEstados($("#selectRgUfEmissao")),
+                carregarOpcoes("api/Paciente/tipoContato", $("#selectTipoContato")),
+                carregarOpcoes("api/Paciente/tipoEndereco", $("#selectTipoEndereco")),
+                carregarOpcoes("api/Paciente/tipoStatus", $("#selectStatus")),
+                carregarOpcoes("api/Paciente/tipoSexo", $("#selectSexo")),
+                carregarOpcoes("api/Paciente/tipoProfissao", $("#selectProfissao")),
+                carregarOpcoes("api/Paciente/tipoCorRaca", $("#selectCorRaca")),
+                carregarOpcoes("api/Paciente/tipoEstadoCivil", $("#selectEstadoCivil"))
+            ]);
+        } catch (error) {
+            alert("Erro ao carregar dados: " + error);
+        }
+    }
 
-        const camposObrigatorios = [
-            "#txtnomeCompleto",
-            "#txtdataNascimento",
-            "#txtrgNumero",
-            "#txtrgDataEmissao",
-            "#txtrgOrgaoExpedidor",
-            "#selectRgUfEmissao",
-            "#txtcnsNumero",
-            "#txtcpfNumero",
-            "#txtnomeMae",
-            "#selectNaturalidadeCidade", // Corrigido para validar corretamente
-            "#selectNaturalidadeUf",
-            "#txtpeso",
-            "#txtaltura",
-            "#selectStatus",
-            "#selectSexo",
-            "#selectProfissao",
-            "#selectCorRaca",
-            "#selectEstadoCivil"
-        ];
+    async function visualizar(codigo) {
+        await carregarDadosSelecoes(); // Aguarda carregar os dados antes de continuar
 
-        camposObrigatorios.forEach(function (campo) {
-            if (!$(campo).val().trim()) {
-                $(campo).addClass('is-invalid');
-                isValid = false;
+        $.ajax({
+            type: "GET",
+            url: urlAPI + "api/Paciente/" + codigo,
+            contentType: "application/json;charset=utf-8",
+            data: {},
+            dataType: "json",
+            success: function (jsonResult) {
+                pacienteDados = jsonResult;
+                $("#txtid").val(jsonResult.id);
+                $("#txtnomeCompleto").val(jsonResult.nomeCompleto);
+                var dataNascimento = new Date(jsonResult.dataNascimento);
+                var formattedDate = dataNascimento.toISOString().split('T')[0];
+                $("#txtdataNascimento").val(formattedDate);
+                $("#txtrgNumero").val(jsonResult.rgNumero);
+                $("#txtrgDataEmissao").val(new Date(jsonResult.rgDataEmissao).toISOString().split('T')[0]);
+                $("#txtrgOrgaoExpedidor").val(jsonResult.rgOrgaoExpedidor);
+                $("#selectRgUfEmissao").val(jsonResult.rgUfEmissao);
+                $("#txtcnsNumero").val(jsonResult.cnsNumero);
+                $("#txtcpfNumero").val(jsonResult.cpfNumero);
+                $("#txtdataCadastro").val(new Date(jsonResult.dataCadastro).toISOString().split('T')[0]);
+                $("#selectStatus").val(jsonResult.idStatus);
+                $("#selectSexo").val(jsonResult.idSexo);
+                $("#selectProfissao").val(jsonResult.idProfissao);
+                $("#selectCorRaca").val(jsonResult.idCorRaca);
+                $("#selectEstadoCivil").val(jsonResult.idEstadoCivil);
+                $("#txtnomeMae").val(jsonResult.nomeMae);
+                $("#txtnomeConjuge").val(jsonResult.nomeConjuge);
+                $("#selectNaturalidadeUf").val(jsonResult.naturalidadeUf);
+                $("#txtpeso").val(jsonResult.peso);
+                $("#txtaltura").val(jsonResult.altura);
+
+                contatos = jsonResult.contato.map(c => ({
+                    idTipoContato: c.idTipoContato,
+                    tipo: c.tipocontato.nome,
+                    valor: c.valor
+                }));
+                atualizarTabelaContatos();
+
+                enderecos = jsonResult.endereco.map(e => ({
+                    idTipoEndereco: e.idTipoEndereco,
+                    logradouro: e.logradouro,
+                    numero: e.numero,
+                    complemento: e.complemento,
+                    bairro: e.bairro,
+                    cidade: e.cidade,
+                    uf: e.uf,
+                    cep: e.cep,
+                    pontoReferencia: e.pontoReferencia
+                }));
+                atualizarTabelaEnderecos();
+
+                carregarMunicipios(jsonResult.naturalidadeUf, $("#selectNaturalidadeCidade"), jsonResult.naturalidadeCidade);
+
+                let idade = calcularIdade(dataNascimento);
+                $("#txtidade").val(idade);
+            },
+            error: function (response) {
+                alert("Erro ao carregar os dados: " + response);
             }
         });
-
-        if (contatos.length === 0) {
-            $("#mensagemValidacao").text("Por favor, adicione pelo menos um contato.");
-            isValid = false;
-        } else {
-            $("#mensagemValidacao").text(""); // Limpa a mensagem se a validação for bem-sucedida
-        }
-
-        if (enderecos.length === 0) {
-            $("#mensagemValidacaoEndereco").text("Por favor, adicione pelo menos um endereço.");
-            isValid = false;
-        } else {
-            $("#mensagemValidacaoEndereco").text(""); // Limpa a mensagem se a validação for bem-sucedida
-        }
-
-        return isValid;
     }
 
-    function removerValidacao() {
-        $(".form-control").on("input", function () {
-            $(this).removeClass('is-invalid');
-        });
-        $("#selectEstado, #selectMunicipio, #selectNaturalidadeUf, #selectNaturalidadeCidade, #selectRgUfEmissao, #selectStatus, #selectSexo, #selectProfissao, #selectCorRaca, #selectEstadoCivil").on("change", function () {
-            $(this).removeClass('is-invalid');
+    function carregarOpcoes(apiEndpoint, selectElement) {
+        return $.ajax({
+            url: urlAPI + apiEndpoint,
+            method: "GET",
+            success: function (data) {
+                selectElement.empty();
+                selectElement.append('<option value="">Selecione uma opção</option>');
+                data.forEach(item => {
+                    const option = `<option value="${item.id}">${item.nome}</option>`;
+                    selectElement.append(option);
+                });
+            },
+            error: function () {
+                alert("Erro ao carregar os dados.");
+            }
         });
     }
 
-    removerValidacao();
-
-    // Função para carregar os estados do IBGE
     function carregarEstados(selectElement) {
         return $.ajax({
             url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
@@ -160,84 +188,50 @@ $(document).ready(function () {
         }
     }
 
-    carregarEstados($("#selectEstado"));
-    carregarEstados($("#selectNaturalidadeUf"));
-    carregarEstados($("#selectRgUfEmissao"));
-
-    $("#selectEstado").change(function () {
-        carregarMunicipios($(this).val(), $("#selectMunicipio"));
-    });
-
-    $("#selectNaturalidadeUf").change(function () {
-        carregarMunicipios($(this).val(), $("#selectNaturalidadeCidade"));
-    });
-
-    function carregarOpcoes(apiEndpoint, selectElement) {
-        $.ajax({
-            url: urlAPI + apiEndpoint,
-            method: "GET",
-            success: function (data) {
-                selectElement.empty();
-                selectElement.append('<option value="">Selecione uma opção</option>');
-                data.forEach(item => {
-                    const option = `<option value="${item.id}">${item.nome}</option>`;
-                    selectElement.append(option);
-                });
-            },
-            error: function () {
-                alert("Erro ao carregar os dados.");
-            }
-        });
-    }
-
-    carregarOpcoes("api/Paciente/tipoContato", $("#selectTipoContato"));
-    carregarOpcoes("api/Paciente/tipoEndereco", $("#selectTipoEndereco"));
-    carregarOpcoes("api/Paciente/tipoStatus", $("#selectStatus"));
-    carregarOpcoes("api/Paciente/tipoSexo", $("#selectSexo"));
-    carregarOpcoes("api/Paciente/tipoProfissao", $("#selectProfissao"));
-    carregarOpcoes("api/Paciente/tipoCorRaca", $("#selectCorRaca"));
-    carregarOpcoes("api/Paciente/tipoEstadoCivil", $("#selectEstadoCivil"));
-
-    $("#btnAdicionarContato").click(function () {
+    $("#selectTipoContato").change(function () {
         const tipoContato = $("#selectTipoContato option:selected").text();
-        const valorContato = $("#txtValorContato").val();
-        const idTipoContato = $("#selectTipoContato").val();
+        const inputContato = $("#txtValorContato");
 
-        if (tipoContato && valorContato) {
-            contatos.push({ idTipoContato: idTipoContato, tipo: tipoContato, valor: valorContato });
-            atualizarTabelaContatos();
-            $("#txtValorContato").val('');
+        inputContato.off("input"); // Remove qualquer máscara ou listener anterior
+        inputContato.val(''); // Limpa o campo
+
+        if (tipoContato === "Celular") {
+            inputContato.attr("maxlength", 11); // Limita a 11 caracteres
+            inputContato.on("input", function () {
+                this.value = this.value.replace(/\D/g, ''); // Permite apenas números
+                this.value = this.value.slice(0, 11); // Garante que não exceda 11 caracteres
+                this.value = aplicarMascara(this.value, "Celular"); // Aplica a máscara
+            });
+        } else if (tipoContato === "Telefone Fixo") {
+            inputContato.attr("maxlength", 10); // Limita a 10 caracteres
+            inputContato.on("input", function () {
+                this.value = this.value.replace(/\D/g, ''); // Permite apenas números
+                this.value = this.value.slice(0, 10); // Garante que não exceda 10 caracteres
+                this.value = aplicarMascara(this.value, "Telefone Fixo"); // Aplica a máscara
+            });
+        } else if (tipoContato === "E-mail") {
+            inputContato.attr("maxlength", 100); // Limita a 100 caracteres
+            inputContato.on("input", function () {
+                const email = this.value;
+                if (!email.includes("@")) {
+                    this.setCustomValidity("E-mail inválido");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
         } else {
-            alert("Por favor, selecione um tipo de contato e insira um valor.");
+            inputContato.removeAttr("maxlength");
         }
     });
 
-    $("#btnAdicionarEndereco").click(function () {
-        const idTipoEndereco = $("#selectTipoEndereco").val();
-        const logradouro = $("#txtLogradouro").val();
-        const numero = $("#txtNumero").val();
-        const complemento = $("#txtComplemento").val();
-        const bairro = $("#txtBairro").val();
-        const cidade = $("#selectMunicipio option:selected").text();
-        const uf = $("#selectEstado option:selected").text();
-        const cep = $("#txtCep").val();
-        const pontoReferencia = $("#txtPontoReferencia").val();
-
-        if (logradouro && numero && bairro && cidade && uf && cep) {
-            enderecos.push({ idTipoEndereco, logradouro, numero, complemento, bairro, cidade, uf, cep, pontoReferencia });
-            atualizarTabelaEnderecos();
-            $("#txtLogradouro").val('');
-            $("#txtNumero").val('');
-            $("#txtComplemento").val('');
-            $("#txtBairro").val('');
-            $("#selectMunicipio").val('');
-            $("#selectEstado").val('');
-            $("#txtCep").val('');
-            $("#txtPontoReferencia").val('');
-        } else {
-            alert("Por favor, preencha todos os campos obrigatórios do endereço.");
+    function aplicarMascara(valor, tipoContato) {
+        if (tipoContato === "Celular") {
+            return valor.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+        } else if (tipoContato === "Telefone Fixo") {
+            return valor.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
         }
-    });
+        return valor;
+    }
 
     function atualizarTabelaContatos() {
         const tabela = $("#contatoTable tbody");
@@ -286,6 +280,47 @@ $(document).ready(function () {
         });
     }
 
+    $("#btnAdicionarContato").click(function () {
+        const tipoContato = $("#selectTipoContato option:selected").text();
+        const valorContato = $("#txtValorContato").val();
+        const idTipoContato = $("#selectTipoContato").val();
+
+        if (tipoContato && valorContato) {
+            contatos.push({ idTipoContato: idTipoContato, tipo: tipoContato, valor: valorContato });
+            atualizarTabelaContatos();
+            $("#txtValorContato").val('');
+        } else {
+            alert("Por favor, selecione um tipo de contato e insira um valor.");
+        }
+    });
+
+    $("#btnAdicionarEndereco").click(function () {
+        const idTipoEndereco = $("#selectTipoEndereco").val();
+        const logradouro = $("#txtLogradouro").val();
+        const numero = $("#txtNumero").val();
+        const complemento = $("#txtComplemento").val();
+        const bairro = $("#txtBairro").val();
+        const cidade = $("#selectMunicipio option:selected").text();
+        const uf = $("#selectEstado option:selected").text();
+        const cep = $("#txtCep").val();
+        const pontoReferencia = $("#txtPontoReferencia").val();
+
+        if (logradouro && numero && bairro && cidade && uf && cep) {
+            enderecos.push({ idTipoEndereco, logradouro, numero, complemento, bairro, cidade, uf, cep, pontoReferencia });
+            atualizarTabelaEnderecos();
+            $("#txtLogradouro").val('');
+            $("#txtNumero").val('');
+            $("#txtComplemento").val('');
+            $("#txtBairro").val('');
+            $("#selectMunicipio").val('');
+            $("#selectEstado").val('');
+            $("#txtCep").val('');
+            $("#txtPontoReferencia").val('');
+        } else {
+            alert("Por favor, preencha todos os campos obrigatórios do endereço.");
+        }
+    });
+
     $("#btnsalvar").click(function () {
         if (validarCampos()) {
             const obj = {
@@ -304,15 +339,23 @@ $(document).ready(function () {
                 naturalidadeUf: $("#selectNaturalidadeUf").val(),
                 peso: $("#txtpeso").val(),
                 altura: $("#txtaltura").val(),
-                dataCadastro: $("#txtdataCadastro").val(),  // não pode ser modificado pelo usuário
+                dataCadastro: $("#txtdataCadastro").val(),
                 idStatus: $("#selectStatus").val(),
                 idSexo: $("#selectSexo").val(),
                 idProfissao: $("#selectProfissao").val(),
                 idCorRaca: $("#selectCorRaca").val(),
                 idEstadoCivil: $("#selectEstadoCivil").val(),
-                contato: contatos,
-                endereco: enderecos
+                contato: contatos,  // Inclui os contatos
+                endereco: enderecos  // Inclui os endereços
             };
+
+            // Remover campos nulos ou desnecessários antes de enviar
+            const camposPossivelmenteNulos = ['status', 'sexo', 'profissao', 'corraca', 'estadocivil'];
+            camposPossivelmenteNulos.forEach(campo => {
+                if (obj[campo] === null || obj[campo] === undefined) {
+                    delete obj[campo];
+                }
+            });
 
             $.ajax({
                 type: obj.id == "0" ? "POST" : "PUT",
@@ -347,6 +390,55 @@ $(document).ready(function () {
             });
         }
     });
+
+    function validarCampos() {
+        let isValid = true;
+        $(".form-control").removeClass('is-invalid');
+
+        const camposObrigatorios = [
+            "#txtnomeCompleto",
+            "#txtdataNascimento",
+            "#txtrgNumero",
+            "#txtrgDataEmissao",
+            "#txtrgOrgaoExpedidor",
+            "#selectRgUfEmissao",
+            "#txtcnsNumero",
+            "#txtcpfNumero",
+            "#txtnomeMae",
+            "#selectNaturalidadeCidade",
+            "#selectNaturalidadeUf",
+            "#txtpeso",
+            "#txtaltura",
+            "#selectStatus",
+            "#selectSexo",
+            "#selectProfissao",
+            "#selectCorRaca",
+            "#selectEstadoCivil"
+        ];
+
+        camposObrigatorios.forEach(function (campo) {
+            if (!$(campo).val().trim()) {
+                $(campo).addClass('is-invalid');
+                isValid = false;
+            }
+        });
+
+        if (contatos.length === 0) {
+            $("#mensagemValidacao").text("Por favor, adicione pelo menos um contato.");
+            isValid = false;
+        } else {
+            $("#mensagemValidacao").text(""); // Limpa a mensagem se a validação for bem-sucedida
+        }
+
+        if (enderecos.length === 0) {
+            $("#mensagemValidacaoEndereco").text("Por favor, adicione pelo menos um endereço.");
+            isValid = false;
+        } else {
+            $("#mensagemValidacaoEndereco").text(""); // Limpa a mensagem se a validação for bem-sucedida
+        }
+
+        return isValid;
+    }
 
     function limparFormulario() {
         $("#txtnomeCompleto").val('');
@@ -387,18 +479,16 @@ $(document).ready(function () {
                     var linha = $("#linhaExemplo").clone().removeAttr("id").removeAttr("style");
                     $(linha).find(".codigo").html(item.id);
                     $(linha).find(".nomeCompleto").html(item.nomeCompleto);
-                    $(linha).find(".dataNascimento").html(new Date(item.dataNascimento).toLocaleDateString()); // Formata a data
+                    $(linha).find(".dataNascimento").html(new Date(item.dataNascimento).toLocaleDateString());
                     $(linha).find(".rgNumero").html(item.rgNumero);
                     $(linha).find(".status").html(item.status ? item.status.nome : "Não Definido");
 
-                    // Construir o HTML para exibir os contatos
                     var contatosHTML = item.contato.map(c => {
                         var tipoContatoNome = c.tipocontato ? c.tipocontato.nome : "Tipo de Contato Desconhecido";
                         return `${tipoContatoNome}: ${c.valor}`;
                     }).join("<br>");
                     $(linha).find(".contatos").html(contatosHTML);
 
-                    // Construir o HTML para exibir os endereços
                     var enderecosHTML = item.endereco.map(e => {
                         return `${e.tipoendereco ? e.tipoendereco.nome : 'Desconhecido'}: ${e.logradouro}, ${e.numero}, ${e.complemento}, ${e.bairro}, ${e.cidade}, ${e.uf}, ${e.cep}, ${e.pontoReferencia}`;
                     }).join("<br>");
@@ -428,76 +518,10 @@ $(document).ready(function () {
             contentType: "application/json;charset=utf-8",
             success: function () {
                 alert('Exclusão efetuada!');
-                location.reload(); // Recarrega a página para atualizar a tabela
+                location.reload();
             },
             error: function (xhr, textStatus, errorThrown) {
                 alert("Erro ao excluir o paciente: " + errorThrown);
-            }
-        });
-    }
-
-    function visualizar(codigo) {
-        $.ajax({
-            type: "GET",
-            url: urlAPI + "api/Paciente/" + codigo,
-            contentType: "application/json;charset=utf-8",
-            data: {},
-            dataType: "json",
-            success: function (jsonResult) {
-                pacienteDados = jsonResult;
-                $("#txtid").val(jsonResult.id);
-                $("#txtnomeCompleto").val(jsonResult.nomeCompleto);
-                // Formatar e definir a data de nascimento
-                var dataNascimento = new Date(jsonResult.dataNascimento);
-                var formattedDate = dataNascimento.toISOString().split('T')[0];
-                $("#txtdataNascimento").val(formattedDate);
-                $("#txtrgNumero").val(jsonResult.rgNumero);
-                $("#txtrgDataEmissao").val(new Date(jsonResult.rgDataEmissao).toISOString().split('T')[0]);
-                $("#txtrgOrgaoExpedidor").val(jsonResult.rgOrgaoExpedidor);
-                $("#selectRgUfEmissao").val(jsonResult.rgUfEmissao);
-                $("#txtcnsNumero").val(jsonResult.cnsNumero);
-                $("#txtcpfNumero").val(jsonResult.cpfNumero);
-                $("#txtdataCadastro").val(new Date(jsonResult.dataCadastro).toISOString().split('T')[0]);
-                $("#selectStatus").val(jsonResult.idStatus);
-                $("#selectSexo").val(jsonResult.idSexo);
-                $("#selectProfissao").val(jsonResult.idProfissao);
-                $("#selectCorRaca").val(jsonResult.idCorRaca);
-                $("#selectEstadoCivil").val(jsonResult.idEstadoCivil);
-                $("#txtnomeMae").val(jsonResult.nomeMae);
-                $("#txtnomeConjuge").val(jsonResult.nomeConjuge);
-                $("#selectNaturalidadeUf").val(jsonResult.naturalidadeUf);
-                $("#txtpeso").val(jsonResult.peso);
-                $("#txtaltura").val(jsonResult.altura);
-
-                contatos = jsonResult.contato.map(c => ({
-                    idTipoContato: c.idTipoContato,
-                    tipo: c.tipocontato.nome,
-                    valor: c.valor
-                }));
-                atualizarTabelaContatos();
-
-                enderecos = jsonResult.endereco.map(e => ({
-                    idTipoEndereco: e.idTipoEndereco,
-                    logradouro: e.logradouro,
-                    numero: e.numero,
-                    complemento: e.complemento,
-                    bairro: e.bairro,
-                    cidade: e.cidade,
-                    uf: e.uf,
-                    cep: e.cep,
-                    pontoReferencia: e.pontoReferencia
-                }));
-                atualizarTabelaEnderecos();
-
-                // Carregar os municípios depois de definir o estado
-                carregarMunicipios(jsonResult.naturalidadeUf, $("#selectNaturalidadeCidade"), jsonResult.naturalidadeCidade);
-
-                // Calcular idade e definir no campo
-                let idade = calcularIdade(dataNascimento);
-                $("#txtidade").val(idade);
-            },
-            error: function (response) {
-                alert("Erro ao carregar os dados: " + response);
             }
         });
     }
