@@ -16,8 +16,8 @@
         }
 
         .logo {
-            width: 200px; /* Defina a largura desejada */
-            height: auto; /* Mantém a proporção da imagem */
+            width: 200px;
+            height: auto;
         }
 
         #side_nav {
@@ -63,14 +63,33 @@
         @@media (max-width: 767px) {
             #side_nav {
                 margin-left: -250px;
-                position: absolute;
-                min-height: 100vh;
-                z-index: 1;
+                position: fixed;
+                height: 100vh;
+                z-index: 1000;
+                overflow-y: auto;
+                width: 250px;
             }
 
             #side_nav.active {
                 margin-left: 0;
             }
+
+            .content {
+                padding-left: 0;
+            }
+        }
+
+        .open-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
         }
     </style>
 </head>
@@ -135,7 +154,7 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#submenu3" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between alinhamento-center">
+                    <a href="#submenu3" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-user-friends"></i> Representante</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
@@ -149,7 +168,7 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#submenu4" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between alinhamento-center">
+                    <a href="#submenu4" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
                         <span><i class="fas  fa-diagnoses"></i> CID</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
@@ -163,7 +182,7 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#submenu5" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between alinhamento-center">
+                    <a href="#submenu5" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-pills"></i> Medicamento</span>
                         <i class="fas fa-chevron-down"></i>
                     </a>
@@ -182,12 +201,12 @@
             <ul class="list-unstyled px-2">
                 <li class="nav-item">
                     <a href="#" class="text-decoration-none px-3 py-2 d-block">
-                        <i class="fas fa-bars"></i> Settings
+                        <i class="fas fa-bars"></i> Configurações
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="text-decoration-none px-3 py-2 d-block">
-                        <i class="fas fa-bell"></i> Notifications
+                        <i class="fas fa-bell"></i> Notificações
                     </a>
                 </li>
             </ul>
@@ -207,7 +226,7 @@
                     <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                         <ul class="navbar-nav mb-2 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Profile</a>
+                                <a class="nav-link active" aria-current="page" href="#">Perfil</a>
                             </li>
                         </ul>
                     </div>
@@ -236,19 +255,30 @@
 
             // Handle sidebar toggle for small screens
             $('.open-btn').on('click', function () {
-                $('.sidebar').addClass('active');
+                $('#side_nav').addClass('active');
             });
 
             $('.close-btn').on('click', function () {
-                $('.sidebar').removeClass('active');
+                $('#side_nav').removeClass('active');
             });
 
-            // Initialize Bootstrap components properly
-            $('[data-bs-toggle="collapse"]').each(function() {
-                $(this).collapse();
+            // Handle submenu toggle for better user experience
+            $(".sidebar li > a[data-bs-toggle='collapse']").on('click', function() {
+                let target = $(this).attr('href');
+                let isOpen = $(target).hasClass('show');
+                if (!isOpen) {
+                    $(target).collapse('show');
+                } else {
+                    $(target).collapse('hide');
+                }
             });
 
-            // Additional initialization
+            // Preserve the active submenu state on page load
+            $('.collapse').each(function() {
+                if ($(this).find('.active').length > 0) {
+                    $(this).collapse('show');
+                }
+            });
         });
     </script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
