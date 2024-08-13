@@ -1,7 +1,11 @@
 ﻿const urlAPI = "https://localhost:7034/";
 
 $(document).ready(function () {
+<<<<<<< Updated upstream
    
+=======
+
+>>>>>>> Stashed changes
     $(".numeric-only").on("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
