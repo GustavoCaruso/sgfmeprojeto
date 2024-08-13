@@ -1,6 +1,9 @@
 ﻿const urlAPI = "https://localhost:7034/";
+<<<<<<< HEAD
 let statusOptions = '';
 let versaoCidOptions = ''; // Adiciona a variável para armazenar as opções de versão do CID
+=======
+>>>>>>> 2andre
 
 $(document).ready(function () {
     carregarOpcoesStatus(() => {

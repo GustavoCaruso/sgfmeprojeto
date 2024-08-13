@@ -1,7 +1,15 @@
 ﻿const urlAPI = "https://localhost:7034/";
 
 $(document).ready(function () {
+<<<<<<< HEAD
     
+=======
+<<<<<<< Updated upstream
+   
+=======
+
+>>>>>>> Stashed changes
+>>>>>>> 2andre
     $(".numeric-only").on("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
