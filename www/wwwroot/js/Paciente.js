@@ -1,7 +1,7 @@
 ﻿const urlAPI = "https://localhost:7034/";
 
 $(document).ready(function () {
-    
+
     $(".numeric-only").on("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
@@ -58,8 +58,7 @@ $(document).ready(function () {
             "#txtcnsNumero",
             "#txtcpfNumero",
             "#txtnomeMae",
-            "#txtnomeConjuge",
-            "#selectNaturalidadeCidade",
+            "#selectNaturalidadeCidade", // Corrigido para validar corretamente
             "#selectNaturalidadeUf",
             "#txtpeso",
             "#txtaltura",
