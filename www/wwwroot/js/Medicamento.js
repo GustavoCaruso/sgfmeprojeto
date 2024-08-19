@@ -1,8 +1,7 @@
 ﻿const urlAPI = "https://localhost:7034/";
-<<<<<<< HEAD
+
 let statusOptions = '';
-=======
->>>>>>> 2andre
+
 
 $(document).ready(function () {
     carregarOpcoesStatus(() => {

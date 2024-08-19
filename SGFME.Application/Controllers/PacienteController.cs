@@ -151,7 +151,6 @@ namespace SGFME.Application.Controllers
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    // Adicione logging detalhado aqui
                     var innerExceptionMessage = ex.InnerException?.Message ?? "Nenhuma exceção interna";
                     var fullExceptionMessage = $"Erro ao criar Paciente: {ex.Message} | Exceção interna: {innerExceptionMessage}";
                     Console.WriteLine(fullExceptionMessage);
@@ -160,24 +159,64 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        [HttpGet("dadosBasicos")]
+        public async Task<ActionResult<List<object>>> GetBasicPacienteData()
+        {
+            try
+            {
+                var pacientes = await _context.paciente
+                    .Include(p => p.status) // Inclui o relacionamento com Status
+                    .Select(p => new
+                    {
+                        p.id,
+                        p.nomeCompleto,
+                        p.peso,
+                        p.altura,
+                        p.dataNascimento,
+                        p.dataCadastro,
+                        p.cpfNumero,
+                        p.rgNumero,
+                        p.nomeMae,
+                        p.nomeConjuge,
+                        p.naturalidadeCidade,
+                        p.naturalidadeUf,
+                        p.idStatus, // Inclui o idStatus
+                        statusNome = p.status.nome, // Inclui o nome do status
+                        p.idSexo,
+                        p.idEstadoCivil,
+                        p.idProfissao,
+                        p.idCorRaca
+                    })
+                    .ToListAsync(); // Remove paginação
+
+                return Ok(pacientes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os dados básicos dos pacientes.");
+            }
+        }
 
 
 
-        [HttpGet("selecionarContatos/{id}")]
+
+        // Endpoint para contatos de um paciente
+        [HttpGet("{id}/contatos")]
         public async Task<ActionResult<List<Contato>>> GetContatosByPacienteId(long id)
         {
             try
             {
-                var paciente = await _context.paciente
-                    .Include(m => m.contato)
-                    .FirstOrDefaultAsync(m => m.id == id);
+                var contatos = await _context.contato
+                    .Where(c => c.idPaciente == id)
+                    .Include(c => c.tipocontato)
+                    .ToListAsync();
 
-                if (paciente == null)
+                if (contatos == null || !contatos.Any())
                 {
-                    return NotFound("paciente não encontrado.");
+                    return NotFound("Contatos não encontrados.");
                 }
 
-                return Ok(paciente.contato);
+                return Ok(contatos);
             }
             catch (Exception ex)
             {
@@ -185,27 +224,65 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        [HttpGet("selecionarEnderecos/{id}")]
+        // Endpoint para endereços de um paciente
+        [HttpGet("{id}/enderecos")]
         public async Task<ActionResult<List<Endereco>>> GetEnderecosByPacienteId(long id)
         {
             try
             {
-                var paciente = await _context.paciente
-                    .Include(m => m.endereco)
-                    .FirstOrDefaultAsync(m => m.id == id);
+                var enderecos = await _context.endereco
+                    .Where(e => e.idPaciente == id)
+                    .Include(e => e.tipoendereco)
+                    .ToListAsync();
 
-                if (paciente == null)
+                if (enderecos == null || !enderecos.Any())
                 {
-                    return NotFound("Paciente não encontrado.");
+                    return NotFound("Endereços não encontrados.");
                 }
 
-                return Ok(paciente.endereco);
+                return Ok(enderecos);
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar endereços.");
             }
         }
+
+        // Endpoint para dados completos de um paciente específico
+        [HttpGet("{id}/dadosCompletos")]
+        public async Task<ActionResult<Paciente>> GetCompletePacienteData(long id)
+        {
+            try
+            {
+                var paciente = await _context.paciente
+                    .Include(p => p.contato)
+                        .ThenInclude(c => c.tipocontato)
+                    .Include(p => p.endereco)
+                        .ThenInclude(e => e.tipoendereco)
+                    .Include(p => p.status)
+                    .Include(p => p.sexo)
+                    .Include(p => p.corraca)
+                    .Include(p => p.profissao)
+                    .Include(p => p.estadocivil)
+                    .FirstOrDefaultAsync(p => p.id == id);
+
+                if (paciente == null)
+                {
+                    return NotFound("Paciente não encontrado.");
+                }
+
+                return Ok(paciente);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os dados completos do paciente.");
+            }
+        }
+
+
+
+
+
 
         [HttpGet("tipoContato")]
         public IActionResult ObterTiposContato()
@@ -505,12 +582,184 @@ namespace SGFME.Application.Controllers
         }
 
 
+        [HttpPatch("{id}/mudarStatus")]
+        public async Task<IActionResult> MudarStatus(long id, [FromBody] int novoStatusId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var paciente = await _context.paciente.FirstOrDefaultAsync(p => p.id == id);
+                    if (paciente == null)
+                    {
+                        return NotFound(new { Message = "Paciente não encontrado." });
+                    }
+
+                    var status = await _context.status.FirstOrDefaultAsync(s => s.id == novoStatusId);
+                    if (status == null)
+                    {
+                        return NotFound(new { Message = "Status não encontrado." });
+                    }
+
+                    // Validação de regras de negócio, se aplicável
+                    // if (!paciente.CanChangeStatusTo(novoStatusId))
+                    // {
+                    //     return BadRequest(new { Message = "Mudança de status inválida." });
+                    // }
+
+                    paciente.idStatus = novoStatusId;
+
+                    // Validação utilizando FluentValidation (se aplicável)
+                    // var validator = new PacienteValidator();
+                    // var validationResult = await validator.ValidateAsync(paciente);
+                    // if (!validationResult.IsValid)
+                    // {
+                    //     return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+                    // }
+
+                    _context.paciente.Update(paciente);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(paciente);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    // Log ex para diagnóstico
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Erro ao mudar o status do paciente.", Details = ex.Message });
+                }
+            }
+        }
+
+
+
         [HttpGet]
         public IActionResult SelecionarTodos()
         {
             return Execute(() => _baseService.Get<PacienteModel>());
         }
 
-        
+
+        [HttpPut("{id}/contatos")]
+        public async Task<IActionResult> UpdateContatos(long id, List<ContatoCreateDTO> novosContatos)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var paciente = await _context.paciente
+                        .Include(p => p.contato)
+                        .FirstOrDefaultAsync(p => p.id == id);
+
+                    if (paciente == null)
+                    {
+                        return NotFound("Paciente não encontrado.");
+                    }
+
+                    // Validação dos novos contatos (opcional)
+                    foreach (var contatoDto in novosContatos)
+                    {
+                        if (!_context.tipocontato.Any(tc => tc.id == contatoDto.idTipoContato))
+                        {
+                            return BadRequest($"Tipo de Contato com id {contatoDto.idTipoContato} não encontrado.");
+                        }
+                    }
+
+                    // Remove todos os contatos antigos
+                    _context.contato.RemoveRange(paciente.contato);
+                    paciente.contato.Clear();
+
+                    // Adiciona os novos contatos
+                    foreach (var contatoDto in novosContatos)
+                    {
+                        var contato = new Contato
+                        {
+                            valor = contatoDto.valor,
+                            idTipoContato = contatoDto.idTipoContato,
+                            paciente = paciente,
+                            discriminator = "Paciente"
+                        };
+                        paciente.contato.Add(contato);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(paciente.contato);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar contatos.");
+                }
+            }
+        }
+
+        [HttpPut("{id}/enderecos")]
+        public async Task<IActionResult> UpdateEnderecos(long id, List<EnderecoCreateDTO> novosEnderecos)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var paciente = await _context.paciente
+                        .Include(p => p.endereco)
+                        .FirstOrDefaultAsync(p => p.id == id);
+
+                    if (paciente == null)
+                    {
+                        return NotFound("Paciente não encontrado.");
+                    }
+
+                    // Validação dos novos endereços (opcional)
+                    foreach (var enderecoDto in novosEnderecos)
+                    {
+                        if (!_context.tipoendereco.Any(te => te.id == enderecoDto.idTipoEndereco))
+                        {
+                            return BadRequest($"Tipo de Endereço com id {enderecoDto.idTipoEndereco} não encontrado.");
+                        }
+                    }
+
+                    // Remove todos os endereços antigos
+                    _context.endereco.RemoveRange(paciente.endereco);
+                    paciente.endereco.Clear();
+
+                    // Adiciona os novos endereços
+                    foreach (var enderecoDto in novosEnderecos)
+                    {
+                        var endereco = new Endereco
+                        {
+                            idTipoEndereco = enderecoDto.idTipoEndereco,
+                            logradouro = enderecoDto.logradouro,
+                            numero = enderecoDto.numero,
+                            complemento = enderecoDto.complemento,
+                            bairro = enderecoDto.bairro,
+                            cidade = enderecoDto.cidade,
+                            uf = enderecoDto.uf,
+                            cep = enderecoDto.cep,
+                            pontoReferencia = enderecoDto.pontoReferencia,
+                            paciente = paciente,
+                            discriminator = "Paciente"
+                        };
+                        paciente.endereco.Add(endereco);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(paciente.endereco);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar endereços.");
+                }
+            }
+        }
+
+
+
+
     }
 }
