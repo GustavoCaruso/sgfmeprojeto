@@ -100,8 +100,10 @@
                     <th scope="col">Código</th>
                     <th scope="col">Nome Completo</th>
                     <th scope="col">Data de Nascimento</th>
+                    <th scope="col">RG</th>
+                    <th scope="col">CPF</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Visualizar</th>
+                    <th scope="col">Ações</th>
                 </tr>
             </thead>
             <tbody id="tabela">
@@ -119,12 +121,18 @@
         <th scope="row" class="codigo"></th>
         <td class="nomeCompleto text-truncate"></td>
         <td class="dataNascimento text-truncate"></td>
+        <td class="rg text-truncate"></td>
+        <td class="cpf text-truncate"></td>
         <td class="status">
             <select class="form-select alterar-status">
                 <!-- Os status serão carregados dinamicamente -->
             </select>
         </td>
-        <td><a href="#" class="alterar btn btn-info btn-sm">Visualizar</a></td>
+        <td>
+            <a href="#" class="alterar btn btn-info btn-sm">
+                <i class="fas fa-eye"></i> Visualizar
+            </a>
+        </td>
     </tr>
 </table>
 

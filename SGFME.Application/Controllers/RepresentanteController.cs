@@ -142,21 +142,56 @@ namespace SGFME.Application.Controllers
         }
 
 
-        [HttpGet("selecionarContatos/{id}")]
+       
+
+
+
+
+        [HttpGet("dadosBasicos")]
+        public async Task<ActionResult<List<object>>> GetBasicRepresentanteData()
+        {
+            try
+            {
+                var representantes = await _context.representante
+                    .Include(r => r.status) // Inclui o relacionamento com Status
+                    .Select(r => new
+                    {
+                        r.id,
+                        r.nomeCompleto,
+                        r.dataNascimento,
+                        r.cpfNumero,
+                        r.rgNumero,
+                        r.idStatus, // Inclui o idStatus
+                        statusNome = r.status.nome, // Inclui o nome do status
+                    })
+                    .ToListAsync(); // Remove paginação
+
+                return Ok(representantes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os dados básicos dos representantes.");
+            }
+        }
+
+
+
+        [HttpGet("{id}/contatos")]
         public async Task<ActionResult<List<Contato>>> GetContatosByRepresentanteId(long id)
         {
             try
             {
-                var representante = await _context.representante
-                    .Include(m => m.contato)
-                    .FirstOrDefaultAsync(m => m.id == id);
+                var contatos = await _context.contato
+                    .Where(c => c.idRepresentante == id) // Filtra os contatos pelo id do representante
+                    .Include(c => c.tipocontato)
+                    .ToListAsync();
 
-                if (representante == null)
+                if (contatos == null || !contatos.Any())
                 {
-                    return NotFound("Representante não encontrado.");
+                    return NotFound("Contatos não encontrados.");
                 }
 
-                return Ok(representante.contato);
+                return Ok(contatos);
             }
             catch (Exception ex)
             {
@@ -164,27 +199,71 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        [HttpGet("selecionarEnderecos/{id}")]
+
+
+
+
+        [HttpGet("{id}/enderecos")]
         public async Task<ActionResult<List<Endereco>>> GetEnderecosByRepresentanteId(long id)
         {
             try
             {
-                var representante = await _context.representante
-                    .Include(m => m.endereco)
-                    .FirstOrDefaultAsync(m => m.id == id);
+                var enderecos = await _context.endereco
+                    .Where(e => e.idRepresentante == id) // Filtra os endereços pelo id do representante
+                    .Include(e => e.tipoendereco)
+                    .ToListAsync();
 
-                if (representante == null)
+                if (enderecos == null || !enderecos.Any())
                 {
-                    return NotFound("Representante não encontrado.");
+                    return NotFound("Endereços não encontrados.");
                 }
 
-                return Ok(representante.endereco);
+                return Ok(enderecos);
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar endereços.");
             }
         }
+
+
+
+
+
+
+
+        [HttpGet("{id}/dadosCompletos")]
+        public async Task<ActionResult<Representante>> GetCompleteRepresentanteData(long id)
+        {
+            try
+            {
+                var representante = await _context.representante
+                    .Include(r => r.contato)
+                        .ThenInclude(c => c.tipocontato)
+                    .Include(r => r.endereco)
+                        .ThenInclude(e => e.tipoendereco)
+                    .Include(r => r.status)
+                    .Include(r => r.sexo)
+                    .Include(r => r.corraca)
+                    .Include(r => r.profissao)
+                    .Include(r => r.estadocivil)
+                    .FirstOrDefaultAsync(r => r.id == id);
+
+                if (representante == null)
+                {
+                    return NotFound("Representante não encontrado.");
+                }
+
+                return Ok(representante);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os dados completos do representante.");
+            }
+        }
+
+
+
 
         [HttpGet("tipoContato")]
         public IActionResult ObterTiposContato()
@@ -487,5 +566,161 @@ namespace SGFME.Application.Controllers
         {
             return Execute(() => _baseService.Get<RepresentanteModel>());
         }
+
+
+
+
+
+        [HttpPatch("{id}/mudarStatus")]
+        public async Task<IActionResult> MudarStatus(long id, [FromBody] int novoStatusId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var representante = await _context.representante.FirstOrDefaultAsync(r => r.id == id);
+                    if (representante == null)
+                    {
+                        return NotFound(new { Message = "Representante não encontrado." });
+                    }
+
+                    var status = await _context.status.FirstOrDefaultAsync(s => s.id == novoStatusId);
+                    if (status == null)
+                    {
+                        return NotFound(new { Message = "Status não encontrado." });
+                    }
+
+                    representante.idStatus = novoStatusId;
+
+                    _context.representante.Update(representante);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(representante);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Erro ao mudar o status do representante.", Details = ex.Message });
+                }
+            }
+        }
+
+        [HttpPut("{id}/contatos")]
+        public async Task<IActionResult> UpdateContatos(long id, List<ContatoCreateDTO> novosContatos)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var representante = await _context.representante
+                        .Include(r => r.contato)
+                        .FirstOrDefaultAsync(r => r.id == id);
+
+                    if (representante == null)
+                    {
+                        return NotFound("Representante não encontrado.");
+                    }
+
+                    foreach (var contatoDto in novosContatos)
+                    {
+                        if (!_context.tipocontato.Any(tc => tc.id == contatoDto.idTipoContato))
+                        {
+                            return BadRequest($"Tipo de Contato com id {contatoDto.idTipoContato} não encontrado.");
+                        }
+                    }
+
+                    _context.contato.RemoveRange(representante.contato);
+                    representante.contato.Clear();
+
+                    foreach (var contatoDto in novosContatos)
+                    {
+                        var contato = new Contato
+                        {
+                            valor = contatoDto.valor,
+                            idTipoContato = contatoDto.idTipoContato,
+                            representante = representante,
+                            discriminator = "Representante"
+                        };
+                        representante.contato.Add(contato);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(representante.contato);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar contatos.");
+                }
+            }
+        }
+
+        [HttpPut("{id}/enderecos")]
+        public async Task<IActionResult> UpdateEnderecos(long id, List<EnderecoCreateDTO> novosEnderecos)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var representante = await _context.representante
+                        .Include(r => r.endereco)
+                        .FirstOrDefaultAsync(r => r.id == id);
+
+                    if (representante == null)
+                    {
+                        return NotFound("Representante não encontrado.");
+                    }
+
+                    foreach (var enderecoDto in novosEnderecos)
+                    {
+                        if (!_context.tipoendereco.Any(te => te.id == enderecoDto.idTipoEndereco))
+                        {
+                            return BadRequest($"Tipo de Endereço com id {enderecoDto.idTipoEndereco} não encontrado.");
+                        }
+                    }
+
+                    _context.endereco.RemoveRange(representante.endereco);
+                    representante.endereco.Clear();
+
+                    foreach (var enderecoDto in novosEnderecos)
+                    {
+                        var endereco = new Endereco
+                        {
+                            idTipoEndereco = enderecoDto.idTipoEndereco,
+                            logradouro = enderecoDto.logradouro,
+                            numero = enderecoDto.numero,
+                            complemento = enderecoDto.complemento,
+                            bairro = enderecoDto.bairro,
+                            cidade = enderecoDto.cidade,
+                            uf = enderecoDto.uf,
+                            cep = enderecoDto.cep,
+                            pontoReferencia = enderecoDto.pontoReferencia,
+                            representante = representante,
+                            discriminator = "Representante"
+                        };
+                        representante.endereco.Add(endereco);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(representante.endereco);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar endereços.");
+                }
+            }
+        }
+
+
+
+
+
+
     }
 }

@@ -118,6 +118,137 @@ namespace SGFME.Application.Controllers
             }
         }
 
+
+
+
+        [HttpGet("dadosBasicos")]
+        public async Task<ActionResult<List<object>>> GetBasicEstabelecimentoSaudeData()
+        {
+            try
+            {
+                var estabelecimentos = await _context.estabelecimentosaude
+                    .Include(e => e.status) // Inclui o relacionamento com Status
+                    .Select(e => new
+                    {
+                        e.id,
+                        e.nomeFantasia,
+                        e.razaoSocial,
+                        e.cnes,
+                        e.dataCadastro,
+                        e.idStatus, // Inclui o idStatus
+                        statusNome = e.status.nome // Inclui o nome do status
+                    })
+                    .ToListAsync(); // Remove paginação
+
+                return Ok(estabelecimentos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os dados básicos dos estabelecimentos de saúde.");
+            }
+        }
+
+
+        // Endpoint para contatos de um estabelecimento de saúde
+        [HttpGet("{id}/contatos")]
+        public async Task<ActionResult<List<Contato>>> GetContatosByEstabelecimentoSaudeId(long id)
+        {
+            try
+            {
+                var contatos = await _context.contato
+                    .Where(c => c.idEstabelecimentoSaude == id) // Filtra pelos contatos associados ao estabelecimento de saúde
+                    .Include(c => c.tipocontato) // Inclui o relacionamento com TipoContato
+                    .ToListAsync();
+
+                if (contatos == null || !contatos.Any())
+                {
+                    return NotFound("Contatos não encontrados.");
+                }
+
+                return Ok(contatos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar contatos.");
+            }
+        }
+
+
+
+        // Endpoint para endereços de um estabelecimento de saúde
+        [HttpGet("{id}/enderecos")]
+        public async Task<ActionResult<List<Endereco>>> GetEnderecosByEstabelecimentoSaudeId(long id)
+        {
+            try
+            {
+                var enderecos = await _context.endereco
+                    .Where(e => e.idEstabelecimentoSaude == id) // Filtra pelos endereços associados ao estabelecimento de saúde
+                    .Include(e => e.tipoendereco) // Inclui o relacionamento com TipoEndereco
+                    .ToListAsync();
+
+                if (enderecos == null || !enderecos.Any())
+                {
+                    return NotFound("Endereços não encontrados.");
+                }
+
+                return Ok(enderecos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar endereços.");
+            }
+        }
+
+
+
+        // Endpoint para dados completos de um estabelecimento de saúde específico
+        [HttpGet("{id}/dadosCompletos")]
+        public async Task<ActionResult<EstabelecimentoSaude>> GetCompleteEstabelecimentoSaudeData(long id)
+        {
+            try
+            {
+                var estabelecimentoSaude = await _context.estabelecimentosaude
+                    .Include(es => es.contato)
+                        .ThenInclude(c => c.tipocontato)
+                    .Include(es => es.endereco)
+                        .ThenInclude(e => e.tipoendereco)
+                    .Include(es => es.status)
+                    .FirstOrDefaultAsync(es => es.id == id);
+
+                if (estabelecimentoSaude == null)
+                {
+                    return NotFound("Estabelecimento de saúde não encontrado.");
+                }
+
+                return Ok(estabelecimentoSaude);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os dados completos do estabelecimento de saúde.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet("selecionarContatos/{id}")]
         public async Task<ActionResult<List<Contato>>> GetContatosByEstabelecimentoId(long id)
         {
@@ -371,5 +502,176 @@ namespace SGFME.Application.Controllers
         {
             return Execute(() => _baseService.Get<EstabelecimentoSaude>());
         }
+
+        [HttpPatch("{id}/mudarStatus")]
+        public async Task<IActionResult> MudarStatusEstabelecimentoSaude(long id, [FromBody] int novoStatusId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var estabelecimentoSaude = await _context.estabelecimentosaude.FirstOrDefaultAsync(es => es.id == id);
+                    if (estabelecimentoSaude == null)
+                    {
+                        return NotFound(new { Message = "Estabelecimento de saúde não encontrado." });
+                    }
+
+                    var status = await _context.status.FirstOrDefaultAsync(s => s.id == novoStatusId);
+                    if (status == null)
+                    {
+                        return NotFound(new { Message = "Status não encontrado." });
+                    }
+
+                    // Validação de regras de negócio, se aplicável
+                    // if (!estabelecimentoSaude.CanChangeStatusTo(novoStatusId))
+                    // {
+                    //     return BadRequest(new { Message = "Mudança de status inválida." });
+                    // }
+
+                    estabelecimentoSaude.idStatus = novoStatusId;
+
+                    // Validação utilizando FluentValidation (se aplicável)
+                    // var validator = new EstabelecimentoSaudeValidator();
+                    // var validationResult = await validator.ValidateAsync(estabelecimentoSaude);
+                    // if (!validationResult.IsValid)
+                    // {
+                    //     return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+                    // }
+
+                    _context.estabelecimentosaude.Update(estabelecimentoSaude);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(estabelecimentoSaude);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    // Log ex para diagnóstico
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Erro ao mudar o status do estabelecimento de saúde.", Details = ex.Message });
+                }
+            }
+        }
+
+
+        [HttpPut("{id}/contatos")]
+        public async Task<IActionResult> UpdateContatosEstabelecimentoSaude(long id, List<ContatoCreateDTO> novosContatos)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var estabelecimentoSaude = await _context.estabelecimentosaude
+                        .Include(es => es.contato)
+                        .FirstOrDefaultAsync(es => es.id == id);
+
+                    if (estabelecimentoSaude == null)
+                    {
+                        return NotFound("Estabelecimento de saúde não encontrado.");
+                    }
+
+                    // Validação dos novos contatos (opcional)
+                    foreach (var contatoDto in novosContatos)
+                    {
+                        if (!_context.tipocontato.Any(tc => tc.id == contatoDto.idTipoContato))
+                        {
+                            return BadRequest($"Tipo de Contato com id {contatoDto.idTipoContato} não encontrado.");
+                        }
+                    }
+
+                    // Remove todos os contatos antigos
+                    _context.contato.RemoveRange(estabelecimentoSaude.contato);
+                    estabelecimentoSaude.contato.Clear();
+
+                    // Adiciona os novos contatos
+                    foreach (var contatoDto in novosContatos)
+                    {
+                        var contato = new Contato
+                        {
+                            valor = contatoDto.valor,
+                            idTipoContato = contatoDto.idTipoContato,
+                            estabelecimentosaude = estabelecimentoSaude,
+                            discriminator = "EstabelecimentoSaude"
+                        };
+                        estabelecimentoSaude.contato.Add(contato);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(estabelecimentoSaude.contato);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar contatos.");
+                }
+            }
+        }
+
+
+        [HttpPut("{id}/enderecos")]
+        public async Task<IActionResult> UpdateEnderecosEstabelecimentoSaude(long id, List<EnderecoCreateDTO> novosEnderecos)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var estabelecimentoSaude = await _context.estabelecimentosaude
+                        .Include(es => es.endereco)
+                        .FirstOrDefaultAsync(es => es.id == id);
+
+                    if (estabelecimentoSaude == null)
+                    {
+                        return NotFound("Estabelecimento de saúde não encontrado.");
+                    }
+
+                    // Validação dos novos endereços (opcional)
+                    foreach (var enderecoDto in novosEnderecos)
+                    {
+                        if (!_context.tipoendereco.Any(te => te.id == enderecoDto.idTipoEndereco))
+                        {
+                            return BadRequest($"Tipo de Endereço com id {enderecoDto.idTipoEndereco} não encontrado.");
+                        }
+                    }
+
+                    // Remove todos os endereços antigos
+                    _context.endereco.RemoveRange(estabelecimentoSaude.endereco);
+                    estabelecimentoSaude.endereco.Clear();
+
+                    // Adiciona os novos endereços
+                    foreach (var enderecoDto in novosEnderecos)
+                    {
+                        var endereco = new Endereco
+                        {
+                            idTipoEndereco = enderecoDto.idTipoEndereco,
+                            logradouro = enderecoDto.logradouro,
+                            numero = enderecoDto.numero,
+                            complemento = enderecoDto.complemento,
+                            bairro = enderecoDto.bairro,
+                            cidade = enderecoDto.cidade,
+                            uf = enderecoDto.uf,
+                            cep = enderecoDto.cep,
+                            pontoReferencia = enderecoDto.pontoReferencia,
+                            estabelecimentosaude = estabelecimentoSaude,
+                            discriminator = "EstabelecimentoSaude"
+                        };
+                        estabelecimentoSaude.endereco.Add(endereco);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(estabelecimentoSaude.endereco);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar endereços.");
+                }
+            }
+        }
+
+
     }
 }

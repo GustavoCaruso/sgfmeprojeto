@@ -170,22 +170,12 @@ namespace SGFME.Application.Controllers
                     {
                         p.id,
                         p.nomeCompleto,
-                        p.peso,
-                        p.altura,
                         p.dataNascimento,
-                        p.dataCadastro,
                         p.cpfNumero,
                         p.rgNumero,
-                        p.nomeMae,
-                        p.nomeConjuge,
-                        p.naturalidadeCidade,
-                        p.naturalidadeUf,
                         p.idStatus, // Inclui o idStatus
                         statusNome = p.status.nome, // Inclui o nome do status
-                        p.idSexo,
-                        p.idEstadoCivil,
-                        p.idProfissao,
-                        p.idCorRaca
+                        
                     })
                     .ToListAsync(); // Remove paginação
 

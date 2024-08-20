@@ -21,10 +21,24 @@
         margin-top: 15px;
         margin-bottom: 15px;
     }
+
+    .table-responsive td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .table-responsive th, .table-responsive td {
+        max-width: 150px; /* Ajuste conforme necessário */
+    }
 </style>
 
 <form id="estabelecimentoSaudeForm" class="row g-3">
-
+    <div id="loading" style="display: none; text-align: center;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
     <div class="row align-items-center mb-3">
         <div class="col-auto">
             <i class="fas fa-hospital fa-3x"></i>
@@ -115,7 +129,7 @@
                     <tr>
                         <th scope="col">Tipo</th>
                         <th scope="col">Valor</th>
-                        <th scope="col">Excluir</th>
+                        <th scope="col">Ações</th> <!-- Nova coluna para ações -->
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -214,7 +228,7 @@
                         <th scope="col">UF</th>
                         <th scope="col">CEP</th>
                         <th scope="col">Ponto de Referência</th>
-                        <th scope="col">Excluir</th>
+                        <th scope="col">Ações</th> <!-- Nova coluna para ações -->
                     </tr>
                 </thead>
                 <tbody></tbody>
