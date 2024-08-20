@@ -130,6 +130,8 @@ $(document).ready(async function () {
 
     configurarMascaraCPF();
     configurarMascaraCEP();
+    configurarMascaraCNS();
+    configurarMascaraCRM();
 });
 
 // Função para remover máscara de valores como telefone ou CPF
@@ -445,6 +447,7 @@ $("#btnsalvar").click(function () {
         const rgNumero = removerMascara($("#txtrgNumero").val(), "RG");
         const cnsNumero = removerMascara($("#txtcnsNumero").val(), "CNS");
         const cpfNumero = removerMascara($("#txtcpfNumero").val(), "CPF");
+        const crm = removerMascara($("#txtcrm").val(), "CRM");
 
         enderecos = enderecos.map(endereco => ({
             ...endereco,
@@ -461,7 +464,7 @@ $("#btnsalvar").click(function () {
             rgUfEmissao: $("#selectRgUfEmissao").val(),
             cnsNumero: cnsNumero,
             cpfNumero: cpfNumero,
-            crm: $("#txtcrm").val(),
+            crm: crm,
             nomeMae: $("#txtnomeMae").val(),
             nomeConjuge: $("#txtnomeConjuge").val(),
             naturalidadeCidade: $("#selectNaturalidadeCidade").val(),
@@ -511,6 +514,7 @@ $("#btnsalvar").click(function () {
         });
     }
 });
+
 
 
 function limparFormulario() {
@@ -978,14 +982,7 @@ $("#txtrgNumero").on("input", function () {
     $(this).val(valor);
 });
 
-$("#txtcnsNumero").on("input", function () {
-    let valor = $(this).val();
-    valor = valor.replace(/\D/g, "");
-    valor = valor.replace(/(\d{3})(\d)/, "$1 $2");
-    valor = valor.replace(/(\d{4})(\d)/, "$1 $2");
-    valor = valor.replace(/(\d{4})(\d)/, "$1 $2");
-    $(this).val(valor);
-});
+
 
 $("#txtCep").on("input", function () {
     let valor = $(this).val();
@@ -1016,3 +1013,41 @@ $("#txtNumero").on("blur", function () {
 
     $(this).val(valor);
 });
+
+
+function configurarMascaraCNS() {
+    $("#txtcnsNumero").off("input").on("input", function () {
+        let valor = $(this).val();
+        valor = valor.replace(/\D/g, ""); // Remove todos os caracteres não numéricos
+        if (valor.length > 15) {
+            valor = valor.slice(0, 15); // Limita o valor a 15 dígitos
+        }
+        if (valor.length <= 15) {
+            valor = valor.replace(/(\d{3})(\d)/, "$1 $2");
+            valor = valor.replace(/(\d{4})(\d)/, "$1 $2");
+            valor = valor.replace(/(\d{4})(\d{4})$/, "$1 $2");
+        }
+        $(this).val(valor);
+    });
+}
+
+
+function configurarMascaraCRM() {
+    $("#txtcrm").off("input").on("input", function () {
+        let valor = $(this).val();
+        valor = valor.replace(/\D/g, "");
+        if (valor.length <= 10) {
+            valor = valor.replace(/(\d{3})(\d)/, "$1-$2");
+            valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+        }
+        $(this).val(valor);
+    });
+}
+
+
+function removerMascara(valor, tipo) {
+    if (["Celular", "Telefone Fixo", "CEP", "CNS", "CPF", "CRM"].includes(tipo)) {
+        return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
+    }
+    return valor;
+}
