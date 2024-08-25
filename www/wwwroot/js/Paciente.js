@@ -948,8 +948,8 @@ $("#btnAdicionarContato").click(function () {
     const tipoContato = $("#selectTipoContato option:selected").text();
     let valorContato = $("#txtValorContato").val();
 
-    // Verifica se os campos estão preenchidos
-    if (idTipoContato === "" || idTipoContato === null || tipoContato === "Selecione um Tipo de Contato") {
+    // Verifica se os campos estão preenchidos corretamente
+    if (idTipoContato === "0" || tipoContato === "Selecione um Tipo de Contato") {
         alert("Por favor, selecione um tipo de contato válido.");
         return;
     }
@@ -1003,6 +1003,7 @@ $("#btnAdicionarContato").click(function () {
 
     atualizarTabelaContatos();
     $("#txtValorContato").val('');
+    $("#selectTipoContato").val('0');  // Reseta o select para a opção padrão após adicionar
 });
 
 
@@ -1022,12 +1023,13 @@ $("#btnAdicionarEndereco").click(function () {
     const cep = removerMascara($("#txtCep").val(), "CEP");
     const pontoReferencia = $("#txtPontoReferencia").val();
 
-    // Verificar se a opção "Selecione uma opção" está selecionada
+    // Verifica se o tipo de endereço está selecionado
     if (!idTipoEndereco || idTipoEndereco === "0") {
         alert("Por favor, selecione um tipo de endereço válido.");
         return;
     }
 
+    // Verifica se todos os campos obrigatórios estão preenchidos
     if (!logradouro || !numero || !bairro || !cidade || !uf || !cep) {
         alert("Por favor, preencha todos os campos obrigatórios do endereço.");
         return;

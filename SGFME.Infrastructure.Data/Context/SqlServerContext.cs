@@ -36,6 +36,7 @@ namespace SGFME.Infrastructure.Data.Context
         public DbSet<Medicamento> medicamento { get; set; }
         public DbSet<Especialidade> especialidade { get; set; }
         public DbSet<VersaoCid> versaocid { get; set; }
+        public DbSet<Funcionario> funcionario { get; set; }
 
 
 
@@ -87,6 +88,7 @@ namespace SGFME.Infrastructure.Data.Context
 
             modelBuilder.Entity<Especialidade>(new EspecialidadeMapping().Configure);//TESTE
             modelBuilder.Entity<VersaoCid>(new VersaoCidMapping().Configure);
+            modelBuilder.Entity<Funcionario>(new FuncionarioMapping().Configure);
             //TESTE2
 
         }

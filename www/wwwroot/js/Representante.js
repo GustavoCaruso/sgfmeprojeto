@@ -992,12 +992,19 @@ $("#txtcpfNumero").on("input", function () {
 
 $("#txtrgNumero").on("input", function () {
     let valor = $(this).val();
+
+    // Remove qualquer caractere que não seja alfanumérico
     valor = valor.replace(/[^a-zA-Z0-9]/g, "");
-    valor = valor.replace(/(\d{2})(\d)/, "$1.$2");
-    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-    valor = valor.replace(/(\d{3})(\w{1,2})$/, "$1-$2");
+
+    // Aplica a máscara RG, considerando que pode haver letras no final
+    if (valor.length <= 9) {
+        valor = valor.replace(/(\d{2})(\d{3})(\d{3})([\d\w]{1,2})$/, "$1.$2.$3-$4");
+    }
+
+    // Atualiza o valor do campo com a máscara aplicada
     $(this).val(valor);
 });
+
 
 $("#txtcnsNumero").on("input", function () {
     let valor = $(this).val();
