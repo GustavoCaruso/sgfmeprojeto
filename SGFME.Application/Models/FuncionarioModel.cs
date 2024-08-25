@@ -1,4 +1,6 @@
-﻿namespace SGFME.Application.Models
+﻿using SGFME.Domain.Entidades;
+
+namespace SGFME.Application.Models
 {
     public class FuncionarioModel
     {
@@ -18,5 +20,20 @@
         public string naturalidadeUf { get; set; }
         public string? crfUf { get; set; }
         public string? crf { get; set; }
+        public long idStatus { get; set; }
+        public virtual Status status { get; set; }
+
+        public long idSexo { get; set; }
+        public virtual Sexo sexo { get; set; }
+
+       
+        public long idCorRaca { get; set; }
+        public virtual CorRaca corraca { get; set; }
+        public long idEstadoCivil { get; set; }
+        public virtual EstadoCivil estadocivil { get; set; }
+
+
+        public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
+        public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
     }
 }

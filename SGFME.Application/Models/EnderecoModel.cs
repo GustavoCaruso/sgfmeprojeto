@@ -16,7 +16,8 @@ namespace SGFME.Application.Models
 
         public long? idTipoEndereco { get; set; } // Chave estrangeira
         public virtual TipoEndereco tipoendereco { get; set; } // Propriedade de navegação
-
+        public long? idFuncionario { get; set; } // Chave estrangeira
+        public virtual Funcionario funcionario { get; set; } // Propriedade de navegação
 
         public string discriminator { get; set; } // Propriedade discriminadora
 

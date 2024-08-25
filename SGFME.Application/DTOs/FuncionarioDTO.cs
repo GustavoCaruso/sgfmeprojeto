@@ -18,5 +18,22 @@
         public string naturalidadeUf { get; set; }
         public string? crfUf { get; set; }
         public string? crf { get; set; }
+
+        public long idStatus { get; set; }
+
+
+        public long idSexo { get; set; }
+
+
+        
+
+        public long idCorRaca { get; set; }
+
+        public long idEstadoCivil { get; set; }
+
+
+
+        public List<ContatoCreateDTO> contato { get; set; } = new List<ContatoCreateDTO>();
+        public List<EnderecoCreateDTO> endereco { get; set; } = new List<EnderecoCreateDTO>();
     }
 }

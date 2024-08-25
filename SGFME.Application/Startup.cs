@@ -110,6 +110,9 @@ namespace SGFME.Application
                 config.CreateMap<VersaoCid, VersaoCidModel>();
                 config.CreateMap<VersaoCidModel, VersaoCid>();
 
+                config.CreateMap<Funcionario, FuncionarioModel>();
+                config.CreateMap<FuncionarioModel, Funcionario>();
+
 
 
 
@@ -173,6 +176,9 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<VersaoCid>, BaseService<VersaoCid>>();
             services.AddScoped<IBaseRepository<VersaoCid>, BaseRepository<VersaoCid>>();
+
+            services.AddScoped<IBaseService<Funcionario>, BaseService<Funcionario>>();
+            services.AddScoped<IBaseRepository<Funcionario>, BaseRepository<Funcionario>>();
 
         }
 

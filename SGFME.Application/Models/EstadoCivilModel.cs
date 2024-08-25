@@ -16,5 +16,7 @@ namespace SGFME.Application.Models
 
         [JsonIgnore]
         public virtual ICollection<Representante> representante { get; set; } = new List<Representante>();
+        [JsonIgnore]
+        public virtual ICollection<Funcionario> funcionario { get; set; } = new List<Funcionario>();
     }
 }

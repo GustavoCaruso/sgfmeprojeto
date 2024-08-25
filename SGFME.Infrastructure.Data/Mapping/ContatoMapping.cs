@@ -65,6 +65,13 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .IsRequired(false);
 
 
+         
+            builder.HasOne(p => p.funcionario).WithMany(c => c.contato)
+                .HasConstraintName("fk_funcionario_contato")
+                .HasForeignKey(p => p.idFuncionario)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
 
             builder.Property(prop => prop.discriminator)
                 .IsRequired()

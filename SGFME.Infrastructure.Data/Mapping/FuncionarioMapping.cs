@@ -105,9 +105,31 @@ namespace SGFME.Infrastructure.Data.Mapping
 
 
 
+            
+
             //Relações com as demais tabelas
 
+            // Definir a relação com Status
+            builder.HasOne(r => r.status)
+                .WithMany(s => s.funcionario)
+                .HasForeignKey(r => r.idStatus)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(r => r.sexo)
+                .WithMany(s => s.funcionario)
+                .HasForeignKey(r => r.idSexo)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            builder.HasOne(r => r.corraca)
+                .WithMany(s => s.funcionario)
+                .HasForeignKey(r => r.idCorRaca)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.estadocivil)
+                .WithMany(s => s.funcionario)
+                .HasForeignKey(r => r.idEstadoCivil)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
 

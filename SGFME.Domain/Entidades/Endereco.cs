@@ -30,6 +30,9 @@ namespace SGFME.Domain.Entidades
         public long? idMedico { get; set; } // Chave estrangeira
         public virtual Medico medico { get; set; } // Propriedade de navegação
 
+        public long? idFuncionario { get; set; } // Chave estrangeira
+        public virtual Funcionario funcionario { get; set; } // Propriedade de navegação
+
         public long? idEstabelecimentoSaude { get; set; } // Chave estrangeira
         public virtual EstabelecimentoSaude estabelecimentosaude { get; set; } // Propriedade de navegação
     }

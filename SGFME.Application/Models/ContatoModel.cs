@@ -13,6 +13,8 @@ namespace SGFME.Application.Models
         public virtual Paciente paciente { get; set; } // Propriedade de navegação
         public long? idMedico { get; set; } // Chave estrangeira
         public virtual Medico medico { get; set; } // Propriedade de navegação
+        public long? idFuncionario { get; set; } // Chave estrangeira
+        public virtual Funcionario funcionario { get; set; } // Propriedade de navegação
 
         public string discriminator { get; set; } // Propriedade discriminadora
 
