@@ -14,6 +14,7 @@ namespace SGFME.Domain.Entidades
         public DateTime dataCadastro { get; set; }
         public long idStatus { get; set; }
         public virtual Status status { get; set; }
+        public virtual ICollection<Funcionario> funcionario { get; set; } = new List<Funcionario>();
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
         public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
     }

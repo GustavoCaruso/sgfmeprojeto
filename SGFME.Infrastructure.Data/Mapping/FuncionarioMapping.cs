@@ -131,6 +131,11 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .HasForeignKey(r => r.idEstadoCivil)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(r => r.estabelecimentosaude)
+                .WithMany(s => s.funcionario)
+                .HasForeignKey(r => r.idEstabelecimentoSaude)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
 
         }

@@ -42,6 +42,9 @@ namespace SGFME.Domain.Entidades
         public long idEstadoCivil { get; set; }
         public virtual EstadoCivil estadocivil { get; set; }
 
+        public long idEstabelecimentoSaude { get; set; }
+        public virtual EstabelecimentoSaude estabelecimentosaude { get; set; }
+
 
 
 

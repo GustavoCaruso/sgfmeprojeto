@@ -19,7 +19,7 @@ namespace SGFME.Application.Controllers
     [ApiController]
     public class FuncionarioController : ControllerBase
     {
-        private IBaseService<Funcionario> _baseService;
+        private readonly IBaseService<Funcionario> _baseService;
         private readonly SqlServerContext _context;
 
         public FuncionarioController(IBaseService<Funcionario> baseService, SqlServerContext context)
@@ -28,7 +28,7 @@ namespace SGFME.Application.Controllers
             _context = context;
         }
 
-        // Adicionar método para executar comando e retornar IActionResult
+        // Método auxiliar para execução segura de comandos
         private IActionResult Execute(Func<object> func)
         {
             try
@@ -66,6 +66,10 @@ namespace SGFME.Application.Controllers
                     {
                         return BadRequest($"Estado Civil com id {request.idEstadoCivil} não encontrado.");
                     }
+                    if (!_context.estabelecimentosaude.Any(es => es.id == request.idEstabelecimentoSaude))
+                    {
+                        return BadRequest($"Estabelecimento de Saúde com id {request.idEstabelecimentoSaude} não encontrado.");
+                    }
 
                     var novoFuncionario = new Funcionario
                     {
@@ -83,12 +87,13 @@ namespace SGFME.Application.Controllers
                         nomeConjuge = request.nomeConjuge,
                         naturalidadeCidade = request.naturalidadeCidade,
                         naturalidadeUf = request.naturalidadeUf,
-                        crf = request.crf,
                         crfUf = request.crfUf,
+                        crf = request.crf,
                         idStatus = request.idStatus,
                         idSexo = request.idSexo,
-                        idEstadoCivil = request.idEstadoCivil,
                         idCorRaca = request.idCorRaca,
+                        idEstadoCivil = request.idEstadoCivil,
+                        idEstabelecimentoSaude = request.idEstabelecimentoSaude,
                         contato = new List<Contato>(),
                         endereco = new List<Endereco>()
                     };
@@ -137,6 +142,7 @@ namespace SGFME.Application.Controllers
                         .Include(f => f.sexo)
                         .Include(f => f.corraca)
                         .Include(f => f.estadocivil)
+                        .Include(f => f.estabelecimentosaude)
                         .FirstOrDefaultAsync(e => e.id == novoFuncionario.id);
 
                     return CreatedAtAction(nameof(Create), new { id = createdFuncionario.id }, createdFuncionario);
@@ -152,13 +158,144 @@ namespace SGFME.Application.Controllers
             }
         }
 
+
+        [HttpGet("tipoContato")]
+        public IActionResult ObterTiposContato()
+        {
+            try
+            {
+                var tiposContato = _context.tipocontato.ToList();
+                return Ok(tiposContato);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoEndereco")]
+        public IActionResult ObterTiposEndereco()
+        {
+            try
+            {
+                var tiposEndereco = _context.tipoendereco.ToList();
+                return Ok(tiposEndereco);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+        [HttpGet("tipoStatus")]
+        public IActionResult ObterTiposStatus()
+        {
+            try
+            {
+                var tiposStatus = _context.status.ToList();
+                return Ok(tiposStatus);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+
+
+
+        [HttpGet("tipoSexo")]
+        public IActionResult ObterTiposSexo()
+        {
+            try
+            {
+                var tiposSexo = _context.sexo.ToList();
+                return Ok(tiposSexo);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoEstadoCivil")]
+        public IActionResult ObterTiposEstadoCivil()
+        {
+            try
+            {
+                var tiposEstadoCivil = _context.estadocivil.ToList();
+                return Ok(tiposEstadoCivil);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoCorRaca")]
+        public IActionResult ObterTiposCorRaca()
+        {
+            try
+            {
+                var tiposCorRaca = _context.corraca.ToList();
+                return Ok(tiposCorRaca);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("tipoProfissao")]
+        public IActionResult ObterTiposProfissao()
+        {
+            try
+            {
+                var tiposProfissao = _context.profissao.ToList();
+                return Ok(tiposProfissao);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+        [HttpGet("estabelecimentoSaude")]
+        public IActionResult ObterestabelecimentoSaude()
+        {
+            try
+            {
+                var estabelecimentoSaude = _context.estabelecimentosaude.ToList();
+                return Ok(estabelecimentoSaude);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet("dadosBasicos")]
         public async Task<ActionResult<List<object>>> GetBasicFuncionarioData()
         {
             try
             {
                 var funcionarios = await _context.funcionario
-                    .Include(f => f.status)
+                    .Include(f => f.status) // Inclui o relacionamento com Status
                     .Select(f => new
                     {
                         f.id,
@@ -166,8 +303,8 @@ namespace SGFME.Application.Controllers
                         f.dataNascimento,
                         f.cpfNumero,
                         f.rgNumero,
-                        f.idStatus,
-                        statusNome = f.status.nome,
+                        f.idStatus, // Inclui o idStatus
+                        statusNome = f.status.nome, // Inclui o nome do status
                     })
                     .ToListAsync();
 
@@ -242,11 +379,12 @@ namespace SGFME.Application.Controllers
                     .Include(f => f.sexo)
                     .Include(f => f.corraca)
                     .Include(f => f.estadocivil)
+                    .Include(f => f.estabelecimentosaude)
                     .FirstOrDefaultAsync(f => f.id == id);
 
                 if (funcionario == null)
                 {
-                    return NotFound("Funcionario não encontrado.");
+                    return NotFound("Funcionário não encontrado.");
                 }
 
                 return Ok(funcionario);
@@ -271,7 +409,7 @@ namespace SGFME.Application.Controllers
 
                     if (funcionario == null)
                     {
-                        return NotFound("Funcionario não encontrado.");
+                        return NotFound("Funcionário não encontrado.");
                     }
 
                     funcionario.nomeCompleto = request.nomeCompleto;
@@ -287,12 +425,13 @@ namespace SGFME.Application.Controllers
                     funcionario.rgUfEmissao = request.rgUfEmissao;
                     funcionario.cnsNumero = request.cnsNumero;
                     funcionario.cpfNumero = request.cpfNumero;
+                    funcionario.crfUf = request.crfUf;
+                    funcionario.crf = request.crf;
                     funcionario.idStatus = request.idStatus;
                     funcionario.idCorRaca = request.idCorRaca;
                     funcionario.idSexo = request.idSexo;
                     funcionario.idEstadoCivil = request.idEstadoCivil;
-                    funcionario.crf = request.crf;
-                    funcionario.crfUf = request.crfUf;
+                    funcionario.idEstabelecimentoSaude = request.idEstabelecimentoSaude;
 
                     // Atualizando os contatos
                     _context.contato.RemoveRange(funcionario.contato);
@@ -333,6 +472,15 @@ namespace SGFME.Application.Controllers
                         funcionario.endereco.Add(endereco);
                     }
 
+                    // Validar a entrada usando FluentValidation
+                    var validator = new FuncionarioValidator();
+                    var validationResult = await validator.ValidateAsync(funcionario);
+
+                    if (!validationResult.IsValid)
+                    {
+                        return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+                    }
+
                     _context.funcionario.Update(funcionario);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -342,7 +490,7 @@ namespace SGFME.Application.Controllers
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar Funcionario.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar Funcionário.");
                 }
             }
         }
@@ -361,7 +509,7 @@ namespace SGFME.Application.Controllers
 
                     if (funcionarioExistente == null)
                     {
-                        return NotFound("Funcionario não encontrado.");
+                        return NotFound("Funcionário não encontrado.");
                     }
 
                     _context.contato.RemoveRange(funcionarioExistente.contato);
@@ -370,72 +518,13 @@ namespace SGFME.Application.Controllers
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return Ok("Funcionario excluído com sucesso.");
+                    return Ok("Funcionário excluído com sucesso.");
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao excluir Funcionario.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao excluir Funcionário.");
                 }
-            }
-        }
-        [HttpGet("tipoStatus")]
-        public IActionResult ObterTiposStatus()
-        {
-            try
-            {
-                var tiposStatus = _context.status.ToList();
-                return Ok(tiposStatus);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-
-
-
-
-        [HttpGet("tipoSexo")]
-        public IActionResult ObterTiposSexo()
-        {
-            try
-            {
-                var tiposSexo = _context.sexo.ToList();
-                return Ok(tiposSexo);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("tipoEstadoCivil")]
-        public IActionResult ObterTiposEstadoCivil()
-        {
-            try
-            {
-                var tiposEstadoCivil = _context.estadocivil.ToList();
-                return Ok(tiposEstadoCivil);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("tipoCorRaca")]
-        public IActionResult ObterTiposCorRaca()
-        {
-            try
-            {
-                var tiposCorRaca = _context.corraca.ToList();
-                return Ok(tiposCorRaca);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -449,7 +538,7 @@ namespace SGFME.Application.Controllers
                     var funcionario = await _context.funcionario.FirstOrDefaultAsync(f => f.id == id);
                     if (funcionario == null)
                     {
-                        return NotFound(new { Message = "Funcionario não encontrado." });
+                        return NotFound(new { Message = "Funcionário não encontrado." });
                     }
 
                     var status = await _context.status.FirstOrDefaultAsync(s => s.id == novoStatusId);
@@ -493,10 +582,9 @@ namespace SGFME.Application.Controllers
 
                     if (funcionario == null)
                     {
-                        return NotFound("Funcionario não encontrado.");
+                        return NotFound("Funcionário não encontrado.");
                     }
 
-                    // Validação dos novos contatos (opcional)
                     foreach (var contatoDto in novosContatos)
                     {
                         if (!_context.tipocontato.Any(tc => tc.id == contatoDto.idTipoContato))
@@ -546,7 +634,7 @@ namespace SGFME.Application.Controllers
 
                     if (funcionario == null)
                     {
-                        return NotFound("Funcionario não encontrado.");
+                        return NotFound("Funcionário não encontrado.");
                     }
 
                     foreach (var enderecoDto in novosEnderecos)

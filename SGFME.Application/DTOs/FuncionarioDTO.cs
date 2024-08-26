@@ -30,6 +30,7 @@
         public long idCorRaca { get; set; }
 
         public long idEstadoCivil { get; set; }
+        public long idEstabelecimentoSaude { get; set; }
 
 
 
