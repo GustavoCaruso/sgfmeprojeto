@@ -3,7 +3,7 @@
 let statusOptions = '';
 let sexoOptions = '';
 let corRacaOptions = '';
-let profissaoOptions = '';
+
 let estadoCivilOptions = '';
 let estabelecimentoSaudeOptions = '';
 let tipoContatoOptions = '';
@@ -143,7 +143,7 @@ function carregarDadosSelecoes() {
         carregarOpcoesStatus(),
         carregarOpcoesSexo(),
         carregarOpcoesCorRaca(),
-        carregarOpcoesProfissao(),
+       
         carregarOpcoesEstadoCivil(),
         carregarOpcoesEstabelecimentoSaude(),
         carregarEstados($("#selectNaturalidadeUf")),
@@ -278,30 +278,7 @@ function carregarOpcoesCorRaca() {
     });
 }
 
-function carregarOpcoesProfissao() {
-    const cachedProfissao = localStorage.getItem('profissaoOptions');
-    if (cachedProfissao) {
-        profissaoOptions = cachedProfissao;
-        $("#selectProfissao").html(profissaoOptions);
-        return Promise.resolve();
-    }
 
-    return $.ajax({
-        url: urlAPI + "api/Funcionario/tipoProfissao",
-        method: "GET",
-        success: function (data) {
-            profissaoOptions = '<option value="0">Selecione uma profissão</option>';
-            data.forEach(item => {
-                profissaoOptions += `<option value="${item.id}">${item.nome}</option>`;
-            });
-            $("#selectProfissao").html(profissaoOptions);
-            localStorage.setItem('profissaoOptions', profissaoOptions);
-        },
-        error: function () {
-            alert("Erro ao carregar as profissões.");
-        }
-    });
-}
 
 function carregarOpcoesEstabelecimentoSaude() {
     return $.ajax({
@@ -447,7 +424,7 @@ function validarCampos() {
         "#selectNaturalidadeUf",
         "#selectStatus",
         "#selectSexo",
-        "#selectProfissao",
+       
         "#selectCorRaca",
         "#selectEstadoCivil",
         "#selectEstabelecimentoSaude"
@@ -488,9 +465,13 @@ $("#btnsalvar").click(function () {
     }
 
     if (validarCampos()) {
-        const rgNumero = removerMascara($("#txtrgNumero").val(), "RG");
-        const cnsNumero = removerMascara($("#txtcnsNumero").val(), "CNS");
-        const cpfNumero = removerMascara($("#txtcpfNumero").val(), "CPF");
+        
+       
+
+        const cpfNumero = removerMascaraCPF($("#txtcpfNumero").val());
+        const rgNumero = removerMascaraRG($("#txtrgNumero").val());
+        const cnsNumero = removerMascaraCNS($("#txtcnsNumero").val());
+       
 
         enderecos = enderecos.map(endereco => ({
             ...endereco,
@@ -514,12 +495,12 @@ $("#btnsalvar").click(function () {
             dataCadastro: $("#txtdataCadastro").val(),
             idStatus: $("#selectStatus").val(),
             idSexo: $("#selectSexo").val(),
-            idProfissao: $("#selectProfissao").val(),
+            
             idCorRaca: $("#selectCorRaca").val(),
             idEstadoCivil: $("#selectEstadoCivil").val(),
             idEstabelecimentoSaude: $("#selectEstabelecimentoSaude").val(),
-            crf: $("#txtCrf").val(), // Adiciona o campo CRF
-            crfUf: $("#selectCrfUf").val(), // Adiciona o campo CRF - UF
+            crf: $("#txtcrf").val(),
+            crfUf: $("#selectCrfUf").val(),
             contato: contatos,
             endereco: enderecos
         };
@@ -560,6 +541,7 @@ $("#btnsalvar").click(function () {
 });
 
 
+
 function limparFormulario() {
     $("#txtnomeCompleto").val('');
     $("#txtdataNascimento").val('');
@@ -569,6 +551,7 @@ function limparFormulario() {
     $("#selectRgUfEmissao").val('');
     $("#txtcnsNumero").val('');
     $("#txtcpfNumero").val('');
+    $("#txtcrf").val('');
     $("#txtid").val('0');
     $("#txtdataCadastro").val(new Date().toISOString().split('T')[0]);
     $("#txtidade").val('');
@@ -576,9 +559,10 @@ function limparFormulario() {
     $("#txtnomeConjuge").val('');
     $("#selectNaturalidadeCidade").val('');
     $("#selectNaturalidadeUf").val('');
+    $("#selectCrfUf").val('');
     $("#selectStatus").val("0");
     $("#selectSexo").val("0");
-    $("#selectProfissao").val("0");
+   
     $("#selectCorRaca").val("0");
     $("#selectEstadoCivil").val("0");
     $("#selectEstabelecimentoSaude").val("0");
@@ -636,7 +620,7 @@ async function visualizar(codigo) {
         $("#selectRgUfEmissao").val(jsonResult.rgUfEmissao);
 
         // Adicionar os campos CRF e CRF - UF
-        $("#txtCrf").val(jsonResult.crf);
+        $("#txtcrf").val(jsonResult.crf);
         $("#selectCrfUf").val(jsonResult.crfUf);
 
         await carregarEstados($("#selectNaturalidadeUf")).then(() => {
@@ -650,7 +634,7 @@ async function visualizar(codigo) {
 
         $("#selectStatus").val(jsonResult.idStatus);
         $("#selectSexo").val(jsonResult.idSexo);
-        $("#selectProfissao").val(jsonResult.idProfissao);
+        
         $("#selectCorRaca").val(jsonResult.idCorRaca);
         $("#selectEstadoCivil").val(jsonResult.idEstadoCivil);
         $("#selectEstabelecimentoSaude").val(jsonResult.idEstabelecimentoSaude);
@@ -940,6 +924,27 @@ $("#btnAdicionarContato").click(function () {
     $("#txtValorContato").val('');
     $("#selectTipoContato").val('0');
 });
+
+function removerMascaraCPF(valor) {
+    return valor.replace(/\D/g, '');
+}
+
+function removerMascaraRG(valor) {
+    return valor.replace(/[^a-zA-Z0-9]/g, '');
+}
+
+function removerMascaraCEP(valor) {
+    return valor.replace(/\D/g, '');
+}
+
+function removerMascaraCNS(valor) {
+    return valor.replace(/\D/g, '');
+}
+
+function removerMascaraTelefone(valor) {
+    return valor.replace(/\D/g, '');
+}
+
 
 $("#btnAdicionarEndereco").click(function () {
     const idTipoEndereco = $("#selectTipoEndereco").val();

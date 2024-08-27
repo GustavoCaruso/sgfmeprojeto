@@ -63,10 +63,7 @@
                 <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
             </div>
 
-            <div class="col-md-2">
-                <label for="txtdataCadastro" class="form-label">Data de Cadastro</label>
-                <input type="date" class="form-control" id="txtdataCadastro" disabled>
-            </div>
+            
 
             <div class="col-md-2">
                 <label for="selectStatus" class="form-label">Status</label>
@@ -77,7 +74,7 @@
 
             <div class="col-md-6">
                 <label for="txtnomeUsuario" class="form-label">Nome de Usuário</label>
-                <input type="text" class="form-control" id="txtnomeUsuario" placeholder="Nome de Usuário" required maxlength="100">
+                <input type="text" class="form-control" id="txtnomeUsuario" placeholder="Nome de Usuário" required maxlength="100" readonly>
                 <div class="invalid-feedback">
                     Por favor, insira o nome de usuário.
                 </div>
@@ -85,11 +82,12 @@
 
             <div class="col-md-6">
                 <label for="txtsenha" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="txtsenha" placeholder="Senha" required maxlength="100">
+                <input type="password" class="form-control" id="txtsenha" placeholder="Senha" required maxlength="100" readonly>
                 <div class="invalid-feedback">
                     Por favor, insira a senha.
                 </div>
             </div>
+
         </div>
 
         <div class="row">

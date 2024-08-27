@@ -158,6 +158,21 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        //método para os usuário buscarem informações
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Funcionario>> GetFuncionarioById(long id)
+        {
+            var funcionario = await _context.funcionario.FindAsync(id);
+
+            if (funcionario == null)
+            {
+                return NotFound("Funcionário não encontrado.");
+            }
+
+            return Ok(funcionario);
+        }
+
+
 
         [HttpGet("tipoContato")]
         public IActionResult ObterTiposContato()

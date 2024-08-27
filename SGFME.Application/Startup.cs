@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using SGFME.Application.Models;
@@ -17,18 +18,56 @@ namespace SGFME.Application
 {
     public class Startup
     {
+
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
 
+
+            // Configuração do CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
+
+            // Configuração da Autenticação JWT
+            var key = Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]);
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                    };
+                });
+
             services.AddControllers();
 
+
+            
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SGFME.Application", Version = "v1" });
@@ -196,6 +235,29 @@ namespace SGFME.Application
 
         public void Configure(WebApplication app, IWebHostEnvironment environment)
         {
+
+            if (environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseRouting();
+
+            // Ativando CORS
+            app.UseCors("CorsPolicy");
+
+            // Ativando Autenticação e Autorização
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+
+
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -206,27 +268,15 @@ namespace SGFME.Application
 
             app.UseHttpsRedirection();
             app.UseStaticFiles(); // Serve arquivos estáticos da pasta wwwroot por padrão
-            app.UseRouting();
+            
 
-            app.UseCors(builder =>
-            {
-                builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-            });
+           
 
-            app.UseAuthentication();
-
-            app.UseAuthorization();
+            
 
             app.MapControllers();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-
-            });
+            
         }
     }
 }

@@ -104,14 +104,22 @@
         <img src="~/img/logo-sgfme.png" alt="SGFME Logo">
         <p>Sistema de Gestão para Farmácia de Medicamentos Especializados</p>
         <h2>AUTENTICAÇÃO</h2>
-        <input type="text" placeholder="Nome de usuário">
-        <input type="password" placeholder="Senha">
+        <input type="text" id="txtnomeUsuario" placeholder="Nome de usuário">
+        <input type="password" id="txtsenha" placeholder="Senha">
         <div style="text-align: left;">
             <input type="checkbox" id="lembrar-me">
             <label for="lembrar-me">Lembrar-me</label>
         </div>
-        <button>Entrar</button>
+        <button type="button" id="btnentrar">Entrar</button>
+
         <a href="#">Esqueceu a senha?</a>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   
+    <script src="~/js/Login.js"></script>
+
+   
 </body>
 </html>
+
+

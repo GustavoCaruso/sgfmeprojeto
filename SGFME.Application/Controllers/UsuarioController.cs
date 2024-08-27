@@ -54,16 +54,31 @@ namespace SGFME.Application.Controllers
                     {
                         return BadRequest($"Perfil de Usuário com id {request.idPerfilUsuario} não encontrado.");
                     }
-                    if (!_context.funcionario.Any(f => f.id == request.idFuncionario))
+                    var funcionario = await _context.funcionario.FindAsync(request.idFuncionario);
+                    if (funcionario == null)
                     {
                         return BadRequest($"Funcionário com id {request.idFuncionario} não encontrado.");
                     }
 
+                    // Geração do nome de usuário único
+                    string nomeBase = funcionario.nomeCompleto.Split(' ')[0].ToLower(); // Primeiro nome
+                    string sobrenomeBase = funcionario.nomeCompleto.Split(' ').Last().ToLower(); // Último sobrenome
+                    string nomeUsuario = $"{nomeBase}.{sobrenomeBase}";
+
+                    int contador = 1;
+                    while (_context.usuario.Any(u => u.nomeUsuario == nomeUsuario))
+                    {
+                        nomeUsuario = $"{nomeBase}.{sobrenomeBase}{contador}";
+                        contador++;
+                    }
+
+                    // Geração da senha baseada no CPF
+                    string senha = funcionario.cpfNumero.Substring(0, 6);
+
                     var novoUsuario = new Usuario
                     {
-                        id = request.id,
-                        nomeUsuario = request.nomeUsuario,
-                        senha = request.senha,
+                        nomeUsuario = nomeUsuario,
+                        senha = senha,
                         idStatus = request.idStatus,
                         idPerfilUsuario = request.idPerfilUsuario,
                         idFuncionario = request.idFuncionario
@@ -91,6 +106,7 @@ namespace SGFME.Application.Controllers
                 }
             }
         }
+
 
         [HttpGet("dadosBasicos")]
         public async Task<ActionResult<List<object>>> GetBasicUsuarioData()

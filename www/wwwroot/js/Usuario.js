@@ -1,4 +1,5 @@
-﻿const urlAPI = "https://localhost:7034/";
+﻿
+const urlAPI = "https://localhost:7034/";
 
 let statusOptions = '';
 let perfilUsuarioOptions = '';
@@ -60,13 +61,51 @@ $(document).ready(async function () {
             $("#selectFuncionario").empty().append('<option value="0">Selecione um funcionário</option>');
         }
     });
+
+    $("#selectFuncionario").change(function () {
+        var funcionarioId = $(this).val();
+
+        if (funcionarioId !== "0") {
+            // Fazer a chamada AJAX para obter os detalhes do funcionário selecionado
+            $.ajax({
+                url: urlAPI + `api/Funcionario/${funcionarioId}`, // Supondo que essa rota retorne os detalhes do funcionário
+                method: "GET",
+                success: function (data) {
+                    var nomeCompleto = data.nomeCompleto;
+                    var cpf = data.cpfNumero;
+
+                    // Gerar nome de usuário e senha
+                    var nomeBase = nomeCompleto.split(' ')[0].toLowerCase();
+                    var sobrenomeBase = nomeCompleto.split(' ').pop().toLowerCase();
+                    var nomeUsuario = nomeBase + '.' + sobrenomeBase;
+
+                    var senha = cpf.substring(0, 6);
+
+                    // Preencher e bloquear os campos
+                    $("#txtnomeUsuario").val(nomeUsuario).prop('readonly', true);
+                    $("#txtsenha").val(senha).prop('readonly', true);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("Erro ao obter detalhes do funcionário:", jqXHR.status, textStatus, errorThrown);
+                    alert("Erro ao obter detalhes do funcionário.");
+                }
+            });
+        } else {
+            // Caso não tenha funcionário selecionado, limpar e desbloquear os campos
+            $("#txtnomeUsuario").val('').prop('readonly', false);
+            $("#txtsenha").val('').prop('readonly', false);
+        }
+    });
+
+
+
 });
 
 // Função para carregar os funcionários baseados no estabelecimento selecionado
-function carregarFuncionariosPorEstabelecimento(estabelecimentoId) {
-    console.log("Carregando funcionários para o estabelecimento ID:", estabelecimentoId);
+function carregarFuncionariosPorEstabelecimento(idEstabelecimentoSaude) {
+    console.log("Carregando funcionários para o estabelecimento ID:", idEstabelecimentoSaude);
     return $.ajax({
-        url: urlAPI + `api/Usuario/FuncionariosPorEstabelecimento/${estabelecimentoId}`,
+        url: urlAPI + `api/Usuario/FuncionariosPorEstabelecimento/${idEstabelecimentoSaude}`,
         method: "GET",
         success: function (data) {
             console.log("Funcionários recebidos:", data);
@@ -299,6 +338,7 @@ function limparFormulario() {
     $("#txtid").val('0');
     $("#selectStatus").val("0");
     $("#selectPerfilUsuario").val("0");
+    $("#selectEstabelecimentoSaude").val("0");
     $("#selectFuncionario").val("0");
     houveAlteracao = false;
 }
@@ -336,22 +376,18 @@ async function visualizar(codigo) {
 
         if (jsonResult) {
             $("#txtid").val(jsonResult.id);
-            $("#txtnomeUsuario").val(jsonResult.nomeUsuario);
-            $("#txtsenha").val(jsonResult.senha);
-            $("#selectStatus").val(jsonResult.idStatus);
-            $("#selectPerfilUsuario").val(jsonResult.idPerfilUsuario);
+            $("#txtnomeUsuario").val(jsonResult.nomeUsuario).prop('readonly', true);
+            $("#txtsenha").val(jsonResult.senha).prop('readonly', false);
+            $("#selectStatus").val(jsonResult.idStatus).prop('disabled', true);
+            $("#selectPerfilUsuario").val(jsonResult.idPerfilUsuario).prop('disabled', true);
 
             if (jsonResult.funcionario && jsonResult.funcionario.idEstabelecimentoSaude) {
                 await carregarEstabelecimentosSaude().then(() => {
-                    $("#selectEstabelecimentoSaude").val(jsonResult.funcionario.idEstabelecimentoSaude);
+                    $("#selectEstabelecimentoSaude").val(jsonResult.funcionario.idEstabelecimentoSaude).prop('disabled', true);
                     return carregarFuncionariosPorEstabelecimento(jsonResult.funcionario.idEstabelecimentoSaude);
                 }).then(() => {
-                    $("#selectFuncionario").val(jsonResult.idFuncionario);
+                    $("#selectFuncionario").val(jsonResult.idFuncionario).prop('disabled', true);
                 });
-
-                // Adicionar nome do funcionário e nome do estabelecimento de saúde
-                $("#nomeFuncionario").val(jsonResult.funcionario.nomeCompleto);
-                $("#nomeEstabelecimentoSaude").val(jsonResult.funcionario.estabelecimentosaude.nomeFantasia);
             } else {
                 console.error("Estabelecimento de Saúde ou Funcionário não definidos corretamente.");
             }
@@ -365,5 +401,6 @@ async function visualizar(codigo) {
         $("#loading").hide();
     }
 }
+
 
 
