@@ -11,106 +11,109 @@ let contatoEmEdicao = null;
 let enderecoEmEdicao = null;
 
 $(document).ready(async function () {
-    await carregarDadosSelecoes();
+    try {
+        await carregarDadosSelecoes();
 
-    if ($("#tabela").length > 0) {
-        carregarEstabelecimentosSaude();
-    } else if ($("#txtid").length > 0) {
-        let params = new URLSearchParams(window.location.search);
-        let id = params.get('id');
-        if (id) {
-            visualizar(id);
-        } else {
-            let dataAtual = new Date().toISOString().split('T')[0];
-            $("#txtdataCadastro").val(dataAtual);
+        if ($("#tabela").length > 0) {
+            carregarEstabelecimentosSaude();
+        } else if ($("#txtid").length > 0) {
+            let params = new URLSearchParams(window.location.search);
+            let id = params.get('id');
+            if (id) {
+                visualizar(id);
+            } else {
+                let dataAtual = new Date().toISOString().split('T')[0];
+                $("#txtdataCadastro").val(dataAtual);
+            }
         }
+
+        $(".form-control").on("input change", function () {
+            if ($(this).hasClass('is-invalid')) {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        $(".numeric-only").on("input", function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        $("#btnlimpar").click(function () {
+            limparFormulario();
+        });
+
+        $(document).on("click", ".alterar", function (elemento) {
+            let codigo = $(elemento.target).closest("tr").find(".codigo").text();
+            console.log("Clique no botão alterar. Código:", codigo);
+            window.location.href = "/EstabelecimentoSaudeCadastro?id=" + codigo;
+        });
+
+        $(document).on("change", ".alterar-status", function (elemento) {
+            let codigo = $(elemento.target).closest("tr").find(".codigo").text();
+            let novoStatus = $(elemento.target).val();
+
+            if (novoStatus === "0") {
+                alert("Seleção inválida! Por favor, escolha um status válido.");
+                $(elemento.target).val($(elemento.target).data('original-value'));
+            } else {
+                console.log("Mudança de status. Código:", codigo, "Novo Status:", novoStatus);
+                mudarStatus(codigo, novoStatus);
+            }
+        });
+
+        $(document).on("focus", ".alterar-status", function () {
+            $(this).data('original-value', $(this).val());
+        });
+
+        $("#selectEstado").change(function () {
+            const ufSelecionada = $(this).val();
+            console.log("UF selecionada para endereço:", ufSelecionada);
+            if (ufSelecionada !== "0") {
+                carregarMunicipios(ufSelecionada, $("#selectMunicipio"));
+            } else {
+                $("#selectMunicipio").empty().append('<option value="0">Selecione uma cidade</option>');
+            }
+        });
+
+        $(document).off("click", ".btn-danger[data-type='contato']").on("click", ".btn-danger[data-type='contato']", function () {
+            const index = $(this).data("index");
+            console.log("Clique para excluir contato. Índice:", index);
+            const confirmDelete = confirm("Você tem certeza que deseja excluir este contato?");
+            if (confirmDelete) {
+                console.log("Confirmação de exclusão de contato. Índice:", index);
+                contatos.splice(index, 1);
+                atualizarTabelaContatos();
+            }
+        });
+
+        $(document).off("click", ".btn-danger[data-type='endereco']").on("click", ".btn-danger[data-type='endereco']", function () {
+            const index = $(this).data("index");
+            console.log("Clique para excluir endereço. Índice:", index);
+            const confirmDelete = confirm("Você tem certeza que deseja excluir este endereço?");
+            if (confirmDelete) {
+                console.log("Confirmação de exclusão de endereço. Índice:", index);
+                enderecos.splice(index, 1);
+                atualizarTabelaEnderecos();
+            } else {
+                console.log("Exclusão de endereço cancelada.");
+            }
+        });
+
+        $(".form-control").on("input change", function () {
+            if (!houveAlteracao) {
+                houveAlteracao = true;
+            }
+        });
+
+        configurarMascaraCEP();
+    } catch (error) {
+        console.error("Erro durante a inicialização:", error);
+        alert("Erro durante a inicialização da página.");
     }
-
-    $(".form-control").on("input change", function () {
-        if ($(this).hasClass('is-invalid')) {
-            $(this).removeClass('is-invalid');
-        }
-    });
-
-    $(".numeric-only").on("input", function () {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
-
-    $("#btnlimpar").click(function () {
-        limparFormulario();
-    });
-
-    $(document).on("click", ".alterar", function (elemento) {
-        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        console.log("Clique no botão alterar. Código:", codigo);
-        window.location.href = "/EstabelecimentoSaudeCadastro?id=" + codigo;
-    });
-
-    $(document).on("change", ".alterar-status", function (elemento) {
-        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        let novoStatus = $(elemento.target).val();
-
-        if (novoStatus === "0") {
-            alert("Seleção inválida! Por favor, escolha um status válido.");
-            // Reverte a seleção para o valor anterior
-            $(elemento.target).val($(elemento.target).data('original-value'));
-        } else {
-            console.log("Mudança de status. Código:", codigo, "Novo Status:", novoStatus);
-            mudarStatus(codigo, novoStatus);
-        }
-    });
-
-    $(document).on("focus", ".alterar-status", function () {
-        // Armazena o valor original antes da mudança
-        $(this).data('original-value', $(this).val());
-    });
-
-    $("#selectEstado").change(function () {
-        const ufSelecionada = $(this).val();
-        console.log("UF selecionada para endereço:", ufSelecionada);
-        if (ufSelecionada !== "0") {
-            carregarMunicipios(ufSelecionada, $("#selectMunicipio"));
-        } else {
-            $("#selectMunicipio").empty().append('<option value="0">Selecione uma cidade</option>');
-        }
-    });
-
-    $(document).off("click", ".btn-danger[data-type='contato']").on("click", ".btn-danger[data-type='contato']", function () {
-        const index = $(this).data("index");
-        console.log("Clique para excluir contato. Índice:", index);
-        const confirmDelete = confirm("Você tem certeza que deseja excluir este contato?");
-        if (confirmDelete) {
-            console.log("Confirmação de exclusão de contato. Índice:", index);
-            contatos.splice(index, 1);
-            atualizarTabelaContatos();
-        }
-    });
-
-    $(document).off("click", ".btn-danger[data-type='endereco']").on("click", ".btn-danger[data-type='endereco']", function () {
-        const index = $(this).data("index");
-        console.log("Clique para excluir endereço. Índice:", index);
-        const confirmDelete = confirm("Você tem certeza que deseja excluir este endereço?");
-        if (confirmDelete) {
-            console.log("Confirmação de exclusão de endereço. Índice:", index);
-            enderecos.splice(index, 1);
-            atualizarTabelaEnderecos();
-        } else {
-            console.log("Exclusão de endereço cancelada.");
-        }
-    });
-
-    $(".form-control").on("input change", function () {
-        if (!houveAlteracao) {
-            houveAlteracao = true;
-        }
-    });
-
-    configurarMascaraCEP();
 });
 
 function removerMascara(valor, tipo) {
     if (tipo === "Celular" || tipo === "Telefone Fixo" || tipo === "CEP") {
-        return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
+        return valor.replace(/\D/g, '');
     }
     return valor;
 }
@@ -152,7 +155,8 @@ function carregarOpcoesStatus() {
             $("#selectStatus").html(statusOptions);
             localStorage.setItem('statusOptions', statusOptions);
         },
-        error: function () {
+        error: function (xhr, textStatus, errorThrown) {
+            console.error("Erro ao carregar os status:", xhr.status, xhr.responseText);
             alert("Erro ao carregar os status.");
         }
     });
@@ -170,7 +174,8 @@ function carregarOpcoes(apiEndpoint, selectElement) {
                 selectElement.append(option);
             });
         },
-        error: function () {
+        error: function (xhr, textStatus, errorThrown) {
+            console.error("Erro ao carregar as opções:", xhr.status, xhr.responseText);
             alert("Erro ao carregar os dados.");
         }
     });
@@ -188,7 +193,8 @@ function carregarEstados(selectElement) {
                 selectElement.append(option);
             });
         },
-        error: function () {
+        error: function (xhr, textStatus, errorThrown) {
+            console.error("Erro ao carregar os estados:", xhr.status, xhr.responseText);
             alert("Erro ao carregar os estados.");
         }
     });
@@ -210,7 +216,8 @@ function carregarMunicipios(estadoSigla, selectElement, cidadeSelecionada = null
                     selectElement.val(cidadeSelecionada);
                 }
             },
-            error: function () {
+            error: function (xhr, textStatus, errorThrown) {
+                console.error("Erro ao carregar os municípios:", xhr.status, xhr.responseText);
                 alert("Erro ao carregar as Cidades.");
             }
         });
@@ -240,14 +247,14 @@ function carregarEstabelecimentosSaude() {
 
                 var statusSelect = $("<select>")
                     .addClass("form-select alterar-status")
-                    .html(statusOptions) // Usa as opções armazenadas
-                    .val(item.idStatus); // Define o valor selecionado
+                    .html(statusOptions)
+                    .val(item.idStatus);
                 $(linha).find(".status").html(statusSelect);
 
-                fragment.appendChild(linha[0]); // Adiciona a linha ao fragmento
+                fragment.appendChild(linha[0]);
             });
 
-            tabela.append(fragment); // Adiciona todas as linhas de uma vez ao DOM
+            tabela.append(fragment);
 
             $('#tabelaEstabelecimentoSaude').DataTable({
                 language: {
@@ -258,7 +265,8 @@ function carregarEstabelecimentosSaude() {
 
             $("#loading").hide();
         },
-        error: function () {
+        error: function (xhr, textStatus, errorThrown) {
+            console.error("Erro ao carregar os estabelecimentos de saúde:", xhr.status, xhr.responseText);
             alert("Erro ao carregar estabelecimentos de saúde.");
             $("#loading").hide();
         }
@@ -355,6 +363,7 @@ $("#btnsalvar").click(function () {
                     }
                     alert(message);
                 } else {
+                    console.error("Erro ao salvar os dados:", jqXHR.status, jqXHR.responseText);
                     alert("Erro ao salvar os dados: " + textStatus);
                 }
             }
@@ -391,7 +400,7 @@ function mudarStatus(codigo, novoStatus) {
             alert('Status alterado com sucesso!');
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log("Erro:", xhr.responseText);
+            console.error("Erro ao alterar o status:", xhr.status, xhr.responseText);
             alert("Erro ao alterar o status do estabelecimento de saúde: " + xhr.responseText);
         }
     });
@@ -441,6 +450,7 @@ async function visualizar(codigo) {
         atualizarTabelaEnderecos();
 
     } catch (error) {
+        console.error("Erro ao carregar os dados:", error);
         alert("Erro ao carregar os dados: " + error.responseText);
     } finally {
         $("#loading").hide();
