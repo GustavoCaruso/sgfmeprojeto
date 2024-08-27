@@ -1,0 +1,117 @@
+﻿@page
+@model www.Pages.LoginModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SGFME</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4d79ff, #00c6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+            .login-container img {
+                width: 180px;
+                margin-bottom: 10px;
+            }
+
+            .login-container p {
+                font-size: 14px;
+                color: #555;
+                margin-bottom: 30px;
+            }
+
+            .login-container h2 {
+                color: #333;
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+
+            .login-container input[type="text"],
+            .login-container input[type="password"] {
+                width: 100%;
+                padding: 15px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-sizing: border-box;
+                font-size: 16px;
+            }
+
+            .login-container input[type="checkbox"] {
+                margin-top: 10px;
+            }
+
+            .login-container label {
+                color: #555;
+                font-size: 14px;
+                margin-left: 5px;
+            }
+
+            .login-container button {
+                width: 100%;
+                background-color: #007bff;
+                color: white;
+                padding: 15px;
+                margin-top: 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+                .login-container button:hover {
+                    background-color: #0056b3;
+                }
+
+            .login-container a {
+                color: #007bff;
+                font-size: 14px;
+                display: block;
+                margin-top: 20px;
+                text-decoration: none;
+            }
+
+                .login-container a:hover {
+                    text-decoration: underline;
+                }
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="~/img/logo-sgfme.png" alt="SGFME Logo">
+        <p>Sistema de Gestão para Farmácia de Medicamentos Especializados</p>
+        <h2>AUTENTICAÇÃO</h2>
+        <input type="text" placeholder="Nome de usuário">
+        <input type="password" placeholder="Senha">
+        <div style="text-align: left;">
+            <input type="checkbox" id="lembrar-me">
+            <label for="lembrar-me">Lembrar-me</label>
+        </div>
+        <button>Entrar</button>
+        <a href="#">Esqueceu a senha?</a>
+    </div>
+</body>
+</html>
