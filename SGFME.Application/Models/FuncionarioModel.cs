@@ -1,4 +1,5 @@
 ﻿using SGFME.Domain.Entidades;
+using System.Text.Json.Serialization;
 
 namespace SGFME.Application.Models
 {
@@ -38,5 +39,8 @@ namespace SGFME.Application.Models
 
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
         public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
+
+        [JsonIgnore]
+        public virtual ICollection<Usuario> usuario { get; set; } = new List<Usuario>();
     }
 }

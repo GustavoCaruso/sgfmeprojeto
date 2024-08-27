@@ -18,7 +18,7 @@ namespace SGFME.Domain.Entidades
         public virtual ICollection<Medico> medico { get; set; } = new List<Medico>();
         public virtual ICollection<EstabelecimentoSaude> estabelecimentosaude { get; set; } = new List<EstabelecimentoSaude>();
         public virtual ICollection<Funcionario> funcionario { get; set; } = new List<Funcionario>();
-
+        public virtual ICollection<Usuario> usuario { get; set; } = new List<Usuario>();
 
 
         public virtual ICollection<Cid> cid { get; set; } = new List<Cid>();

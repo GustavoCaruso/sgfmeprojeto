@@ -116,6 +116,9 @@ namespace SGFME.Application
                 config.CreateMap<PerfilUsuario, PerfilUsuarioModel>();
                 config.CreateMap<PerfilUsuarioModel, PerfilUsuario>();
 
+                config.CreateMap<Usuario, UsuarioModel>();
+                config.CreateMap<UsuarioModel, Usuario>();
+
 
 
 
@@ -185,6 +188,9 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<PerfilUsuario>, BaseService<PerfilUsuario>>();
             services.AddScoped<IBaseRepository<PerfilUsuario>, BaseRepository<PerfilUsuario>>();
+
+            services.AddScoped<IBaseService<Usuario>, BaseService<Usuario>>();
+            services.AddScoped<IBaseRepository<Usuario>, BaseRepository<Usuario>>();
 
         }
 

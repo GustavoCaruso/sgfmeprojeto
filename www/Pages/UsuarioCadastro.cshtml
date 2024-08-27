@@ -1,0 +1,128 @@
+﻿@page
+@model www.Pages.UsuarioCadastroModel
+@{
+    ViewData["Title"] = "Cadastro de Usuário";
+}
+
+<style>
+    .section {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+    }
+
+    .section-title {
+        margin-bottom: 20px;
+    }
+
+    .btn-margin {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .table-responsive td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .table-responsive th, .table-responsive td {
+        max-width: 150px; /* Ajuste conforme necessário */
+    }
+</style>
+
+<form id="usuarioForm" class="row g-3">
+    <div id="loading" style="display: none; text-align: center;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
+
+    <div class="row align-items-center mb-3">
+        <div class="col-auto">
+            <i class="fas fa-user fa-3x"></i>
+        </div>
+        <div class="col">
+            <h1>Cadastro de Usuário</h1>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-dark" onclick="location.href='/UsuarioGerenciamento'">
+                Gerenciamento de Usuários
+            </button>
+        </div>
+    </div>
+    <hr />
+
+    <div class="section">
+        <h2 class="section-title">Informações do Usuário</h2>
+        <div class="row">
+            <div class="col-md-2">
+                <label for="txtid" class="form-label">Código</label>
+                <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
+            </div>
+
+            <div class="col-md-2">
+                <label for="txtdataCadastro" class="form-label">Data de Cadastro</label>
+                <input type="date" class="form-control" id="txtdataCadastro" disabled>
+            </div>
+
+            <div class="col-md-2">
+                <label for="selectStatus" class="form-label">Status</label>
+                <select class="form-control" id="selectStatus" required>
+                    <option value="0">Selecione um status</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label for="txtnomeUsuario" class="form-label">Nome de Usuário</label>
+                <input type="text" class="form-control" id="txtnomeUsuario" placeholder="Nome de Usuário" required maxlength="100">
+                <div class="invalid-feedback">
+                    Por favor, insira o nome de usuário.
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="txtsenha" class="form-label">Senha</label>
+                <input type="password" class="form-control" id="txtsenha" placeholder="Senha" required maxlength="100">
+                <div class="invalid-feedback">
+                    Por favor, insira a senha.
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <label for="selectPerfilUsuario" class="form-label">Perfil de Usuário</label>
+                <select class="form-control" id="selectPerfilUsuario" required>
+                    <option value="0">Selecione um perfil de usuário</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label for="selectEstabelecimentoSaude" class="form-label">Estabelecimento de Saúde</label>
+                <select class="form-control" id="selectEstabelecimentoSaude" required>
+                    <option value="0">Selecione um estabelecimento de saúde</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label for="selectFuncionario" class="form-label">Funcionário</label>
+                <select class="form-control" id="selectFuncionario" required>
+                    <option value="0">Selecione um funcionário</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <button type="button" class="btn btn-primary" onclick="location.href='/UsuarioGerenciamento'">Voltar</button>
+        <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
+        <button type="button" id="btnlimpar" class="btn btn-primary">Limpar</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/js/Usuario.js"></script>
+}

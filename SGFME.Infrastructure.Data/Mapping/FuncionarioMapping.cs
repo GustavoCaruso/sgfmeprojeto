@@ -138,6 +138,12 @@ namespace SGFME.Infrastructure.Data.Mapping
 
 
 
+            // Definir a relação com Representante
+            builder.HasMany(s => s.usuario)
+                .WithOne(r => r.funcionario)
+                .HasForeignKey(r => r.idFuncionario)
+                .OnDelete(DeleteBehavior.Restrict); // Definir o comportamento de deleção
+
         }
     }
 }

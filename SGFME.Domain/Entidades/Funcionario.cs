@@ -47,7 +47,7 @@ namespace SGFME.Domain.Entidades
 
 
 
-
+        public virtual ICollection<Usuario> usuario { get; set; } = new List<Usuario>();
 
 
 

@@ -19,8 +19,12 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .HasColumnType("varchar(255)")  //tipo da coluna
                 .HasColumnName("nome");  //nome da coluna no bd
 
-            
 
+            // Definir a relação com Representante
+            builder.HasMany(s => s.usuario)
+                .WithOne(r => r.perfilusuario)
+                .HasForeignKey(r => r.idPerfilUsuario)
+                .OnDelete(DeleteBehavior.Restrict); // Definir o comportamento de deleção
         }
     }
 }
