@@ -11,7 +11,7 @@ namespace SGFME.Domain.Entidades
         public string valor { get; set; }
 
        
-        //Relacionamento com a entidade Paciente-One to Many
+       //
         public long? idPaciente { get; set; } // Chave estrangeira
         public virtual Paciente paciente { get; set; } // Propriedade de navegação
 
