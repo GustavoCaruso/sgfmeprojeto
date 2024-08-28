@@ -41,20 +41,20 @@
             border-radius: 8px;
         }
 
-        .sidebar li:hover a,
-        .sidebar li:hover a:hover {
-            color: #1f2937;
-        }
+            .sidebar li:hover a,
+            .sidebar li:hover a:hover {
+                color: #1f2937;
+            }
 
         .sidebar li.active {
             background: #eee;
             border-radius: 8px;
         }
 
-        .sidebar li.active a,
-        .sidebar li.active a:hover {
-            color: #1f2937;
-        }
+            .sidebar li.active a,
+            .sidebar li.active a:hover {
+                color: #1f2937;
+            }
 
         .sidebar li a {
             color: #fff;
@@ -70,9 +70,9 @@
                 width: 250px;
             }
 
-            #side_nav.active {
-                margin-left: 0;
-            }
+                #side_nav.active {
+                    margin-left: 0;
+                }
 
             .content {
                 padding-left: 0;
@@ -228,6 +228,9 @@
                             <li class="nav-item">
                                 <a class="nav-link active" aria-current="page" href="#">Perfil</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" id="logoutBtn">Sair</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -263,7 +266,7 @@
             });
 
             // Handle submenu toggle for better user experience
-            $(".sidebar li > a[data-bs-toggle='collapse']").on('click', function() {
+            $(".sidebar li > a[data-bs-toggle='collapse']").on('click', function () {
                 let target = $(this).attr('href');
                 let isOpen = $(target).hasClass('show');
                 if (!isOpen) {
@@ -274,25 +277,27 @@
             });
 
             // Preserve the active submenu state on page load
-            $('.collapse').each(function() {
+            $('.collapse').each(function () {
                 if ($(this).find('.active').length > 0) {
                     $(this).collapse('show');
                 }
             });
+
+            // Handle logout
+            $("#logoutBtn").on('click', function () {
+                // Remove the token from sessionStorage
+                sessionStorage.removeItem('token');
+                // Redirect to the login page
+                window.location.href = '/Login';
+            });
+
+            // Verifica o token no sessionStorage
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                // Redireciona para a página de login se o token for inválido
+                window.location.href = '/Login';
+            }
         });
-
-
-        // Obtém o token armazenado no sessionStorage
-        const token = sessionStorage.getItem('token');
-
-        // Verifica se o token está ausente ou vazio
-        if (!token) {
-            // Redireciona para a página de login ou index se o token for inválido
-            window.location.href = '/Login';
-        }
-            
-    
-
     </script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
