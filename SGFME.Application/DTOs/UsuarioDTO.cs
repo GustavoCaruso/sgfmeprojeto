@@ -13,5 +13,8 @@
 
 
         public long idFuncionario { get; set; }
+
+        // Nova propriedade para indicar se o usuário precisa trocar a senha
+        public bool PrecisaTrocarSenha { get; set; }
     }
 }

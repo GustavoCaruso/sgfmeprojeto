@@ -30,9 +30,7 @@ namespace SGFME.Application.Controllers
             _context = context;
         }
 
-
-
-
+        // Método existente de validação de login
         [HttpPost]
         [Route("validaLogin")]
         public IActionResult Login([FromBody] dynamic loginDetalhes)
@@ -55,6 +53,17 @@ namespace SGFME.Application.Controllers
                     {
                         mensagem = "Usuário não está ativo.",
                         statusUsuario = usuario.status?.nome
+                    });
+                }
+
+                // Verifica se o usuário precisa trocar a senha
+                if (usuario.precisaTrocarSenha)
+                {
+                    return Ok(new
+                    {
+                        mensagem = "Usuário precisa trocar a senha.",
+                        necessitaTrocarSenha = true,
+                        idUsuario = usuario.id
                     });
                 }
 
@@ -84,21 +93,70 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("TrocarSenha")]
+        public async Task<IActionResult> TrocarSenha([FromBody] dynamic senhaDetalhes)
+        {
+            if (senhaDetalhes == null)
+            {
+                return BadRequest(new { mensagem = "Dados de senha não fornecidos." });
+            }
+
+            long idUsuario;
+            string senhaAtual;
+            string novaSenha;
+
+            try
+            {
+                idUsuario = senhaDetalhes.idUsuario;
+                senhaAtual = senhaDetalhes.senhaAtual;
+                novaSenha = senhaDetalhes.novaSenha;
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { mensagem = "Dados de senha malformados." });
+            }
+
+            if (string.IsNullOrEmpty(senhaAtual) || string.IsNullOrEmpty(novaSenha))
+            {
+                return BadRequest(new { mensagem = "A senha atual e a nova senha devem ser fornecidas." });
+            }
+
+            var usuario = await _context.usuario.FindAsync(idUsuario);
+            if (usuario == null)
+            {
+                return NotFound(new { mensagem = "Usuário não encontrado." });
+            }
+
+            if (usuario.senha != senhaAtual)
+            {
+                return BadRequest(new { mensagem = "Senha atual incorreta." });
+            }
+
+            usuario.senha = novaSenha;
+            usuario.precisaTrocarSenha = false; // Reseta a flag de troca de senha
+
+            try
+            {
+                _context.usuario.Update(usuario);
+                await _context.SaveChangesAsync();
+                return Ok(new { mensagem = "Senha alterada com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro ao trocar senha para o usuário {usuario.nomeUsuario}: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { mensagem = "Erro ao trocar a senha." });
+            }
+        }
+
+
+
         private Usuario ValidarUsuario(string nomeUsuario, string senha)
         {
             return _context.usuario
                 .Include(u => u.status)
                 .FirstOrDefault(u => u.nomeUsuario == nomeUsuario && u.senha == senha);
         }
-
-
-
-
-
-
-
-
-
 
         private string GerarTokenJWT(UsuarioModel usuario)
         {
