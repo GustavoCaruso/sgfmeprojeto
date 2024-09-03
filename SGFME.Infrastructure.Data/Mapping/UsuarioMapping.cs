@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SGFME.Domain.Entidades;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SGFME.Infrastructure.Data.Mapping
 {
@@ -13,24 +8,28 @@ namespace SGFME.Infrastructure.Data.Mapping
     {
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
-            builder.ToTable("Usuario"); //Nome da tabela no SqlServer
+            builder.ToTable("Usuario"); // Nome da tabela no SqlServer
 
-            builder.HasKey(prop => prop.id); //Chave primária no SqlServer
+            builder.HasKey(prop => prop.id); // Chave primária no SqlServer
 
             builder.Property(prop => prop.nomeUsuario)
-                .HasConversion(prop => prop.ToString(), prop => prop)
                 .IsRequired()
                 .HasColumnName("nomeUsuario")
                 .HasColumnType("varchar(255)");
 
             builder.Property(prop => prop.senha)
-                .HasConversion(prop => prop.ToString(), prop => prop)
                 .IsRequired()
                 .HasColumnName("senha")
                 .HasColumnType("varchar(255)");
 
+            // Mapeamento da nova coluna PrecisaTrocarSenha
+            builder.Property(prop => prop.precisaTrocarSenha)
+                .IsRequired() // Campo obrigatório
+                .HasDefaultValue(true) // Valor padrão true para novos usuários
+                .HasColumnName("precisaTrocarSenha") // Nome da coluna no banco de dados
+                .HasColumnType("bit"); // Tipo de dado booleano no SQL Server
 
-            //Relações com as demais tabelas
+            // Relações com as demais tabelas
 
             // Definir a relação com Status
             builder.HasOne(r => r.status)
@@ -47,9 +46,6 @@ namespace SGFME.Infrastructure.Data.Mapping
                 .WithMany(s => s.usuario)
                 .HasForeignKey(r => r.idFuncionario)
                 .OnDelete(DeleteBehavior.Restrict);
-
-
-
         }
     }
 }

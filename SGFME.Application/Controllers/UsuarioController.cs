@@ -81,7 +81,8 @@ namespace SGFME.Application.Controllers
                         senha = senha,
                         idStatus = request.idStatus,
                         idPerfilUsuario = request.idPerfilUsuario,
-                        idFuncionario = request.idFuncionario
+                        idFuncionario = request.idFuncionario,
+                        precisaTrocarSenha = true // Definir como true para que o usuário troque a senha no primeiro login
                     };
 
                     _context.usuario.Add(novoUsuario);
@@ -106,6 +107,7 @@ namespace SGFME.Application.Controllers
                 }
             }
         }
+
 
 
         [HttpGet("dadosBasicos")]

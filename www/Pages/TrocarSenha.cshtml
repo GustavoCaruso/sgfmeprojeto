@@ -1,0 +1,105 @@
+﻿@page
+@model www.Pages.TrocarSenhaModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trocar Senha - SGFME</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4d79ff, #00c6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .senha-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+            .senha-container img {
+                width: 180px;
+                margin-bottom: 10px;
+            }
+
+            .senha-container p {
+                font-size: 14px;
+                color: #555;
+                margin-bottom: 30px;
+            }
+
+            .senha-container h2 {
+                color: #333;
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+
+            .senha-container input[type="password"] {
+                width: 100%;
+                padding: 15px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-sizing: border-box;
+                font-size: 16px;
+            }
+
+            .senha-container button {
+                width: 100%;
+                background-color: #007bff;
+                color: white;
+                padding: 15px;
+                margin-top: 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+                .senha-container button:hover {
+                    background-color: #0056b3;
+                }
+
+            .senha-container a {
+                color: #007bff;
+                font-size: 14px;
+                display: block;
+                margin-top: 20px;
+                text-decoration: none;
+            }
+
+                .senha-container a:hover {
+                    text-decoration: underline;
+                }
+
+    </style>
+</head>
+<body>
+    <div class="senha-container">
+        <img src="~/img/logo-sgfme.png" alt="SGFME Logo">
+        <p>Sistema de Gestão para Farmácia de Medicamentos Especializados</p>
+        <h2>TROCAR SENHA</h2>
+        <input type="password" id="txtsenhaAtual" placeholder="Senha Atual">
+        <input type="password" id="txtnovaSenha" placeholder="Nova Senha">
+        <input type="password" id="txtconfirmarSenha" placeholder="Confirmar Nova Senha">
+        <button type="button" id="btnTrocarSenha">Trocar Senha</button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="~/js/TrocarSenha.js"></script>
+</body>
+</html>
