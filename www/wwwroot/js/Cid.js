@@ -151,7 +151,13 @@ $(document).ready(function () {
                 dataType: "json",
                 success: function () {
                     limparFormulario();
-                    alert("Dados Salvos com sucesso!");
+                    //alert("Dados Salvos com sucesso!");
+
+                    Swal.fire({
+                        title: "Sucesso!",
+                        text: "CID cadastrado com sucesso!",
+                        icon: "success"
+                    });
 
                     if ($("#tabela").length > 0) {
                         carregarCids();

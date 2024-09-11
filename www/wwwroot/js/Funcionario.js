@@ -456,7 +456,9 @@ function validarCampos() {
     return isValid;
 }
 
-$("#btnsalvar").click(function () {
+$("#btnsalvar").click(async function () {  // Tornando a função assíncrona
+    var botao = this;
+    botao.disabled = true;
     if ($("#txtid").val() !== "0" && houveAlteracao) {
         const confirmSave = confirm("Você fez alterações no formulário. Deseja salvar as alterações?");
         if (!confirmSave) {
@@ -465,13 +467,10 @@ $("#btnsalvar").click(function () {
     }
 
     if (validarCampos()) {
-        
-       
 
         const cpfNumero = removerMascaraCPF($("#txtcpfNumero").val());
         const rgNumero = removerMascaraRG($("#txtrgNumero").val());
         const cnsNumero = removerMascaraCNS($("#txtcnsNumero").val());
-       
 
         enderecos = enderecos.map(endereco => ({
             ...endereco,
@@ -495,7 +494,6 @@ $("#btnsalvar").click(function () {
             dataCadastro: $("#txtdataCadastro").val(),
             idStatus: $("#selectStatus").val(),
             idSexo: $("#selectSexo").val(),
-            
             idCorRaca: $("#selectCorRaca").val(),
             idEstadoCivil: $("#selectEstadoCivil").val(),
             idEstabelecimentoSaude: $("#selectEstabelecimentoSaude").val(),
@@ -505,40 +503,47 @@ $("#btnsalvar").click(function () {
             endereco: enderecos
         };
         console.log(obj);
-        $.ajax({
-            type: obj.id == "0" ? "POST" : "PUT",
-            url: urlAPI + "api/Funcionario" + (obj.id != "0" ? "/" + obj.id : ""),
-            contentType: "application/json;charset=utf-8",
-            data: JSON.stringify(obj),
-            dataType: "json",
-            success: function () {
-                limparFormulario();
-                alert("Dados Salvos com sucesso!");
 
-                if ($("#tabela").length > 0) {
-                    carregarFuncionarios();
-                }
-                houveAlteracao = false;
-            },
-            error: function (jqXHR, textStatus) {
-                if (jqXHR.status === 400) {
-                    var errors = jqXHR.responseJSON.errors;
-                    var message = "";
-                    for (var key in errors) {
-                        if (errors.hasOwnProperty(key)) {
-                            errors[key].forEach(function (errorMessage) {
-                                message += errorMessage + "\n";
-                            });
-                        }
-                    }
-                    alert(message);
-                } else {
-                    alert("Erro ao salvar os dados: " + textStatus);
-                }
+        try {
+            const response = await $.ajax({
+                type: obj.id == "0" ? "POST" : "PUT",
+                url: urlAPI + "api/Funcionario" + (obj.id != "0" ? "/" + obj.id : ""),
+                contentType: "application/json;charset=utf-8",
+                data: JSON.stringify(obj),
+                dataType: "json"
+            });
+
+            limparFormulario();
+
+            Swal.fire({
+                title: "Sucesso!",
+                text: "Funcionário cadastrado com sucesso!",
+                icon: "success"
+            });
+
+            if ($("#tabela").length > 0) {
+                carregarFuncionarios();
             }
-        });
+            houveAlteracao = false;
+        } catch (jqXHR) {
+            if (jqXHR.status === 400) {
+                const errors = jqXHR.responseJSON.errors;
+                let message = "";
+                for (const key in errors) {
+                    if (errors.hasOwnProperty(key)) {
+                        errors[key].forEach(function (errorMessage) {
+                            message += errorMessage + "\n";
+                        });
+                    }
+                }
+                alert(message);
+            } else {
+                alert("Erro ao salvar os dados: " + jqXHR.statusText);
+            }
+        }
     }
 });
+
 
 
 
