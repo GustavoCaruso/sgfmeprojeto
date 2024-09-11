@@ -39,3 +39,5 @@ project.nuget.cache
 *.tmp
 *.temp
 *.tlog/
+/www/www.csproj
+/SGFME.Application/SGFME.Application.csproj

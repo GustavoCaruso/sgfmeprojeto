@@ -493,17 +493,19 @@ $("#btnsalvar").click(function () {
         }
     }
 
-
     if (validarCampos()) {
+        // Desabilita o botão para evitar múltiplos cliques
+        $("#btnsalvar").prop("disabled", true);
+
         // Removendo a máscara dos campos necessários
         const rgNumero = removerMascara($("#txtrgNumero").val(), "RG");
         const cnsNumero = removerMascara($("#txtcnsNumero").val(), "CNS");
-        const cpfNumero = removerMascara($("#txtcpfNumero").val(), "CPF"); // Certifique-se de remover a máscara do CPF aqui
+        const cpfNumero = removerMascara($("#txtcpfNumero").val(), "CPF");
 
         // Para cada endereço, remover a máscara do CEP
         enderecos = enderecos.map(endereco => ({
             ...endereco,
-            cep: removerMascara(endereco.cep, "CEP") // Remove a máscara do CEP do endereço
+            cep: removerMascara(endereco.cep, "CEP")
         }));
 
         const obj = {
@@ -529,7 +531,7 @@ $("#btnsalvar").click(function () {
             idCorRaca: $("#selectCorRaca").val(),
             idEstadoCivil: $("#selectEstadoCivil").val(),
             contato: contatos,
-            endereco: enderecos // Endereços já estão com o CEP desformatado
+            endereco: enderecos
         };
 
         $.ajax({
@@ -562,10 +564,15 @@ $("#btnsalvar").click(function () {
                 } else {
                     alert("Erro ao salvar os dados: " + textStatus);
                 }
+            },
+            complete: function () {
+                // Reabilita o botão após o sucesso ou erro
+                $("#btnsalvar").prop("disabled", false);
             }
         });
     }
 });
+
 
 
 

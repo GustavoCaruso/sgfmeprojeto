@@ -47,8 +47,8 @@ namespace SGFME.Infrastructure.Data.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //var stringConexao = @"Server=GUSTACNOTE;DataBase=SGFMEv06;integrated security=true;TrustServerCertificate=True;";
-            var stringConexao = "Data Source=SQL8020.site4now.net;Initial Catalog=db_aa9649_ggustac;User Id=db_aa9649_ggustac_admin;Password=sgfme123456;";
+            var stringConexao = @"Server=GUSTACNOTE;DataBase=SGFMEv07;integrated security=true;TrustServerCertificate=True;";
+            //var stringConexao = "Data Source=SQL8020.site4now.net;Initial Catalog=db_aa9649_ggustac;User Id=db_aa9649_ggustac_admin;Password=sgfme123456;";
 
 
 
