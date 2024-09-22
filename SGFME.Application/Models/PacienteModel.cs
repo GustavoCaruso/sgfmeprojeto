@@ -37,5 +37,7 @@ namespace SGFME.Application.Models
 
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
         public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
+        // Relacionamento com Representantes
+        public virtual ICollection<PacienteRepresentanteModel> pacienterepresentante { get; set; } = new List<PacienteRepresentanteModel>();
     }
 }

@@ -50,28 +50,33 @@ namespace SGFME.Application.Controllers
             {
                 try
                 {
-                    // Verificar se os IDs de chaves estrangeiras existem
-                    if (!_context.corraca.Any(cr => cr.id == request.idCorRaca))
+                    // Verificar se há representantes duplicados na lista de RGs fornecida
+                    var rgsUnicos = request.rgRepresentante.Distinct().ToList();
+                    if (rgsUnicos.Count != request.rgRepresentante.Count)
                     {
-                        return BadRequest($"CorRaca com id {request.idCorRaca} não encontrada.");
-                    }
-                    if (!_context.status.Any(st => st.id == request.idStatus))
-                    {
-                        return BadRequest($"Status com id {request.idStatus} não encontrado.");
-                    }
-                    if (!_context.sexo.Any(sx => sx.id == request.idSexo))
-                    {
-                        return BadRequest($"Sexo com id {request.idSexo} não encontrado.");
-                    }
-                    if (!_context.estadocivil.Any(ec => ec.id == request.idEstadoCivil))
-                    {
-                        return BadRequest($"Estado Civil com id {request.idEstadoCivil} não encontrado.");
-                    }
-                    if (!_context.profissao.Any(pr => pr.id == request.idProfissao))
-                    {
-                        return BadRequest($"Profissão com id {request.idProfissao} não encontrada.");
+                        return BadRequest("Não é permitido adicionar representantes duplicados.");
                     }
 
+                    // Buscar Representante pelo RG (um ou mais Rgs dos representantes podem ser passados no request)
+                    var representantesBuscados = await _context.representante
+                        .Where(r => rgsUnicos.Contains(r.rgNumero))
+                        .ToListAsync();
+
+                    // Verificar se todos os RGs fornecidos existem
+                    if (representantesBuscados.Count != rgsUnicos.Count)
+                    {
+                        var rgsNaoEncontrados = rgsUnicos
+                            .Where(rg => !representantesBuscados.Any(representante => representante.rgNumero == rg))
+                            .ToList();
+                        return BadRequest($"Os seguintes RGs de representantes não foram encontrados: {string.Join(", ", rgsNaoEncontrados)}");
+                    }
+
+                    if (representantesBuscados.Count > 3)
+                    {
+                        return BadRequest("O paciente não pode ter mais do que 3 representantes.");
+                    }
+
+                    // Criar o novo paciente
                     var novoPaciente = new Paciente
                     {
                         id = request.id,
@@ -132,7 +137,22 @@ namespace SGFME.Application.Controllers
                         novoPaciente.endereco.Add(endereco);
                     }
 
+                    // Primeiro, salva o paciente no banco de dados
                     _context.paciente.Add(novoPaciente);
+                    await _context.SaveChangesAsync(); // Isso garante que o id do paciente seja gerado
+
+                    // Criar a relação entre Paciente e Representantes
+                    foreach (var representante in representantesBuscados)
+                    {
+                        var pacienteRepresentante = new PacienteRepresentante
+                        {
+                            idPaciente = novoPaciente.id, // Usar o id gerado do paciente
+                            idRepresentante = representante.id
+                        };
+                        _context.pacienterepresentante.Add(pacienteRepresentante);
+                    }
+
+                    // Salvar os relacionamentos no banco de dados
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
@@ -148,16 +168,24 @@ namespace SGFME.Application.Controllers
 
                     return CreatedAtAction(nameof(Create), new { id = createdPaciente.id }, createdPaciente);
                 }
+                catch (DbUpdateException dbEx)
+                {
+                    await transaction.RollbackAsync();
+                    var innerException = dbEx.InnerException?.Message ?? dbEx.Message;
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao criar Paciente: {innerException}");
+                }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    var innerExceptionMessage = ex.InnerException?.Message ?? "Nenhuma exceção interna";
-                    var fullExceptionMessage = $"Erro ao criar Paciente: {ex.Message} | Exceção interna: {innerExceptionMessage}";
-                    Console.WriteLine(fullExceptionMessage);
-                    return StatusCode(StatusCodes.Status500InternalServerError, fullExceptionMessage);
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"Erro inesperado ao criar Paciente: {ex.Message}");
                 }
             }
         }
+
+
+
+
+
 
         [HttpGet("dadosBasicos")]
         public async Task<ActionResult<List<object>>> GetBasicPacienteData()
@@ -166,6 +194,8 @@ namespace SGFME.Application.Controllers
             {
                 var pacientes = await _context.paciente
                     .Include(p => p.status) // Inclui o relacionamento com Status
+                    .Include(p => p.pacienterepresentante) // Inclui o relacionamento PacienteRepresentante
+                        .ThenInclude(pr => pr.representante) // Inclui os representantes
                     .Select(p => new
                     {
                         p.id,
@@ -173,19 +203,28 @@ namespace SGFME.Application.Controllers
                         p.dataNascimento,
                         p.cpfNumero,
                         p.rgNumero,
-                        p.idStatus, // Inclui o idStatus
-                        statusNome = p.status.nome, // Inclui o nome do status
-                        
+                        p.idStatus,
+                        statusNome = p.status.nome, // Nome do status
+
+                        // Dados dos representantes
+                        representantes = p.pacienterepresentante.Select(pr => new
+                        {
+                            pr.representante.nomeCompleto,
+                            pr.representante.rgNumero,
+                            pr.representante.cpfNumero,
+                            pr.representante.dataNascimento
+                        }).ToList()
                     })
-                    .ToListAsync(); // Remove paginação
+                    .ToListAsync();
 
                 return Ok(pacientes);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os dados básicos dos pacientes.");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao buscar os dados básicos dos pacientes: {ex.Message}");
             }
         }
+
 
 
 
@@ -238,9 +277,10 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        
         // Endpoint para dados completos de um paciente específico
         [HttpGet("{id}/dadosCompletos")]
-        public async Task<ActionResult<Paciente>> GetCompletePacienteData(long id)
+        public async Task<ActionResult<object>> GetCompletePacienteData(long id)
         {
             try
             {
@@ -254,6 +294,60 @@ namespace SGFME.Application.Controllers
                     .Include(p => p.corraca)
                     .Include(p => p.profissao)
                     .Include(p => p.estadocivil)
+                    .Include(p => p.pacienterepresentante) // Inclui a relação com PacienteRepresentante
+                        .ThenInclude(pr => pr.representante) // Inclui os representantes
+                    .Select(p => new
+                    {
+                        p.id,
+                        p.nomeCompleto,
+                        p.peso,
+                        p.altura,
+                        p.dataNascimento,
+                        p.dataCadastro,
+                        p.nomeMae,
+                        p.rgNumero,
+                        p.cpfNumero,
+                        p.idStatus,
+                        statusNome = p.status.nome,
+                        p.idSexo,
+                        sexoNome = p.sexo.nome,
+                        p.idProfissao,
+                        profissaoNome = p.profissao.nome,
+                        p.idCorRaca,
+                        corRacaNome = p.corraca.nome,
+                        p.idEstadoCivil,
+                        estadoCivilNome = p.estadocivil.nome,
+
+                        // Contatos do paciente
+                        contatos = p.contato.Select(c => new
+                        {
+                            c.valor,
+                            tipoContato = c.tipocontato.nome
+                        }).ToList(),
+
+                        // Endereços do paciente
+                        enderecos = p.endereco.Select(e => new
+                        {
+                            e.logradouro,
+                            e.numero,
+                            e.complemento,
+                            e.bairro,
+                            e.cidade,
+                            e.uf,
+                            e.cep,
+                            e.pontoReferencia, // Incluindo ponto de referência
+                            tipoEndereco = e.tipoendereco.nome
+                        }).ToList(),
+
+                        // Representantes do paciente
+                        representantes = p.pacienterepresentante.Select(pr => new
+                        {
+                            pr.representante.nomeCompleto,
+                            pr.representante.rgNumero,
+                            pr.representante.cpfNumero,
+                            pr.representante.dataNascimento
+                        }).ToList()
+                    })
                     .FirstOrDefaultAsync(p => p.id == id);
 
                 if (paciente == null)
@@ -265,9 +359,10 @@ namespace SGFME.Application.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar os dados completos do paciente.");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao buscar os dados completos do paciente: {ex.Message}");
             }
         }
+
 
 
 
@@ -339,13 +434,15 @@ namespace SGFME.Application.Controllers
                     var paciente = await _context.paciente
                         .Include(m => m.contato)
                         .Include(m => m.endereco)
+                        .Include(m => m.pacienterepresentante) // Inclui a relação com representantes
                         .FirstOrDefaultAsync(m => m.id == id);
 
                     if (paciente == null)
                     {
-                        return NotFound("paciente não encontrado.");
+                        return NotFound("Paciente não encontrado.");
                     }
 
+                    // Atualizando os dados básicos do paciente
                     paciente.nomeCompleto = request.nomeCompleto;
                     paciente.peso = request.peso;
                     paciente.altura = request.altura;
@@ -361,7 +458,7 @@ namespace SGFME.Application.Controllers
                     paciente.rgUfEmissao = request.rgUfEmissao;
                     paciente.cnsNumero = request.cnsNumero;
                     paciente.cpfNumero = request.cpfNumero;
-                    paciente.idStatus = request.idStatus; // Associação com Status
+                    paciente.idStatus = request.idStatus;
                     paciente.idCorRaca = request.idCorRaca;
                     paciente.idProfissao = request.idProfissao;
                     paciente.idSexo = request.idSexo;
@@ -406,6 +503,38 @@ namespace SGFME.Application.Controllers
                         paciente.endereco.Add(endereco);
                     }
 
+                    // Atualizar os representantes vinculados ao paciente
+                    var rgsUnicos = request.rgRepresentante.Distinct().ToList();
+                    if (rgsUnicos.Count != request.rgRepresentante.Count)
+                    {
+                        return BadRequest("Não é permitido adicionar representantes duplicados.");
+                    }
+
+                    // Buscar Representante pelo RG
+                    var representantesBuscados = await _context.representante
+                        .Where(r => rgsUnicos.Contains(r.rgNumero))
+                        .ToListAsync();
+
+                    if (representantesBuscados.Count > 3)
+                    {
+                        return BadRequest("O paciente não pode ter mais do que 3 representantes.");
+                    }
+
+                    // Remover as relações antigas de PacienteRepresentante
+                    _context.pacienterepresentante.RemoveRange(paciente.pacienterepresentante);
+                    paciente.pacienterepresentante.Clear();
+
+                    // Criar as novas relações entre Paciente e Representantes
+                    foreach (var representante in representantesBuscados)
+                    {
+                        var pacienteRepresentante = new PacienteRepresentante
+                        {
+                            idPaciente = paciente.id,
+                            idRepresentante = representante.id
+                        };
+                        _context.pacienterepresentante.Add(pacienteRepresentante);
+                    }
+
                     // Validar a entrada usando FluentValidation
                     var validator = new PacienteValidator();
                     var validationResult = await validator.ValidateAsync(paciente);
@@ -424,10 +553,11 @@ namespace SGFME.Application.Controllers
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar Paciente.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao atualizar Paciente: {ex.Message}");
                 }
             }
         }
+
 
 
         [HttpDelete("{id}")]

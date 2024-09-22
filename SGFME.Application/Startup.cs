@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using Microsoft.OpenApi.Models;
@@ -77,7 +78,8 @@ namespace SGFME.Application
 
             services.AddSingleton<IConfiguration>(Configuration);
 
-            services.AddDbContext<SqlServerContext>(); //contexto
+            services.AddDbContext<SqlServerContext>();
+
             services.AddControllers().AddNewtonsoftJson(); //json
             services.AddMvc().AddNewtonsoftJson(opt =>
             {
