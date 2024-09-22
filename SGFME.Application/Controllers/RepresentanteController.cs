@@ -717,6 +717,35 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        [HttpGet("buscarPorRg/{rgNumero}")]
+        public async Task<ActionResult<object>> BuscarRepresentantePorRg(string rgNumero)
+        {
+            try
+            {
+                var representante = await _context.representante
+                    .Where(r => r.rgNumero == rgNumero)
+                    .Select(r => new
+                    {
+                        r.id,
+                        r.nomeCompleto,
+                        r.dataNascimento,
+                        r.cpfNumero,
+                        r.rgNumero
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (representante == null)
+                {
+                    return NotFound("Representante não encontrado.");
+                }
+
+                return Ok(representante);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao buscar o representante.");
+            }
+        }
 
 
 

@@ -49,6 +49,7 @@ namespace SGFME.Domain.Entidades
         //relacionamento de one to many
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
         public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
-
+        public virtual ICollection<PacienteRepresentante> pacienterepresentante { get; set; } = new List<PacienteRepresentante>();
+        public virtual ICollection<Dispensacao> dispensacao { get; set; } = new List<Dispensacao>(); 
     }
 }

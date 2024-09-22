@@ -14,10 +14,62 @@ let houveAlteracao = false;
 
 let contatoEmEdicao = null;
 let enderecoEmEdicao = null;
-
+let rgRepresentantes = []; // Array para armazenar os RGs dos representantes vinculados
 $(document).ready(async function () {
     await carregarDadosSelecoes();
+    // Função para buscar o representante pelo RG
+    $("#btnBuscarRepresentante").click(function () {
+        var rg = $("#txtRepresentanteRg").val(); // Obtém o valor do campo RG
+        if (rg.trim() === "") {
+            alert("Por favor, insira um RG válido.");
+            return;
+        }
 
+        // Requisição AJAX para buscar o representante
+        $.ajax({
+            url: urlAPI + "api/Representante/BuscarPorRg/" + rg, // Chama o endpoint passando o RG
+            method: "GET",
+            success: function (data) {
+                const tabela = $("#representanteTable tbody");
+                tabela.empty(); // Limpa a tabela antes de exibir novos resultados
+
+                if (data) {
+                    var linha = `
+                        <tr>
+                            <td>${data.nomeCompleto}</td>
+                            <td>${data.rgNumero}</td>
+                            <td>${data.cpfNumero}</td>
+                            <td>${new Date(data.dataNascimento).toLocaleDateString()}</td>
+                            <td>
+                                <button class="btn btn-success btnVincularRepresentante" data-rg="${data.rgNumero}">Vincular</button>
+                            </td>
+                        </tr>
+                    `;
+                    tabela.append(linha); // Adiciona a linha com os dados do representante na tabela
+                } else {
+                    alert("Nenhum representante encontrado com esse RG.");
+                }
+            },
+            error: function () {
+                alert("Erro ao buscar representante.");
+            }
+        });
+    });
+
+    // Função para vincular/desvincular o representante ao paciente
+    $(document).on('click', '.btnVincularRepresentante', function () {
+        var representanteRg = $(this).data('rg'); // Obtém o RG do representante
+        if (!rgRepresentantes.includes(representanteRg)) {
+            rgRepresentantes.push(representanteRg);  // Adiciona o RG à lista de representantes vinculados
+            $(this).removeClass("btn-success").addClass("btn-danger").text("Desvincular");
+            alert("Representante vinculado com sucesso!");
+        } else {
+            rgRepresentantes = rgRepresentantes.filter(rg => rg !== representanteRg); // Remove o RG da lista
+            $(this).removeClass("btn-danger").addClass("btn-success").text("Vincular");
+            alert("Representante desvinculado com sucesso!");
+        }
+        console.log("Representantes RGs vinculados:", rgRepresentantes); // Exibe os RGs vinculados no console
+    });
     if ($("#tabela").length > 0) {
         carregarPacientes();
     } else if ($("#txtid").length > 0) {
@@ -130,6 +182,22 @@ $(document).ready(async function () {
         if (!houveAlteracao) {
             houveAlteracao = true;
         }
+    });
+
+
+    // Função que captura o ID do representante e adiciona ou remove da lista de vinculados
+    $(document).on('click', '.btnVincularRepresentante', function () {
+        var representanteId = $(this).data('id');
+        if (!representantes.includes(representanteId)) {
+            representantes.push(representanteId);  // Adiciona o id do representante à lista de representantes vinculados
+            $(this).removeClass("btn-success").addClass("btn-danger").text("Desvincular");
+            alert("Representante vinculado com sucesso!");
+        } else {
+            representantes = representantes.filter(id => id !== representanteId); // Remove o representante
+            $(this).removeClass("btn-danger").addClass("btn-success").text("Vincular");
+            alert("Representante desvinculado com sucesso!");
+        }
+        console.log('Representantes vinculados:', representantes); // Exibir os IDs dos representantes vinculados
     });
 
     configurarMascaraCPF();
@@ -403,6 +471,17 @@ function carregarPacientes() {
                 $(linha).find(".rg").html(item.rgNumero); // Adiciona o RG
                 $(linha).find(".cpf").html(item.cpfNumero); // Adiciona o CPF
 
+                // Adiciona os representantes
+                if (item.representantes && item.representantes.length > 0) {
+                    const representantesHtml = item.representantes.map(rep => {
+                        return rep.nomeCompleto + " (RG: " + rep.rgNumero + ", CPF: " + rep.cpfNumero + ", Nascimento: " + new Date(rep.dataNascimento).toLocaleDateString() + ")";
+                    }).join('<br>');
+
+                    $(linha).find(".representantes").html(representantesHtml);
+                } else {
+                    $(linha).find(".representantes").html("Sem representantes");
+                }
+
                 var statusSelect = $("<select>")
                     .addClass("form-select alterar-status")
                     .html(statusOptions) // Usa as opções armazenadas
@@ -429,6 +508,8 @@ function carregarPacientes() {
         }
     });
 }
+
+
 
 
 
@@ -484,15 +565,8 @@ function validarCampos() {
     return isValid;
 }
 
+// Função para salvar o paciente
 $("#btnsalvar").click(function () {
-    // Só verificar a alteração se não for um novo cadastro
-    if ($("#txtid").val() !== "0" && houveAlteracao) {
-        const confirmSave = confirm("Você fez alterações no formulário. Deseja salvar as alterações?");
-        if (!confirmSave) {
-            return; // Cancela o salvamento se o usuário escolher "Não"
-        }
-    }
-
     if (validarCampos()) {
         // Desabilita o botão para evitar múltiplos cliques
         $("#btnsalvar").prop("disabled", true);
@@ -530,6 +604,7 @@ $("#btnsalvar").click(function () {
             idProfissao: $("#selectProfissao").val(),
             idCorRaca: $("#selectCorRaca").val(),
             idEstadoCivil: $("#selectEstadoCivil").val(),
+            rgRepresentante: rgRepresentantes, // Lista de RGs dos representantes vinculados
             contato: contatos,
             endereco: enderecos
         };
@@ -542,28 +617,14 @@ $("#btnsalvar").click(function () {
             dataType: "json",
             success: function () {
                 limparFormulario();
-                alert("Dados Salvos com sucesso!");
+                alert("Dados salvos com sucesso!");
 
                 if ($("#tabela").length > 0) {
                     carregarPacientes();
                 }
-                houveAlteracao = false; // Resetar a flag de alteração após salvar com sucesso
             },
             error: function (jqXHR, textStatus) {
-                if (jqXHR.status === 400) {
-                    var errors = jqXHR.responseJSON.errors;
-                    var message = "";
-                    for (var key in errors) {
-                        if (errors.hasOwnProperty(key)) {
-                            errors[key].forEach(function (errorMessage) {
-                                message += errorMessage + "\n";
-                            });
-                        }
-                    }
-                    alert(message);
-                } else {
-                    alert("Erro ao salvar os dados: " + textStatus);
-                }
+                alert("Erro ao salvar os dados: " + textStatus);
             },
             complete: function () {
                 // Reabilita o botão após o sucesso ou erro
@@ -572,6 +633,7 @@ $("#btnsalvar").click(function () {
         });
     }
 });
+
 
 
 

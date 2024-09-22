@@ -35,8 +35,9 @@ namespace SGFME.Application.DTOs
         public long idCorRaca { get; set; }
         
         public long idEstadoCivil { get; set; }
-        
 
+        // Lista de Rgs dos representantes
+        public List<string> rgRepresentante { get; set; } = new List<string>();
 
         public List<ContatoCreateDTO> contato { get; set; } = new List<ContatoCreateDTO>();
         public List<EnderecoCreateDTO> endereco { get; set; } = new List<EnderecoCreateDTO>();
