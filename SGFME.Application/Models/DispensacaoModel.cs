@@ -12,6 +12,6 @@ namespace SGFME.Application.Models
         public DateTime inicioApac { get; set; }
         public DateTime fimApac { get; set; }
         public string observacao { get; set; }
-        public List<DispensacaoMedicamento> dispensacaomedicamento { get; set; }
+        public List<DispensacaoMedicamento> Medicamentos { get; set; }
     }
 }

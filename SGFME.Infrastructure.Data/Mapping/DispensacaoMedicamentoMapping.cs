@@ -15,16 +15,10 @@ namespace SGFME.Infrastructure.Data.Mapping
             builder.HasKey(dm => dm.id);
 
             // Configura o relacionamento com Medicamento (muitos para um)
-            builder.HasOne(dm => dm.medicamento)
+            builder.HasOne(dm => dm.Medicamento)
                 .WithMany()
-                .HasForeignKey(dm => dm.idMedicamento)
+                .HasForeignKey(dm => dm.IdMedicamento)
                 .OnDelete(DeleteBehavior.Restrict); // Define o comportamento de exclusão
-
-            // Configura o relacionamento com Dispensacao (muitos para um)
-            builder.HasOne<Dispensacao>()
-                .WithMany(d => d.dispensacaomedicamento)
-                .HasForeignKey(dm => dm.idMedicamento)
-                .OnDelete(DeleteBehavior.Cascade); // Cascata ao deletar uma dispensação
 
             // Configura o campo de Quantidade
             builder.Property(dm => dm.quantidade)

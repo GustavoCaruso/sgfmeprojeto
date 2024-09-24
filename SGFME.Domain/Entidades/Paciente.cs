@@ -23,33 +23,19 @@ namespace SGFME.Domain.Entidades
         public string nomeConjuge { get; set; }
         public string naturalidadeCidade { get; set; }
         public string naturalidadeUf { get; set; }
-
-
-
-
         public long idStatus { get; set; }
         public virtual Status status { get; set; }
-
         public long idSexo { get; set; }
         public virtual Sexo sexo { get; set; }
-
         public long idProfissao { get; set; }
         public virtual Profissao profissao { get; set; }
         public long idCorRaca { get; set; }
         public virtual CorRaca corraca { get; set; }
         public long idEstadoCivil { get; set; }
         public virtual EstadoCivil estadocivil { get; set; }
-
-
-
-
-
-
-
         //relacionamento de one to many
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
         public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
         public virtual ICollection<PacienteRepresentante> pacienterepresentante { get; set; } = new List<PacienteRepresentante>();
-        public virtual ICollection<Dispensacao> dispensacao { get; set; } = new List<Dispensacao>(); 
     }
 }
