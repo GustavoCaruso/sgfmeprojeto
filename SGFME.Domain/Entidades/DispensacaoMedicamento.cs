@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SGFME.Domain.Entidades
+﻿namespace SGFME.Domain.Entidades
 {
     public class DispensacaoMedicamento : BaseEntity
     {
-        public long idMedicamento { get; set; }
-        public virtual Medicamento medicamento { get; set; }
+        public long IdMedicamento { get; set; }
+        public virtual Medicamento Medicamento { get; set; }
         public int quantidade { get; set; }
         public bool recibo { get; set; }
         public bool recebido { get; set; }

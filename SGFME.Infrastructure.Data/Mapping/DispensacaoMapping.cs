@@ -16,7 +16,7 @@ namespace SGFME.Infrastructure.Data.Mapping
 
             // Configura o relacionamento com Paciente (muitos para um)
             builder.HasOne(d => d.paciente)
-                .WithMany(p => p.dispensacao)
+                .WithMany()
                 .HasForeignKey(d => d.idPaciente);
 
 
@@ -34,15 +34,14 @@ namespace SGFME.Infrastructure.Data.Mapping
             // Configura o campo de fim
             builder.Property(d => d.fimApac)
                 .IsRequired();
-                
+
 
             // Configura o campo de observação
             builder.Property(d => d.observacao)
-                .HasMaxLength(500)
-                .HasColumnType("varchar(500)");
+                .HasMaxLength(500);
 
             // Configura o relacionamento com Medicamentos (um para muitos)
-            builder.HasMany(d => d.dispensacaomedicamento)
+            builder.HasMany(d => d.Medicamentos)
                 .WithOne()
                 .HasForeignKey(m => m.idDispensacao);
                

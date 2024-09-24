@@ -1,6 +1,0 @@
-@SGFME.Application_HostAddress = http://localhost:5128
-
-GET {{SGFME.Application_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using SGFME.Application.DTOs;
 using SGFME.Application.Models;
 using SGFME.Domain.Entidades;
 using SGFME.Domain.Interfaces;
@@ -93,76 +94,32 @@ namespace SGFME.Application
             {
 
 
-                config.CreateMap<Paciente, PacienteModel>();
-                config.CreateMap<PacienteModel, Paciente>();
-
-                config.CreateMap<Contato, ContatoModel>();
-                config.CreateMap<ContatoModel, Contato>();
-
-                config.CreateMap<TipoContato, TipoContatoModel>();
-                config.CreateMap<TipoContatoModel, TipoContato>();
-
-                config.CreateMap<CorRaca, CorRacaModel>();
-                config.CreateMap<CorRacaModel, CorRaca>();
-
-                config.CreateMap<Sexo, SexoModel>();
-                config.CreateMap<SexoModel, Sexo>();
-
-
-
-                config.CreateMap<Status, StatusModel>();
-                config.CreateMap<StatusModel, Status>();
-
-                config.CreateMap<EstadoCivil, EstadoCivilModel>();
-                config.CreateMap<EstadoCivilModel, EstadoCivil>();
-
-                config.CreateMap<Profissao, ProfissaoModel>();
-                config.CreateMap<ProfissaoModel, Profissao>();
-
-                config.CreateMap<Endereco, EnderecoModel>();
-                config.CreateMap<EnderecoModel, Endereco>();
-
-
-
-                config.CreateMap<Naturalidade, NaturalidadeModel>();
-                config.CreateMap<NaturalidadeModel, Naturalidade>();
-
-                config.CreateMap<TipoEndereco, TipoEnderecoModel>();
-                config.CreateMap<TipoEnderecoModel, TipoEndereco>();
-
-                config.CreateMap<Pessoa, PessoaModel>();
-                config.CreateMap<PessoaModel, Pessoa>();
-
-                config.CreateMap<Cid, CidModel>();
-                config.CreateMap<CidModel, Cid>();
-
-                config.CreateMap<EstabelecimentoSaude, EstabelecimentoSaudeModel>();
-                config.CreateMap<EstabelecimentoSaudeModel, EstabelecimentoSaude>();
-
-                config.CreateMap<Medico, MedicoModel>();
-                config.CreateMap<MedicoModel, Medico>();
-
-                config.CreateMap<Representante, RepresentanteModel>();
-                config.CreateMap<RepresentanteModel, Representante>();
-
-                config.CreateMap<Medicamento, MedicamentoModel>();
-                config.CreateMap<MedicamentoModel, Medicamento>();
-
-                config.CreateMap<VersaoCid, VersaoCidModel>();
-                config.CreateMap<VersaoCidModel, VersaoCid>();
-
-                config.CreateMap<Funcionario, FuncionarioModel>();
-                config.CreateMap<FuncionarioModel, Funcionario>();
-
-                config.CreateMap<PerfilUsuario, PerfilUsuarioModel>();
-                config.CreateMap<PerfilUsuarioModel, PerfilUsuario>();
-
-                config.CreateMap<Usuario, UsuarioModel>();
-                config.CreateMap<UsuarioModel, Usuario>();
-
-
-
-
+                config.CreateMap<Paciente, PacienteModel>().ReverseMap();
+                config.CreateMap<Contato, ContatoModel>().ReverseMap();
+                config.CreateMap<TipoContato, TipoContatoModel>().ReverseMap();
+                config.CreateMap<CorRaca, CorRacaModel>().ReverseMap();
+                config.CreateMap<Sexo, SexoModel>().ReverseMap();
+                config.CreateMap<Status, StatusModel>().ReverseMap();
+                config.CreateMap<EstadoCivil, EstadoCivilModel>().ReverseMap();
+                config.CreateMap<Profissao, ProfissaoModel>().ReverseMap();
+                config.CreateMap<Endereco, EnderecoModel>().ReverseMap();
+                config.CreateMap<Naturalidade, NaturalidadeModel>().ReverseMap();
+                config.CreateMap<TipoEndereco, TipoEnderecoModel>().ReverseMap();
+                config.CreateMap<Pessoa, PessoaModel>().ReverseMap();
+                config.CreateMap<Cid, CidModel>().ReverseMap();
+                config.CreateMap<EstabelecimentoSaude, EstabelecimentoSaudeModel>().ReverseMap();
+                config.CreateMap<Medico, MedicoModel>().ReverseMap();
+                config.CreateMap<Representante, RepresentanteModel>().ReverseMap();
+                config.CreateMap<Medicamento, MedicamentoModel>().ReverseMap();
+                config.CreateMap<VersaoCid, VersaoCidModel>().ReverseMap();
+                config.CreateMap<Funcionario, FuncionarioModel>().ReverseMap();
+                config.CreateMap<PerfilUsuario, PerfilUsuarioModel>().ReverseMap();
+                config.CreateMap<Usuario, UsuarioModel>().ReverseMap();
+                config.CreateMap<Dispensacao, DispensacaoModel>().ReverseMap();
+                config.CreateMap<CriarDispensacaoDTO, Dispensacao>().ReverseMap();
+                config.CreateMap<CriarDispensacaoMedicamentoDTO, DispensacaoMedicamento>().ReverseMap();
+                config.CreateMap<AlterarDispensacaoDTO, Dispensacao>().ReverseMap();
+                config.CreateMap<AlterarDispensacaoMedicamentoDTO, DispensacaoMedicamento>().ReverseMap();
 
             }).CreateMapper());
 
@@ -233,6 +190,8 @@ namespace SGFME.Application
             services.AddScoped<IBaseService<Usuario>, BaseService<Usuario>>();
             services.AddScoped<IBaseRepository<Usuario>, BaseRepository<Usuario>>();
 
+            services.AddScoped<IBaseService<Dispensacao>, BaseService<Dispensacao>>();
+            services.AddScoped<IBaseRepository<Dispensacao>, BaseRepository<Dispensacao>>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment environment)

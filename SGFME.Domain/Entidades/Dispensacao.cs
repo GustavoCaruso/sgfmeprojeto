@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SGFME.Domain.Entidades;
 
-namespace SGFME.Domain.Entidades
+public class Dispensacao : BaseEntity
 {
-    public class Dispensacao : BaseEntity
+    public long idPaciente { get; set; }
+    public virtual Paciente paciente { get; set; }
+    public long idCid { get; set; }
+    public virtual Cid cid { get; set; }
+    public DateTime inicioApac { get; set; }
+    public DateTime fimApac { get; set; }
+    public string? observacao { get; set; }
+    public virtual ICollection<DispensacaoMedicamento> Medicamentos { get; set; }
+
+    public Dispensacao Atualizar(long idPaciente, long idCid, DateTime inicioApac, string? observacao, ICollection<DispensacaoMedicamento> medicamentos)
     {
-        public long idPaciente { get; set; }
-        public virtual Paciente paciente { get; set; }
-        public long idCid { get; set; }
-        public virtual Cid cid { get; set; }
-        public DateTime inicioApac { get; set; }
-        public DateTime fimApac { get; set; }
-        public string observacao { get; set; }
-        public List<DispensacaoMedicamento> dispensacaomedicamento { get; set; }
+        this.idPaciente = idPaciente;
+        this.idCid = idCid;
+        this.inicioApac = inicioApac;
+        this.observacao = observacao;
+        Medicamentos = medicamentos;
+
+        return this;
     }
 }
