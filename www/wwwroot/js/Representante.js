@@ -138,9 +138,13 @@ $(document).ready(async function () {
 function removerMascara(valor, tipo) {
     if (tipo === "Celular" || tipo === "Telefone Fixo" || tipo === "CEP") {
         return valor.replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
+    } else if (tipo === "RG" || tipo === "CNS" || tipo === "CPF") {
+        return valor.replace(/[^a-zA-Z0-9]/g, ''); // Remove todos os caracteres que não sejam números ou letras
     }
     return valor;
 }
+
+
 
 function carregarDadosSelecoes() {
     return Promise.all([
@@ -327,6 +331,11 @@ function carregarEstados(selectElement) {
         url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
         method: "GET",
         success: function (data) {
+            // Ordena os estados pela sigla (UF) em ordem alfabética
+            data.sort(function (a, b) {
+                return a.sigla.localeCompare(b.sigla); // Ordena pela sigla do estado
+            });
+
             selectElement.empty();
             selectElement.append('<option value="">Selecione uma UF</option>');
             data.forEach(estado => {
@@ -339,6 +348,8 @@ function carregarEstados(selectElement) {
         }
     });
 }
+
+
 
 function carregarMunicipios(estadoSigla, selectElement, cidadeSelecionada = null) {
     if (estadoSigla) {
@@ -471,6 +482,7 @@ $("#btnsalvar").click(function () {
     }
 
     if (validarCampos()) {
+        // Remove a máscara de RG, CNS e CPF antes de salvar
         const rgNumero = removerMascara($("#txtrgNumero").val(), "RG");
         const cnsNumero = removerMascara($("#txtcnsNumero").val(), "CNS");
         const cpfNumero = removerMascara($("#txtcpfNumero").val(), "CPF");
@@ -484,17 +496,16 @@ $("#btnsalvar").click(function () {
             id: $("#txtid").val(),
             nomeCompleto: $("#txtnomeCompleto").val(),
             dataNascimento: $("#txtdataNascimento").val(),
-            rgNumero: rgNumero,
+            rgNumero: rgNumero, // RG sem máscara
             rgDataEmissao: $("#txtrgDataEmissao").val(),
             rgOrgaoExpedidor: $("#txtrgOrgaoExpedidor").val(),
             rgUfEmissao: $("#selectRgUfEmissao").val(),
-            cnsNumero: cnsNumero,
-            cpfNumero: cpfNumero,
+            cnsNumero: cnsNumero, // CNS sem máscara
+            cpfNumero: cpfNumero, // CPF sem máscara
             nomeMae: $("#txtnomeMae").val(),
             nomeConjuge: $("#txtnomeConjuge").val(),
             naturalidadeCidade: $("#selectNaturalidadeCidade").val(),
             naturalidadeUf: $("#selectNaturalidadeUf").val(),
-           
             dataCadastro: $("#txtdataCadastro").val(),
             idStatus: $("#selectStatus").val(),
             idSexo: $("#selectSexo").val(),
@@ -539,6 +550,8 @@ $("#btnsalvar").click(function () {
         });
     }
 });
+
+
 
 function limparFormulario() {
     $("#txtnomeCompleto").val('');

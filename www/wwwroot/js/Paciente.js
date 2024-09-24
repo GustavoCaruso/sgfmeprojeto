@@ -11,12 +11,11 @@ let tipoEnderecoOptions = '';
 let contatos = [];
 let enderecos = [];
 let houveAlteracao = false;
-
-let contatoEmEdicao = null;
-let enderecoEmEdicao = null;
 let rgRepresentantes = []; // Array para armazenar os RGs dos representantes vinculados
+
 $(document).ready(async function () {
     await carregarDadosSelecoes();
+
     // Função para buscar o representante pelo RG
     $("#btnBuscarRepresentante").click(function () {
         var rg = $("#txtRepresentanteRg").val(); // Obtém o valor do campo RG
@@ -30,25 +29,33 @@ $(document).ready(async function () {
             url: urlAPI + "api/Representante/BuscarPorRg/" + rg, // Chama o endpoint passando o RG
             method: "GET",
             success: function (data) {
-                const tabela = $("#representanteTable tbody");
-                tabela.empty(); // Limpa a tabela antes de exibir novos resultados
-
-                if (data) {
-                    var linha = `
-                        <tr>
-                            <td>${data.nomeCompleto}</td>
-                            <td>${data.rgNumero}</td>
-                            <td>${data.cpfNumero}</td>
-                            <td>${new Date(data.dataNascimento).toLocaleDateString()}</td>
-                            <td>
-                                <button class="btn btn-success btnVincularRepresentante" data-rg="${data.rgNumero}">Vincular</button>
-                            </td>
-                        </tr>
-                    `;
-                    tabela.append(linha); // Adiciona a linha com os dados do representante na tabela
-                } else {
+                if (!data) {
                     alert("Nenhum representante encontrado com esse RG.");
+                    return;
                 }
+
+                // Verificar se o representante já está na lista
+                if (rgRepresentantes.includes(data.rgNumero)) {
+                    alert("Este representante já está vinculado.");
+                    return;
+                }
+
+                // Adiciona o representante à tabela e à lista
+                const tabela = $("#representanteTable tbody");
+                var linha = `
+                <tr>
+                    <td>${data.nomeCompleto}</td>
+                    <td>${data.rgNumero}</td>
+                    <td>${data.cpfNumero}</td>
+                    <td>${new Date(data.dataNascimento).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-danger btnDesvincularRepresentante" data-rg="${data.rgNumero}">Desvincular</button>
+                    </td>
+                </tr>
+            `;
+                tabela.append(linha); // Adiciona a linha com os dados do representante na tabela
+                rgRepresentantes.push(data.rgNumero); // Adiciona o RG à lista de representantes vinculados
+                alert("Representante vinculado com sucesso!");
             },
             error: function () {
                 alert("Erro ao buscar representante.");
@@ -56,20 +63,18 @@ $(document).ready(async function () {
         });
     });
 
-    // Função para vincular/desvincular o representante ao paciente
-    $(document).on('click', '.btnVincularRepresentante', function () {
+
+
+    // Função para desvincular o representante
+    $(document).on('click', '.btnDesvincularRepresentante', function () {
         var representanteRg = $(this).data('rg'); // Obtém o RG do representante
-        if (!rgRepresentantes.includes(representanteRg)) {
-            rgRepresentantes.push(representanteRg);  // Adiciona o RG à lista de representantes vinculados
-            $(this).removeClass("btn-success").addClass("btn-danger").text("Desvincular");
-            alert("Representante vinculado com sucesso!");
-        } else {
-            rgRepresentantes = rgRepresentantes.filter(rg => rg !== representanteRg); // Remove o RG da lista
-            $(this).removeClass("btn-danger").addClass("btn-success").text("Vincular");
-            alert("Representante desvinculado com sucesso!");
-        }
+        rgRepresentantes = rgRepresentantes.filter(rg => rg !== representanteRg); // Remove o RG da lista
+        $(this).closest('tr').remove(); // Remove a linha da tabela
+        alert("Representante desvinculado com sucesso!");
         console.log("Representantes RGs vinculados:", rgRepresentantes); // Exibe os RGs vinculados no console
     });
+
+
     if ($("#tabela").length > 0) {
         carregarPacientes();
     } else if ($("#txtid").length > 0) {
@@ -101,46 +106,6 @@ $(document).ready(async function () {
         let codigo = $(elemento.target).closest("tr").find(".codigo").text();
         console.log("Clique no botão alterar. Código:", codigo);
         window.location.href = "/PacienteCadastro?id=" + codigo;
-    });
-
-    $(document).on("change", ".alterar-status", function (elemento) {
-        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
-        let novoStatus = $(elemento.target).val();
-
-        if (novoStatus === "0") {
-            alert("Seleção inválida! Por favor, escolha um status válido.");
-            // Reverte a seleção para o valor anterior
-            $(elemento.target).val($(elemento.target).data('original-value'));
-        } else {
-            console.log("Mudança de status. Código:", codigo, "Novo Status:", novoStatus);
-            mudarStatus(codigo, novoStatus);
-        }
-    });
-
-    $(document).on("focus", ".alterar-status", function () {
-        // Armazena o valor original antes da mudança
-        $(this).data('original-value', $(this).val());
-    });
-
-
-    $("#selectNaturalidadeUf").change(function () {
-        const ufSelecionada = $(this).val();
-        console.log("UF Naturalidade selecionada:", ufSelecionada);
-        if (ufSelecionada !== "0") {
-            carregarMunicipios(ufSelecionada, $("#selectNaturalidadeCidade"));
-        } else {
-            $("#selectNaturalidadeCidade").empty().append('<option value="0">Selecione uma cidade</option>');
-        }
-    });
-
-    $("#selectEstado").change(function () {
-        const ufSelecionada = $(this).val();
-        console.log("UF selecionada para endereço:", ufSelecionada);
-        if (ufSelecionada !== "0") {
-            carregarMunicipios(ufSelecionada, $("#selectMunicipio"));
-        } else {
-            $("#selectMunicipio").empty().append('<option value="0">Selecione uma cidade</option>');
-        }
     });
 
     $("#txtdataNascimento").on("input", function () {
@@ -184,26 +149,9 @@ $(document).ready(async function () {
         }
     });
 
-
-    // Função que captura o ID do representante e adiciona ou remove da lista de vinculados
-    $(document).on('click', '.btnVincularRepresentante', function () {
-        var representanteId = $(this).data('id');
-        if (!representantes.includes(representanteId)) {
-            representantes.push(representanteId);  // Adiciona o id do representante à lista de representantes vinculados
-            $(this).removeClass("btn-success").addClass("btn-danger").text("Desvincular");
-            alert("Representante vinculado com sucesso!");
-        } else {
-            representantes = representantes.filter(id => id !== representanteId); // Remove o representante
-            $(this).removeClass("btn-danger").addClass("btn-success").text("Vincular");
-            alert("Representante desvinculado com sucesso!");
-        }
-        console.log('Representantes vinculados:', representantes); // Exibir os IDs dos representantes vinculados
-    });
-
     configurarMascaraCPF();
     configurarMascaraCEP();
 });
-
 
 // Função para remover máscara de valores como telefone ou CPF
 function removerMascara(valor, tipo) {
@@ -212,8 +160,6 @@ function removerMascara(valor, tipo) {
     }
     return valor;
 }
-
-
 
 function carregarDadosSelecoes() {
     return Promise.all([
@@ -230,7 +176,6 @@ function carregarDadosSelecoes() {
     ]);
 }
 
-
 function configurarMascaraCPF() {
     $("#txtcpfNumero").off("input").on("input", function () {
         let valor = $(this).val();
@@ -243,7 +188,6 @@ function configurarMascaraCPF() {
         $(this).val(valor);
     });
 }
-
 
 function configurarMascaraCEP() {
     $("#txtCep").off("input").on("input", function () {
@@ -279,7 +223,6 @@ function carregarOpcoesStatus() {
     });
 }
 
-
 function carregarOpcoesSexo() {
     const cachedSexo = localStorage.getItem('sexoOptions');
     if (cachedSexo) {
@@ -304,7 +247,6 @@ function carregarOpcoesSexo() {
         }
     });
 }
-
 
 function carregarOpcoesEstadoCivil() {
     const cachedEstadoCivil = localStorage.getItem('estadoCivilOptions');
@@ -331,7 +273,6 @@ function carregarOpcoesEstadoCivil() {
     });
 }
 
-
 function carregarOpcoesCorRaca() {
     const cachedCorRaca = localStorage.getItem('corRacaOptions');
     if (cachedCorRaca) {
@@ -356,7 +297,6 @@ function carregarOpcoesCorRaca() {
         }
     });
 }
-
 
 function carregarOpcoesProfissao() {
     const cachedProfissao = localStorage.getItem('profissaoOptions');
@@ -383,8 +323,6 @@ function carregarOpcoesProfissao() {
     });
 }
 
-
-
 function carregarOpcoes(apiEndpoint, selectElement) {
     return $.ajax({
         url: urlAPI + apiEndpoint,
@@ -404,9 +342,6 @@ function carregarOpcoes(apiEndpoint, selectElement) {
     });
 }
 
-
-
-// Função para carregar os estados
 function carregarEstados(selectElement) {
     return $.ajax({
         url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
@@ -425,7 +360,6 @@ function carregarEstados(selectElement) {
     });
 }
 
-// Função para carregar os municípios conforme a UF selecionada
 function carregarMunicipios(estadoSigla, selectElement, cidadeSelecionada = null) {
     if (estadoSigla) {
         return $.ajax({
@@ -509,11 +443,6 @@ function carregarPacientes() {
     });
 }
 
-
-
-
-
-
 function validarCampos() {
     let isValid = true;
     $(".form-control").removeClass('is-invalid');
@@ -565,23 +494,20 @@ function validarCampos() {
     return isValid;
 }
 
-// Função para salvar o paciente
 $("#btnsalvar").click(function () {
     if (validarCampos()) {
-        // Desabilita o botão para evitar múltiplos cliques
         $("#btnsalvar").prop("disabled", true);
 
-        // Removendo a máscara dos campos necessários
         const rgNumero = removerMascara($("#txtrgNumero").val(), "RG");
         const cnsNumero = removerMascara($("#txtcnsNumero").val(), "CNS");
         const cpfNumero = removerMascara($("#txtcpfNumero").val(), "CPF");
 
-        // Para cada endereço, remover a máscara do CEP
         enderecos = enderecos.map(endereco => ({
             ...endereco,
             cep: removerMascara(endereco.cep, "CEP")
         }));
 
+        // Apenas envia os representantes se existirem
         const obj = {
             id: $("#txtid").val(),
             nomeCompleto: $("#txtnomeCompleto").val(),
@@ -591,7 +517,7 @@ $("#btnsalvar").click(function () {
             rgOrgaoExpedidor: $("#txtrgOrgaoExpedidor").val(),
             rgUfEmissao: $("#selectRgUfEmissao").val(),
             cnsNumero: cnsNumero,
-            cpfNumero: cpfNumero, // CPF sem máscara
+            cpfNumero: cpfNumero,
             nomeMae: $("#txtnomeMae").val(),
             nomeConjuge: $("#txtnomeConjuge").val(),
             naturalidadeCidade: $("#selectNaturalidadeCidade").val(),
@@ -604,7 +530,7 @@ $("#btnsalvar").click(function () {
             idProfissao: $("#selectProfissao").val(),
             idCorRaca: $("#selectCorRaca").val(),
             idEstadoCivil: $("#selectEstadoCivil").val(),
-            rgRepresentante: rgRepresentantes, // Lista de RGs dos representantes vinculados
+            rgRepresentante: rgRepresentantes.length > 0 ? rgRepresentantes : null, // Envia apenas se houver representantes
             contato: contatos,
             endereco: enderecos
         };
@@ -627,17 +553,11 @@ $("#btnsalvar").click(function () {
                 alert("Erro ao salvar os dados: " + textStatus);
             },
             complete: function () {
-                // Reabilita o botão após o sucesso ou erro
                 $("#btnsalvar").prop("disabled", false);
             }
         });
     }
 });
-
-
-
-
-
 
 function limparFormulario() {
     $("#txtnomeCompleto").val('');
@@ -673,8 +593,6 @@ function limparFormulario() {
     houveAlteracao = false; // Resetar a flag de alteração após limpar o formulário
 }
 
-
-
 function mudarStatus(codigo, novoStatus) {
     console.log("Alterando status para Paciente:", codigo, "Novo Status:", novoStatus);
     $.ajax({
@@ -698,6 +616,7 @@ async function visualizar(codigo) {
         // Mostrar o indicador de carregamento
         $("#loading").show();
 
+        // Requisição para obter os dados completos do paciente
         const pacientePromise = $.ajax({
             type: "GET",
             url: urlAPI + "api/Paciente/" + codigo + "/dadosCompletos",
@@ -710,48 +629,84 @@ async function visualizar(codigo) {
         // Aguarda as promessas em paralelo
         const [jsonResult, estados] = await Promise.all([pacientePromise, estadosPromise]);
 
+        // Verifica se o objeto do paciente foi retornado corretamente
+        if (!jsonResult) {
+            console.error("Erro: O objeto 'jsonResult' está vazio ou indefinido.");
+            alert("Erro ao carregar os dados do paciente. Por favor, tente novamente.");
+            return;
+        }
+
+        console.log("Dados do paciente recebidos:", jsonResult);
+
         // Preenche os campos com os valores retornados
-        $("#txtid").val(jsonResult.id);
-        $("#txtnomeCompleto").val(jsonResult.nomeCompleto);
+        $("#txtid").val(jsonResult.id || '');
+        $("#txtnomeCompleto").val(jsonResult.nomeCompleto || '');
 
-        const dataNascimento = new Date(jsonResult.dataNascimento);
-        $("#txtdataNascimento").val(dataNascimento.toISOString().split('T')[0]);
+        // Validação da data de nascimento
+        if (jsonResult.dataNascimento) {
+            const dataNascimento = new Date(jsonResult.dataNascimento);
+            if (!isNaN(dataNascimento)) {
+                $("#txtdataNascimento").val(dataNascimento.toISOString().split('T')[0]);
+            } else {
+                console.warn("Data de nascimento inválida:", jsonResult.dataNascimento);
+            }
+        }
 
-        $("#txtrgNumero").val(jsonResult.rgNumero);
-        $("#txtrgDataEmissao").val(new Date(jsonResult.rgDataEmissao).toISOString().split('T')[0]);
-        $("#txtrgOrgaoExpedidor").val(jsonResult.rgOrgaoExpedidor);
-        $("#selectRgUfEmissao").val(jsonResult.rgUfEmissao);
+        // Validação da data de emissão do RG
+        if (jsonResult.rgDataEmissao) {
+            const rgDataEmissao = new Date(jsonResult.rgDataEmissao);
+            if (!isNaN(rgDataEmissao)) {
+                $("#txtrgDataEmissao").val(rgDataEmissao.toISOString().split('T')[0]);
+            } else {
+                console.warn("Data de emissão do RG inválida:", jsonResult.rgDataEmissao);
+            }
+        }
 
+        // Preenche os campos de RG e CNS
+        $("#txtrgNumero").val(jsonResult.rgNumero || '');
+        $("#txtrgOrgaoExpedidor").val(jsonResult.rgOrgaoExpedidor || '');
+        $("#selectRgUfEmissao").val(jsonResult.rgUfEmissao || '');
+        $("#txtcnsNumero").val(jsonResult.cnsNumero || '');
+        $("#txtcpfNumero").val(jsonResult.cpfNumero || '');
+
+        // Preencher naturalidade (UF e Cidade)
         await carregarEstados($("#selectNaturalidadeUf")).then(() => {
-            $("#selectNaturalidadeUf").val(jsonResult.naturalidadeUf);
+            $("#selectNaturalidadeUf").val(jsonResult.naturalidadeUf || '');
             carregarMunicipios(jsonResult.naturalidadeUf, $("#selectNaturalidadeCidade"), jsonResult.naturalidadeCidade);
         });
 
-        $("#txtcnsNumero").val(jsonResult.cnsNumero);
-        $("#txtcpfNumero").val(jsonResult.cpfNumero);
-        $("#txtdataCadastro").val(new Date(jsonResult.dataCadastro).toISOString().split('T')[0]);
+        // Validação da data de cadastro
+        if (jsonResult.dataCadastro) {
+            const dataCadastro = new Date(jsonResult.dataCadastro);
+            if (!isNaN(dataCadastro)) {
+                $("#txtdataCadastro").val(dataCadastro.toISOString().split('T')[0]);
+            } else {
+                console.warn("Data de cadastro inválida:", jsonResult.dataCadastro);
+            }
+        }
 
-        $("#selectStatus").val(jsonResult.idStatus);
-        $("#selectSexo").val(jsonResult.idSexo);
-        $("#selectProfissao").val(jsonResult.idProfissao);
-        $("#selectCorRaca").val(jsonResult.idCorRaca);
-        $("#selectEstadoCivil").val(jsonResult.idEstadoCivil);
+        // Preenche outros campos
+        $("#selectStatus").val(jsonResult.idStatus || '0');
+        $("#selectSexo").val(jsonResult.idSexo || '0');
+        $("#selectProfissao").val(jsonResult.idProfissao || '0');
+        $("#selectCorRaca").val(jsonResult.idCorRaca || '0');
+        $("#selectEstadoCivil").val(jsonResult.idEstadoCivil || '0');
+        $("#txtnomeMae").val(jsonResult.nomeMae || '');
+        $("#txtnomeConjuge").val(jsonResult.nomeConjuge || '');
 
-        $("#txtnomeMae").val(jsonResult.nomeMae);
-        $("#txtnomeConjuge").val(jsonResult.nomeConjuge);
+        // Preenche altura e peso
+        $("#txtpeso").val(jsonResult.peso || '');
+        $("#txtaltura").val(jsonResult.altura || '');
 
-        $("#txtpeso").val(jsonResult.peso);
-        $("#txtaltura").val(jsonResult.altura);
-
-        contatos = jsonResult.contato.map(c => ({
-            idTipoContato: c.idTipoContato,
-            tipo: c.tipocontato.nome,
+        // Preencher contatos
+        contatos = (jsonResult.contatos || []).map(c => ({
+            tipo: c.tipoContato,
             valor: c.valor
         }));
         atualizarTabelaContatos();
 
-        enderecos = jsonResult.endereco.map(e => ({
-            idTipoEndereco: e.idTipoEndereco,
+        // Preencher endereços
+        enderecos = (jsonResult.enderecos || []).map(e => ({
             logradouro: e.logradouro,
             numero: e.numero,
             complemento: e.complemento,
@@ -763,25 +718,49 @@ async function visualizar(codigo) {
         }));
         atualizarTabelaEnderecos();
 
-        const idade = calcularIdade(dataNascimento);
-        $("#txtidade").val(idade);
+        // Preencher a tabela de representantes
+        const representantes = jsonResult.representantes || [];
+        const representanteTable = $("#representanteTable tbody");
+        representanteTable.empty(); // Limpa a tabela antes de preencher
+
+        representantes.forEach(rep => {
+            const linha = `
+                <tr>
+                    <td>${rep.nomeCompleto}</td>
+                    <td>${rep.rgNumero}</td>
+                    <td>${rep.cpfNumero}</td>
+                    <td>${new Date(rep.dataNascimento).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-danger btnRemoverRepresentante" data-rg="${rep.rgNumero}">Remover</button>
+                    </td>
+                </tr>
+            `;
+            representanteTable.append(linha);
+        });
+
+        // Função para remover representantes
+        $(document).on('click', '.btnRemoverRepresentante', function () {
+            const representanteRg = $(this).data('rg');
+            rgRepresentantes = rgRepresentantes.filter(rg => rg !== representanteRg); // Remove o RG da lista
+            $(this).closest('tr').remove(); // Remove a linha da tabela
+            console.log("Representante removido:", representanteRg);
+        });
+
+        // Calcula a idade do paciente
+        if (jsonResult.dataNascimento) {
+            const idade = calcularIdade(new Date(jsonResult.dataNascimento));
+            $("#txtidade").val(idade);
+        }
 
     } catch (error) {
-        alert("Erro ao carregar os dados: " + error.responseText);
+        console.error("Erro ao carregar os dados:", error);
+        alert("Erro ao carregar os dados do paciente. Verifique os logs de erro para mais detalhes.");
     } finally {
         // Esconder indicador de carregamento
         $("#loading").hide();
     }
 }
 
-
-
-
-
-
-
-
-// Funções para atualizar as tabelas após exclusão
 function atualizarTabelaContatos() {
     const tabela = $("#contatoTable tbody");
     tabela.empty();
@@ -814,8 +793,6 @@ function atualizarTabelaContatos() {
     });
 }
 
-
-
 function editarContato(index) {
     if (contatoEmEdicao !== null) {
         // Atualiza o contato que estava em edição anteriormente
@@ -834,8 +811,6 @@ function editarContato(index) {
     $("#selectTipoContato").val(contatoEmEdicao.idTipoContato);
     $("#txtValorContato").val(valorComMascara);
 }
-
-
 
 function atualizarTabelaEnderecos() {
     console.log('Atualizando tabela de endereços');
@@ -872,31 +847,20 @@ function atualizarTabelaEnderecos() {
     // Vincular o evento de edição ao botão "Editar"
     $(document).on("click", ".btn-edit[data-type='endereco']", function () {
         const index = $(this).data("index");
-        console.log("Clique para editar endereço. Índice:", index);
         editarEndereco(index);
     });
 
     // Vincular o evento de exclusão ao botão "Excluir"
     $(document).on("click", ".btn-danger[data-type='endereco']", function () {
         const index = $(this).data("index");
-        console.log("Clique para excluir endereço. Índice:", index);
         const confirmDelete = confirm("Você tem certeza que deseja excluir este endereço?");
         if (confirmDelete) {
-            console.log("Confirmação de exclusão de endereço. Índice:", index);
             enderecos.splice(index, 1); // Remove o endereço pelo índice
             atualizarTabelaEnderecos(); // Atualiza a tabela novamente
-        } else {
-            console.log("Exclusão de endereço cancelada.");
         }
     });
 }
 
-
-
-
-
-
-// Função que é chamada após salvar ou editar um endereço
 function salvarEnderecoEmEdicao() {
     if (enderecoEmEdicao !== null) {
         const enderecoAtualizado = {
@@ -926,7 +890,6 @@ function salvarEnderecoEmEdicao() {
     return true;
 }
 
-
 function editarEndereco(index) {
     enderecoEmEdicao = index;
 
@@ -944,14 +907,6 @@ function editarEndereco(index) {
     $("#txtPontoReferencia").val(endereco.pontoReferencia);
 }
 
-
-
-
-
-
-
-
-// Função para calcular a idade
 function calcularIdade(dataNascimento) {
     const hoje = new Date();
     let idade = hoje.getFullYear() - dataNascimento.getFullYear();
@@ -1011,7 +966,6 @@ function aplicarMascara(valor, tipo) {
 }
 
 // Ao adicionar um novo contato
-
 $("#btnAdicionarContato").click(function () {
     const idTipoContato = $("#selectTipoContato").val();
     const tipoContato = $("#selectTipoContato option:selected").text();
@@ -1075,11 +1029,6 @@ $("#btnAdicionarContato").click(function () {
     $("#selectTipoContato").val('0');  // Reseta o select para a opção padrão após adicionar
 });
 
-
-
-
-
-
 // Depois de excluir ou salvar um endereço
 $("#btnAdicionarEndereco").click(function () {
     const idTipoEndereco = $("#selectTipoEndereco").val();
@@ -1130,10 +1079,6 @@ $("#btnAdicionarEndereco").click(function () {
     $("#selectTipoEndereco").val('0');
 });
 
-
-
-
-
 function limparCamposEndereco() {
     $("#selectTipoEndereco").val('0');  // Reseta o select para a opção padrão
     $("#txtLogradouro").val('');
@@ -1146,7 +1091,6 @@ function limparCamposEndereco() {
     $("#txtPontoReferencia").val('');
     enderecoEmEdicao = null; // Certifique-se de que o estado de edição seja resetado após limpar os campos
 }
-
 
 function removerFormatacao(valor) {
     return valor.replace(/\D/g, "");
@@ -1197,6 +1141,7 @@ $("#txtCep").on("input", function () {
     valor = valor.replace(/^(\d{5})(\d)/, "$1-$2");
     $(this).val(valor);
 });
+
 
 $("#txtpeso, #txtaltura").on("input", function () {
     let valor = $(this).val();
@@ -1256,6 +1201,3 @@ $("#txtNumero").on("blur", function () {
     // Atualiza o valor no campo
     $(this).val(valor);
 });
-
-
-

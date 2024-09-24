@@ -18,13 +18,13 @@ namespace SGFME.Infrastructure.Data.Mapping
             builder.HasOne(pr => pr.paciente)
                 .WithMany(p => p.pacienterepresentante)
                 .HasForeignKey(pr => pr.idPaciente)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Configurando o relacionamento com Representante
             builder.HasOne(pr => pr.representante)
                 .WithMany(r => r.pacienterepresentante)
                 .HasForeignKey(pr => pr.idRepresentante)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Propriedades adicionais (caso necessário, como DataRelacao ou outras)
         }

@@ -277,7 +277,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        
+
         // Endpoint para dados completos de um paciente específico
         [HttpGet("{id}/dadosCompletos")]
         public async Task<ActionResult<object>> GetCompletePacienteData(long id)
@@ -305,7 +305,12 @@ namespace SGFME.Application.Controllers
                         p.dataNascimento,
                         p.dataCadastro,
                         p.nomeMae,
+                        p.nomeConjuge,
                         p.rgNumero,
+                        p.rgDataEmissao, // Incluindo data de emissão do RG
+                        p.rgOrgaoExpedidor, // Incluindo órgão expedidor do RG
+                        p.rgUfEmissao, // Incluindo UF de emissão do RG
+                        p.cnsNumero, // Incluindo CNS
                         p.cpfNumero,
                         p.idStatus,
                         statusNome = p.status.nome,
@@ -317,6 +322,10 @@ namespace SGFME.Application.Controllers
                         corRacaNome = p.corraca.nome,
                         p.idEstadoCivil,
                         estadoCivilNome = p.estadocivil.nome,
+
+                        // Incluindo naturalidade (UF e Cidade)
+                        p.naturalidadeUf, // UF de naturalidade
+                        p.naturalidadeCidade, // Cidade de naturalidade
 
                         // Contatos do paciente
                         contatos = p.contato.Select(c => new
@@ -362,6 +371,7 @@ namespace SGFME.Application.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao buscar os dados completos do paciente: {ex.Message}");
             }
         }
+
 
 
 
@@ -435,6 +445,7 @@ namespace SGFME.Application.Controllers
                         .Include(m => m.contato)
                         .Include(m => m.endereco)
                         .Include(m => m.pacienterepresentante) // Inclui a relação com representantes
+                        .ThenInclude(pr => pr.representante) // Certifica-se de carregar também o representante
                         .FirstOrDefaultAsync(m => m.id == id);
 
                     if (paciente == null)
@@ -503,39 +514,65 @@ namespace SGFME.Application.Controllers
                         paciente.endereco.Add(endereco);
                     }
 
-                    // Atualizar os representantes vinculados ao paciente
-                    var rgsUnicos = request.rgRepresentante.Distinct().ToList();
-                    if (rgsUnicos.Count != request.rgRepresentante.Count)
+                    // Atualizar os representantes vinculados ao paciente, caso existam
+                    if (request.rgRepresentante != null && request.rgRepresentante.Any())
                     {
-                        return BadRequest("Não é permitido adicionar representantes duplicados.");
-                    }
-
-                    // Buscar Representante pelo RG
-                    var representantesBuscados = await _context.representante
-                        .Where(r => rgsUnicos.Contains(r.rgNumero))
-                        .ToListAsync();
-
-                    if (representantesBuscados.Count > 3)
-                    {
-                        return BadRequest("O paciente não pode ter mais do que 3 representantes.");
-                    }
-
-                    // Remover as relações antigas de PacienteRepresentante
-                    _context.pacienterepresentante.RemoveRange(paciente.pacienterepresentante);
-                    paciente.pacienterepresentante.Clear();
-
-                    // Criar as novas relações entre Paciente e Representantes
-                    foreach (var representante in representantesBuscados)
-                    {
-                        var pacienteRepresentante = new PacienteRepresentante
+                        var rgsUnicos = request.rgRepresentante.Distinct().ToList();
+                        if (rgsUnicos.Count != request.rgRepresentante.Count)
                         {
-                            idPaciente = paciente.id,
-                            idRepresentante = representante.id
-                        };
-                        _context.pacienterepresentante.Add(pacienteRepresentante);
+                            return BadRequest("Não é permitido adicionar representantes duplicados.");
+                        }
+
+                        // Buscar Representante pelo RG
+                        var representantesBuscados = await _context.representante
+                            .Where(r => rgsUnicos.Contains(r.rgNumero))
+                            .ToListAsync();
+
+                        if (representantesBuscados.Count > 3)
+                        {
+                            return BadRequest("O paciente não pode ter mais do que 3 representantes.");
+                        }
+
+                        // Encontrar representantes a serem adicionados e removidos
+                        var rgsExistentes = paciente.pacienterepresentante?
+                            .Where(pr => pr.representante != null) // Certifique-se de que o representante não é nulo
+                            .Select(pr => pr.representante.rgNumero)
+                            .ToList() ?? new List<string>();
+
+                        var rgsParaAdicionar = rgsUnicos.Except(rgsExistentes).ToList();
+                        var rgsParaRemover = rgsExistentes.Except(rgsUnicos).ToList();
+
+                        // Remover os representantes que não estão mais no request
+                        var representantesParaRemover = paciente.pacienterepresentante?
+                            .Where(pr => pr.representante != null && rgsParaRemover.Contains(pr.representante.rgNumero))
+                            .ToList();
+
+                        if (representantesParaRemover != null && representantesParaRemover.Any())
+                        {
+                            _context.pacienterepresentante.RemoveRange(representantesParaRemover);
+                        }
+
+                        // Adicionar novos representantes
+                        foreach (var representante in representantesBuscados.Where(r => rgsParaAdicionar.Contains(r.rgNumero)))
+                        {
+                            var pacienteRepresentante = new PacienteRepresentante
+                            {
+                                idPaciente = paciente.id,
+                                idRepresentante = representante.id
+                            };
+                            _context.pacienterepresentante.Add(pacienteRepresentante);
+                        }
+                    }
+                    else
+                    {
+                        // Se não houver representantes no request, remover todos os representantes vinculados ao paciente
+                        if (paciente.pacienterepresentante != null && paciente.pacienterepresentante.Any())
+                        {
+                            _context.pacienterepresentante.RemoveRange(paciente.pacienterepresentante);
+                        }
                     }
 
-                    // Validar a entrada usando FluentValidation
+                    // Validação de entrada usando FluentValidation
                     var validator = new PacienteValidator();
                     var validationResult = await validator.ValidateAsync(paciente);
 
@@ -557,6 +594,11 @@ namespace SGFME.Application.Controllers
                 }
             }
         }
+
+
+
+
+
 
 
 
@@ -877,6 +919,8 @@ namespace SGFME.Application.Controllers
                 }
             }
         }
+
+      
 
 
 
