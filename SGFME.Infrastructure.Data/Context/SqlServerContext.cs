@@ -2,6 +2,11 @@
 using Microsoft.Extensions.Logging;
 using SGFME.Domain.Entidades;
 using SGFME.Infrastructure.Data.Mapping;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SGFME.Infrastructure.Data.Context
 {
@@ -40,9 +45,10 @@ namespace SGFME.Infrastructure.Data.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var stringConexao = @"Server=sql8005.site4now.net;DataBase=db_aa9649_sgfme;User Id=db_aa9649_sgfme_admin;Password=Gu_448228;TrustServerCertificate=True;";
+
             if (!optionsBuilder.IsConfigured)
             {
-                var stringConexao = @"Server=DESKTOP-6H5FN98;DataBase=SGFME;integrated security=true;TrustServerCertificate=True;";
                 optionsBuilder.UseSqlServer(stringConexao);
             }
         }
@@ -51,7 +57,33 @@ namespace SGFME.Infrastructure.Data.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SqlServerContext).Assembly);
+            modelBuilder.Entity<Paciente>(new PacienteMapping().Configure);
+            modelBuilder.Entity<Contato>(new ContatoMapping().Configure);
+            modelBuilder.Entity<TipoContato>(new TipoContatoMapping().Configure);
+            modelBuilder.Entity<CorRaca>(new CorRacaMapping().Configure);
+            modelBuilder.Entity<Sexo>(new SexoMapping().Configure);
+            modelBuilder.Entity<Status>(new StatusMapping().Configure);
+            modelBuilder.Entity<EstadoCivil>(new EstadoCivilMapping().Configure);
+            modelBuilder.Entity<Profissao>(new ProfissaoMapping().Configure);
+            modelBuilder.Entity<Endereco>(new EnderecoMapping().Configure);
+            modelBuilder.Entity<Naturalidade>(new NaturalidadeMapping().Configure);
+            modelBuilder.Entity<TipoEndereco>(new TipoEnderecoMapping().Configure);
+            modelBuilder.Entity<Pessoa>(new PessoaMapping().Configure);
+            modelBuilder.Entity<Cid>(new CidMapping().Configure);
+            modelBuilder.Entity<EstabelecimentoSaude>(new EstabelecimentoSaudeMapping().Configure);
+            modelBuilder.Entity<Medico>(new MedicoMapping().Configure);
+            modelBuilder.Entity<Representante>(new RepresentanteMapping().Configure);
+            modelBuilder.Entity<Medicamento>(new MedicamentoMapping().Configure);
+            modelBuilder.Entity<Especialidade>(new EspecialidadeMapping().Configure);
+            modelBuilder.Entity<VersaoCid>(new VersaoCidMapping().Configure);
+            modelBuilder.Entity<Especialidade>(new EspecialidadeMapping().Configure);
+            modelBuilder.Entity<VersaoCid>(new VersaoCidMapping().Configure);
+            modelBuilder.Entity<Funcionario>(new FuncionarioMapping().Configure);
+            modelBuilder.Entity<PerfilUsuario>(new PerfilUsuarioMapping().Configure);
+            modelBuilder.Entity<Usuario>(new UsuarioMapping().Configure);
+            modelBuilder.Entity<PacienteRepresentante>(new PacienteRepresentanteMapping().Configure);
+            modelBuilder.Entity<Dispensacao>(new DispensacaoMapping().Configure);
+            modelBuilder.Entity<DispensacaoMedicamento>(new DispensacaoMedicamentoMapping().Configure);
         }
     }
 }
