@@ -1,4 +1,135 @@
 ﻿@page
 @model www.Pages.DispensacaoCadastroModel
 @{
+    ViewData["Title"] = "Cadastro de Dispensação";
+}
+
+<style>
+    .section {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+    }
+
+    .section-title {
+        margin-bottom: 20px;
+    }
+
+    .btn-margin {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+</style>
+
+<form id="dispensacaoForm" class="row g-3">
+
+    <div class="row align-items-center mb-3">
+        <div class="col-auto">
+            <i class="fas fa-file-medical fa-3x"></i>
+        </div>
+        <div class="col">
+            <h1>Cadastro de Dispensação</h1>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-dark" onclick="location.href='/DispensacaoGerenciamento'">
+                Gerenciamento de Dispensações
+            </button>
+        </div>
+    </div>
+    <hr />
+
+    <div class="section">
+        <h2 class="section-title">Informações da Dispensação</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="idPaciente" class="form-label">Paciente</label>
+                <select class="form-control" id="idPaciente" required>
+                    <option value="0">Selecione um paciente</option>
+                    <!-- Lista de pacientes carregada aqui -->
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um paciente.
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="idCid" class="form-label">CID</label>
+                <select class="form-control" id="idCid" required>
+                    <option value="0">Selecione um CID</option>
+                    <!-- Lista de CIDs carregada aqui -->
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um CID.
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="inicioApac" class="form-label">Início APAC</label>
+                <input type="datetime-local" class="form-control" id="inicioApac" required>
+                <div class="invalid-feedback">
+                    Por favor, insira a data de início da APAC.
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="observacao" class="form-label">Observação</label>
+                <textarea class="form-control" id="observacao" placeholder="Observações"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Medicamentos</h2>
+        <div id="medicamentosList">
+            <div class="row medicamento-item">
+                <div class="col-md-4">
+                    <label for="idMedicamento" class="form-label">Medicamento</label>
+                    <select class="form-control" id="idMedicamento" required>
+                        <option value="0">Selecione um medicamento</option>
+                        <!-- Lista de medicamentos carregada aqui -->
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, selecione um medicamento.
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="quantidade" class="form-label">Quantidade</label>
+                    <input type="number" class="form-control" id="quantidade" min="0" required>
+                    <div class="invalid-feedback">
+                        Por favor, insira a quantidade.
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="recibo" class="form-label">Recibo</label>
+                    <select class="form-control" id="recibo" required>
+                        <option value="true">Sim</option>
+                        <option value="false">Não</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="recebido" class="form-label">Recebido</label>
+                    <select class="form-control" id="recebido" required>
+                        <option value="true">Sim</option>
+                        <option value="false">Não</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <button type="button" class="btn btn-primary" onclick="location.href='/DispensacaoGerenciamento'">Voltar</button>
+        <button type="button" id="btnSalvar" class="btn btn-primary">Salvar</button>
+        <button type="button" id="btnLimpar" class="btn btn-primary">Limpar</button>
+    </div>
+
+</form>
+
+@section Scripts {
+        <script src="~/js/Dispensacao.js"></script>
 }

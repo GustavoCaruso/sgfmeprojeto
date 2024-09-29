@@ -21,9 +21,6 @@ namespace SGFME.Domain.Entidades
         public string nomeConjuge { get; set; }
         public string naturalidadeCidade { get; set; }
         public string naturalidadeUf { get; set; }
-
-
-
         public long idStatus { get; set; }
         public virtual Status status { get; set; }
         public long idSexo { get; set; }
@@ -34,15 +31,6 @@ namespace SGFME.Domain.Entidades
         public virtual CorRaca corraca { get; set; }
         public long idEstadoCivil { get; set; }
         public virtual EstadoCivil estadocivil { get; set; }
-
-
-
-
-
-
-
-
-
         public virtual ICollection<Contato> contato { get; set; } = new List<Contato>();
         public virtual ICollection<Endereco> endereco { get; set; } = new List<Endereco>();
         public virtual ICollection<PacienteRepresentante> pacienterepresentante { get; set; } = new List<PacienteRepresentante>();

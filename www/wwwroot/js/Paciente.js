@@ -10,6 +10,9 @@ let tipoContatoOptions = '';
 let tipoEnderecoOptions = '';
 let contatos = [];
 let enderecos = [];
+let contatoEmEdicao = null; // Para controlar a edição de contatos
+let enderecoEmEdicao = null; // Para controlar a edição de endereços
+
 let houveAlteracao = false;
 let rgRepresentantes = []; // Array para armazenar os RGs dos representantes vinculados
 
@@ -17,6 +20,7 @@ $(document).ready(async function () {
     await carregarDadosSelecoes();
 
     // Função para buscar o representante pelo RG
+    // Função para buscar o representante pelo RG e adicioná-lo à lista de representantes
     $("#btnBuscarRepresentante").click(function () {
         var rg = $("#txtRepresentanteRg").val(); // Obtém o valor do campo RG
         if (rg.trim() === "") {
@@ -26,7 +30,7 @@ $(document).ready(async function () {
 
         // Requisição AJAX para buscar o representante
         $.ajax({
-            url: urlAPI + "api/Representante/BuscarPorRg/" + rg, // Chama o endpoint passando o RG
+            url: urlAPI + "api/Representante/BuscarPorRg/" + rg,
             method: "GET",
             success: function (data) {
                 if (!data) {
@@ -40,21 +44,21 @@ $(document).ready(async function () {
                     return;
                 }
 
-                // Adiciona o representante à tabela e à lista
+                // Adiciona o representante à tabela e à lista de representantes
                 const tabela = $("#representanteTable tbody");
                 var linha = `
-                <tr>
-                    <td>${data.nomeCompleto}</td>
-                    <td>${data.rgNumero}</td>
-                    <td>${data.cpfNumero}</td>
-                    <td>${new Date(data.dataNascimento).toLocaleDateString()}</td>
-                    <td>
-                        <button class="btn btn-danger btnDesvincularRepresentante" data-rg="${data.rgNumero}">Desvincular</button>
-                    </td>
-                </tr>
+            <tr>
+                <td>${data.nomeCompleto}</td>
+                <td>${data.rgNumero}</td>
+                <td>${data.cpfNumero}</td>
+                <td>${new Date(data.dataNascimento).toLocaleDateString()}</td>
+                <td>
+                    <button class="btn btn-danger btnDesvincularRepresentante" data-rg="${data.rgNumero}">Desvincular</button>
+                </td>
+            </tr>
             `;
-                tabela.append(linha); // Adiciona a linha com os dados do representante na tabela
-                rgRepresentantes.push(data.rgNumero); // Adiciona o RG à lista de representantes vinculados
+                tabela.append(linha);
+                rgRepresentantes.push(data.rgNumero); // Atualiza a lista de representantes com o RG do novo representante
                 alert("Representante vinculado com sucesso!");
             },
             error: function () {
@@ -64,11 +68,10 @@ $(document).ready(async function () {
     });
 
 
-
     // Função para desvincular o representante
     $(document).on('click', '.btnDesvincularRepresentante', function () {
         var representanteRg = $(this).data('rg'); // Obtém o RG do representante
-        rgRepresentantes = rgRepresentantes.filter(rg => rg !== representanteRg); // Remove o RG da lista
+        rgRepresentantes = rgRepresentantes.filter(rg => rg !== representanteRg); // Remove o RG da lista de representantes
         $(this).closest('tr').remove(); // Remove a linha da tabela
         alert("Representante desvinculado com sucesso!");
         console.log("Representantes RGs vinculados:", rgRepresentantes); // Exibe os RGs vinculados no console
@@ -149,9 +152,54 @@ $(document).ready(async function () {
         }
     });
 
+    // Evento change para UF do campo naturalidade
+    $("#selectNaturalidadeUf").change(function () {
+        const ufSelecionada = $(this).val();
+        if (ufSelecionada) {
+            carregarMunicipios(ufSelecionada, $("#selectNaturalidadeCidade"));
+        } else {
+            $("#selectNaturalidadeCidade").empty().append('<option value="">Selecione uma Cidade</option>');
+        }
+    });
+
+    // Evento change para UF no endereço
+    $("#selectEstado").change(function () {
+        const ufSelecionada = $(this).val();
+        if (ufSelecionada) {
+            carregarMunicipios(ufSelecionada, $("#selectMunicipio"));
+        } else {
+            $("#selectMunicipio").empty().append('<option value="">Selecione uma Cidade</option>');
+        }
+    });
+
     configurarMascaraCPF();
     configurarMascaraCEP();
 });
+// Função para carregar os municípios
+function carregarMunicipios(estadoSigla, selectElement, cidadeSelecionada = null) {
+    if (estadoSigla) {
+        return $.ajax({
+            url: `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoSigla}/municipios`,
+            method: "GET",
+            success: function (data) {
+                selectElement.empty();
+                selectElement.append('<option value="">Selecione uma Cidade</option>');
+                data.forEach(municipio => {
+                    const option = `<option value="${municipio.nome}">${municipio.nome}</option>`;
+                    selectElement.append(option);
+                });
+                if (cidadeSelecionada) {
+                    selectElement.val(cidadeSelecionada);
+                }
+            },
+            error: function () {
+                alert("Erro ao carregar as Cidades.");
+            }
+        });
+    } else {
+        selectElement.empty().append('<option value="">Selecione uma cidade</option>');
+    }
+}
 
 // Função para remover máscara de valores como telefone ou CPF
 function removerMascara(valor, tipo) {
@@ -360,30 +408,6 @@ function carregarEstados(selectElement) {
     });
 }
 
-function carregarMunicipios(estadoSigla, selectElement, cidadeSelecionada = null) {
-    if (estadoSigla) {
-        return $.ajax({
-            url: `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoSigla}/municipios`,
-            method: "GET",
-            success: function (data) {
-                selectElement.empty();
-                selectElement.append('<option value="">Selecione uma Cidade</option>');
-                data.forEach(municipio => {
-                    const option = `<option value="${municipio.nome}">${municipio.nome}</option>`;
-                    selectElement.append(option);
-                });
-                if (cidadeSelecionada) {
-                    selectElement.val(cidadeSelecionada);
-                }
-            },
-            error: function () {
-                alert("Erro ao carregar as Cidades.");
-            }
-        });
-    } else {
-        selectElement.empty().append('<option value="">Selecione uma cidade</option>');
-    }
-}
 
 function carregarPacientes() {
     $("#loading").show();
@@ -502,12 +526,13 @@ $("#btnsalvar").click(function () {
         const cnsNumero = removerMascara($("#txtcnsNumero").val(), "CNS");
         const cpfNumero = removerMascara($("#txtcpfNumero").val(), "CPF");
 
+        // Mapear endereços removendo a máscara do CEP
         enderecos = enderecos.map(endereco => ({
             ...endereco,
             cep: removerMascara(endereco.cep, "CEP")
         }));
 
-        // Apenas envia os representantes se existirem
+        // Objeto que será enviado no PUT ou POST
         const obj = {
             id: $("#txtid").val(),
             nomeCompleto: $("#txtnomeCompleto").val(),
@@ -530,34 +555,41 @@ $("#btnsalvar").click(function () {
             idProfissao: $("#selectProfissao").val(),
             idCorRaca: $("#selectCorRaca").val(),
             idEstadoCivil: $("#selectEstadoCivil").val(),
-            rgRepresentante: rgRepresentantes.length > 0 ? rgRepresentantes : null, // Envia apenas se houver representantes
+            rgRepresentante: rgRepresentantes.length > 0 ? rgRepresentantes : [], // Envia os representantes
             contato: contatos,
             endereco: enderecos
         };
 
+        // Logar os dados enviados
+        console.log("Dados enviados:", obj);
+
+        // Chamada Ajax para salvar o paciente (POST ou PUT)
         $.ajax({
             type: obj.id == "0" ? "POST" : "PUT",
             url: urlAPI + "api/Paciente" + (obj.id != "0" ? "/" + obj.id : ""),
-            contentType: "application/json;charset=utf-8",
+            contentType: "application/json",
             data: JSON.stringify(obj),
             dataType: "json",
             success: function () {
                 limparFormulario();
                 alert("Dados salvos com sucesso!");
-
-                if ($("#tabela").length > 0) {
-                    carregarPacientes();
-                }
+                carregarPacientes();  // Recarregar a lista de pacientes, se necessário
             },
             error: function (jqXHR, textStatus) {
-                alert("Erro ao salvar os dados: " + textStatus);
+                console.log("Erro ao salvar os dados:", textStatus);
+                console.log("Resposta do servidor:", jqXHR.responseText);
+                alert("Erro ao salvar os dados.");
             },
             complete: function () {
-                $("#btnsalvar").prop("disabled", false);
+                $("#btnsalvar").prop("disabled", false);  // Reabilitar o botão de salvar após a conclusão
             }
         });
     }
 });
+
+
+
+
 
 function limparFormulario() {
     $("#txtnomeCompleto").val('');
@@ -763,7 +795,7 @@ async function visualizar(codigo) {
 
 function atualizarTabelaContatos() {
     const tabela = $("#contatoTable tbody");
-    tabela.empty();
+    tabela.empty(); // Limpa a tabela antes de adicionar os contatos
 
     contatos.forEach((contato, index) => {
         let valorFormatado = contato.valor;
@@ -791,7 +823,15 @@ function atualizarTabelaContatos() {
         const index = $(this).data("index");
         editarContato(index);
     });
+
+    // Vincula o evento de exclusão ao botão "Excluir"
+    $(".btn-danger[data-type='contato']").off("click").on("click", function () {
+        const index = $(this).data("index");
+        contatos.splice(index, 1); // Remove o contato pelo índice
+        atualizarTabelaContatos(); // Atualiza a tabela novamente
+    });
 }
+
 
 function editarContato(index) {
     if (contatoEmEdicao !== null) {
@@ -977,6 +1017,11 @@ $("#btnAdicionarContato").click(function () {
         return;
     }
 
+    if (valorContato.trim() === "") {
+        alert("Por favor, insira o valor do contato.");
+        return;
+    }
+
     valorContato = removerMascara(valorContato, tipoContato);  // Remove a máscara antes de salvar
 
     // Se estiver editando um contato existente
@@ -1025,9 +1070,11 @@ $("#btnAdicionarContato").click(function () {
     }
 
     atualizarTabelaContatos();
-    $("#txtValorContato").val('');
+    $("#txtValorContato").val(''); // Limpa o campo de valor do contato
     $("#selectTipoContato").val('0');  // Reseta o select para a opção padrão após adicionar
 });
+
+
 
 // Depois de excluir ou salvar um endereço
 $("#btnAdicionarEndereco").click(function () {
