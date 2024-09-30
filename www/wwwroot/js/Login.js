@@ -22,8 +22,10 @@ function realizarLogin() {
                 window.location.href = "TrocarSenha?id=" + jsonResult.idUsuario;
             } else {
                 console.log("Login bem-sucedido");
+                // Armazenar o token e o nome do usuário no sessionStorage
                 sessionStorage.setItem('token', jsonResult.token);
-                window.location.href = "Index"; // Redirecionar para a página inicial ou dashboard após o login bem-sucedido
+                sessionStorage.setItem('nomeUsuario', resultado.nomeUsuario); // Armazenar o nome de usuário
+                window.location.href = "Index"; // Redirecionar para a página inicial ou dashboard
             }
         },
         error: function (jqXHR) {
