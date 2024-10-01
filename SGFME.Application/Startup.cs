@@ -116,10 +116,10 @@ namespace SGFME.Application
                 config.CreateMap<PerfilUsuario, PerfilUsuarioModel>().ReverseMap();
                 config.CreateMap<Usuario, UsuarioModel>().ReverseMap();
                 config.CreateMap<Dispensacao, DispensacaoModel>().ReverseMap();
-                config.CreateMap<CriarDispensacaoDTO, Dispensacao>().ReverseMap();
-                config.CreateMap<CriarDispensacaoMedicamentoDTO, DispensacaoMedicamento>().ReverseMap();
-                config.CreateMap<AlterarDispensacaoDTO, Dispensacao>().ReverseMap();
-                config.CreateMap<AlterarDispensacaoMedicamentoDTO, DispensacaoMedicamento>().ReverseMap();
+                config.CreateMap<DispensacaoMedicamento, DispensacaoMedicamento>().ReverseMap();
+                config.CreateMap<TipoProcesso, TipoProcessoModel>().ReverseMap();
+                config.CreateMap<StatusProcesso, StatusProcessoModel>().ReverseMap();
+               
 
             }).CreateMapper());
 
@@ -138,8 +138,6 @@ namespace SGFME.Application
             services.AddScoped<IBaseService<Sexo>, BaseService<Sexo>>();
             services.AddScoped<IBaseRepository<Sexo>, BaseRepository<Sexo>>();
 
-
-
             services.AddScoped<IBaseService<Status>, BaseService<Status>>();
             services.AddScoped<IBaseRepository<Status>, BaseRepository<Status>>();
 
@@ -151,8 +149,6 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<Endereco>, BaseService<Endereco>>();
             services.AddScoped<IBaseRepository<Endereco>, BaseRepository<Endereco>>();
-
-
 
             services.AddScoped<IBaseService<Naturalidade>, BaseService<Naturalidade>>();
             services.AddScoped<IBaseRepository<Naturalidade>, BaseRepository<Naturalidade>>();
@@ -192,6 +188,15 @@ namespace SGFME.Application
 
             services.AddScoped<IBaseService<Dispensacao>, BaseService<Dispensacao>>();
             services.AddScoped<IBaseRepository<Dispensacao>, BaseRepository<Dispensacao>>();
+
+            services.AddScoped<IBaseService<DispensacaoMedicamento>, BaseService<DispensacaoMedicamento>>();
+            services.AddScoped<IBaseRepository<DispensacaoMedicamento>, BaseRepository<DispensacaoMedicamento>>();
+
+            services.AddScoped<IBaseService<TipoProcesso>, BaseService<TipoProcesso>>();
+            services.AddScoped<IBaseRepository<TipoProcesso>, BaseRepository<TipoProcesso>>();
+
+            services.AddScoped<IBaseService<StatusProcesso>, BaseService<StatusProcesso>>();
+            services.AddScoped<IBaseRepository<StatusProcesso>, BaseRepository<StatusProcesso>>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment environment)

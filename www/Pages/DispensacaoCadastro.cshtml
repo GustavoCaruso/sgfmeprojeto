@@ -21,19 +21,43 @@
         margin-top: 15px;
         margin-bottom: 15px;
     }
+
+    .table-responsive td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .table-responsive th, .table-responsive td {
+        max-width: 150px;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-check-input {
+        margin-right: 10px;
+    }
 </style>
 
 <form id="dispensacaoForm" class="row g-3">
-
+    <div id="loading" style="display: none; text-align: center;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
     <div class="row align-items-center mb-3">
         <div class="col-auto">
-            <i class="fas fa-file-medical fa-3x"></i>
+            <i class="fas fa-prescription-bottle-alt fa-3x"></i>
         </div>
         <div class="col">
             <h1>Cadastro de Dispensação</h1>
         </div>
         <div class="col-auto">
-            <button type="button" class="btn btn-dark" onclick="location.href='/DispensacaoGerenciamento'">
+            <button type="button" class="btn btn-dark"
+                    onclick="location.href='/DispensacaoGerenciamento'">
                 Gerenciamento de Dispensações
             </button>
         </div>
@@ -43,82 +67,142 @@
     <div class="section">
         <h2 class="section-title">Informações da Dispensação</h2>
         <div class="row">
-            <div class="col-md-6">
-                <label for="idPaciente" class="form-label">Paciente</label>
-                <select class="form-control" id="idPaciente" required>
+            <div class="col-md-4">
+                <label for="selectPaciente" class="form-label">Paciente</label>
+                <select class="form-control" id="selectPaciente" required>
                     <option value="0">Selecione um paciente</option>
-                    <!-- Lista de pacientes carregada aqui -->
                 </select>
                 <div class="invalid-feedback">
                     Por favor, selecione um paciente.
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <label for="idCid" class="form-label">CID</label>
-                <select class="form-control" id="idCid" required>
+            <div class="col-md-4">
+                <label for="selectCid" class="form-label">CID</label>
+                <select class="form-control" id="selectCid" required>
                     <option value="0">Selecione um CID</option>
-                    <!-- Lista de CIDs carregada aqui -->
                 </select>
                 <div class="invalid-feedback">
                     Por favor, selecione um CID.
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-2">
                 <label for="inicioApac" class="form-label">Início APAC</label>
-                <input type="datetime-local" class="form-control" id="inicioApac" required>
+                <input type="date" class="form-control" id="inicioApac" required>
                 <div class="invalid-feedback">
-                    Por favor, insira a data de início da APAC.
+                    Por favor, insira a data de início do APAC.
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <label for="observacao" class="form-label">Observação</label>
-                <textarea class="form-control" id="observacao" placeholder="Observações"></textarea>
+            <div class="col-md-2">
+                <label for="fimApac" class="form-label">Fim APAC</label>
+                <input type="date" class="form-control" id="fimApac" required>
+                <div class="invalid-feedback">
+                    Por favor, insira a data de fim do APAC.
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                <label for="dataRenovacao" class="form-label">Data de Renovação</label>
+                <input type="date" class="form-control" id="dataRenovacao">
+            </div>
+
+            <div class="col-md-2">
+                <label for="dataSuspensao" class="form-label">Data de Suspensão</label>
+                <input type="date" class="form-control" id="dataSuspensao">
+            </div>
+
+            <div class="col-md-4">
+                <label for="selectStatusProcesso" class="form-label">Status do Processo</label>
+                <select class="form-control" id="selectStatusProcesso" required>
+                    <option value="0">Selecione um status</option>
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um status.
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="selectTipoProcesso" class="form-label">Tipo de Processo</label>
+                <select class="form-control" id="selectTipoProcesso" required>
+                    <option value="0">Selecione um tipo de processo</option>
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um tipo de processo.
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <label for="txtObservacao" class="form-label">Observações</label>
+                <textarea class="form-control" id="txtObservacao" rows="3" maxlength="500"></textarea>
             </div>
         </div>
     </div>
 
     <div class="section">
         <h2 class="section-title">Medicamentos</h2>
-        <div id="medicamentosList">
-            <div class="row medicamento-item">
-                <div class="col-md-4">
-                    <label for="idMedicamento" class="form-label">Medicamento</label>
-                    <select class="form-control" id="idMedicamento" required>
-                        <option value="0">Selecione um medicamento</option>
-                        <!-- Lista de medicamentos carregada aqui -->
-                    </select>
-                    <div class="invalid-feedback">
-                        Por favor, selecione um medicamento.
-                    </div>
-                </div>
-
-                <div class="col-md-2">
-                    <label for="quantidade" class="form-label">Quantidade</label>
-                    <input type="number" class="form-control" id="quantidade" min="0" required>
-                    <div class="invalid-feedback">
-                        Por favor, insira a quantidade.
-                    </div>
-                </div>
-
-                <div class="col-md-2">
-                    <label for="recibo" class="form-label">Recibo</label>
-                    <select class="form-control" id="recibo" required>
-                        <option value="true">Sim</option>
-                        <option value="false">Não</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2">
-                    <label for="recebido" class="form-label">Recebido</label>
-                    <select class="form-control" id="recebido" required>
-                        <option value="true">Sim</option>
-                        <option value="false">Não</option>
-                    </select>
-                </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="selectMedicamento" class="form-label">Medicamento</label>
+                <select class="form-control" id="selectMedicamento" required>
+                    <option value="0">Selecione um medicamento</option>
+                </select>
             </div>
+
+            <div class="col-md-2">
+                <label for="txtQuantidade" class="form-label">Quantidade</label>
+                <input type="number" class="form-control" id="txtQuantidade" min="1" required>
+            </div>
+
+            <div class="col-md-1 form-check">
+                <input type="checkbox" class="form-check-input" id="txtRecibo">
+                <label for="txtRecibo" class="form-check-label">Recibo</label>
+            </div>
+
+            <div class="col-md-1 form-check">
+                <input type="checkbox" class="form-check-input" id="txtReceita">
+                <label for="txtReceita" class="form-check-label">Receita</label>
+            </div>
+
+            <div class="col-md-1 form-check">
+                <input type="checkbox" class="form-check-input" id="txtMedicamentoChegou">
+                <label for="txtMedicamentoChegou" class="form-check-label">Chegou</label>
+            </div>
+
+            <div class="col-md-1 form-check">
+                <input type="checkbox" class="form-check-input" id="txtMedicamentoEntregue">
+                <label for="txtMedicamentoEntregue" class="form-check-label">Entregue</label>
+            </div>
+
+            <div class="col-md-3">
+                <label for="txtDataEntrega" class="form-label">Data de Entrega</label>
+                <input type="date" class="form-control" id="txtDataEntrega">
+            </div>
+
+            <div class="col-md-12 btn-margin">
+                <button type="button" class="btn btn-primary" id="btnAdicionarMedicamento">Adicionar Medicamento</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="medicamentoTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Medicamento</th>
+                        <th scope="col">Quantidade</th>
+                        <th scope="col">Recibo</th>
+                        <th scope="col">Receita</th>
+                        <th scope="col">Chegou</th>
+                        <th scope="col">Entregue</th>
+                        <th scope="col">Data de Entrega</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 
@@ -127,9 +211,8 @@
         <button type="button" id="btnSalvar" class="btn btn-primary">Salvar</button>
         <button type="button" id="btnLimpar" class="btn btn-primary">Limpar</button>
     </div>
-
 </form>
 
 @section Scripts {
-        <script src="~/js/Dispensacao.js"></script>
+    <script src="~/js/Dispensacao.js"></script>
 }

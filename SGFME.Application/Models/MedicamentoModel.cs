@@ -1,4 +1,5 @@
 ﻿using SGFME.Domain.Entidades;
+using System.Text.Json.Serialization;
 
 namespace SGFME.Application.Models
 {

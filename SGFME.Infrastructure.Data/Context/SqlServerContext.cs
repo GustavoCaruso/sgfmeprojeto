@@ -42,6 +42,8 @@ namespace SGFME.Infrastructure.Data.Context
         public DbSet<PacienteRepresentante> pacienterepresentante { get; set; }
         public DbSet<Dispensacao> dispensacao { get; set; }
         public DbSet<DispensacaoMedicamento> dispensacaomedicamento { get; set; }
+        public DbSet<TipoProcesso> tipoprocesso { get; set; }
+        public DbSet<StatusProcesso> statusprocesso { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
