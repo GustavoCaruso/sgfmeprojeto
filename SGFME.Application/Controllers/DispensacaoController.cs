@@ -22,6 +22,7 @@ namespace SGFME.Application.Controllers
             _context = context;
         }
 
+        // Método para criar uma nova dispensação
         [HttpPost]
         public async Task<ActionResult<Dispensacao>> Create(DispensacaoDTO request)
         {
@@ -29,7 +30,6 @@ namespace SGFME.Application.Controllers
             {
                 try
                 {
-                    // Criando a nova Dispensacao
                     var novaDispensacao = new Dispensacao
                     {
                         idPaciente = request.idPaciente,
@@ -37,6 +37,8 @@ namespace SGFME.Application.Controllers
                         inicioApac = request.inicioApac,
                         fimApac = request.fimApac,
                         observacao = request.observacao,
+                        dataRenovacao = request.dataRenovacao,
+                        dataSuspensao = request.dataSuspensao,
                         idStatusProcesso = request.idStatusProcesso,
                         idTipoProcesso = request.idTipoProcesso,
                         medicamento = new List<DispensacaoMedicamento>()
@@ -59,7 +61,6 @@ namespace SGFME.Application.Controllers
                         novaDispensacao.medicamento.Add(medicamento);
                     }
 
-                    // Salvando a Dispensacao
                     _context.dispensacao.Add(novaDispensacao);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -74,6 +75,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        // Método para buscar dados básicos das dispensações
         [HttpGet("dadosBasicos")]
         public async Task<ActionResult<List<object>>> GetBasicDispensacaoData()
         {
@@ -90,11 +92,11 @@ namespace SGFME.Application.Controllers
                         d.inicioApac,
                         d.fimApac,
                         nomePaciente = d.paciente.nomeCompleto,  // Inclui o nome do paciente
-                        nomeCid = d.cid.codigo,                   // Inclui o nome do CID
+                        nomeCid = d.cid.codigo,                  // Inclui o nome do CID
                         d.idStatusProcesso,
                         d.idTipoProcesso,
-                        statusNome = d.statusprocesso.nome,     // Inclui o nome do status
-                        tipoProcessoNome = d.tipoprocesso.nome  // Inclui o nome do tipo de processo
+                        statusNome = d.statusprocesso.nome,      // Inclui o nome do status
+                        tipoProcessoNome = d.tipoprocesso.nome   // Inclui o nome do tipo de processo
                     })
                     .ToListAsync();
 
@@ -106,7 +108,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
-
+        // Método para buscar medicamentos relacionados a uma dispensação pelo ID
         [HttpGet("{id}/medicamentos")]
         public async Task<ActionResult<List<DispensacaoMedicamento>>> GetMedicamentosByDispensacaoId(long id)
         {
@@ -129,6 +131,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        // Método para atualizar uma dispensação
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(long id, DispensacaoDTO request)
         {
@@ -148,6 +151,8 @@ namespace SGFME.Application.Controllers
                     dispensacao.inicioApac = request.inicioApac;
                     dispensacao.fimApac = request.fimApac;
                     dispensacao.observacao = request.observacao;
+                    dispensacao.dataRenovacao = request.dataRenovacao;
+                    dispensacao.dataSuspensao = request.dataSuspensao;
                     dispensacao.idStatusProcesso = request.idStatusProcesso;
                     dispensacao.idTipoProcesso = request.idTipoProcesso;
 
@@ -184,6 +189,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        // Método para excluir uma dispensação
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
@@ -215,6 +221,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        // Método para buscar dados completos de uma dispensação
         [HttpGet("{id}/dadosCompletos")]
         public async Task<ActionResult<Dispensacao>> GetCompleteDispensacaoData(long id)
         {
@@ -237,36 +244,66 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        // Método para obter os tipos de status e tipos de processo, similar ao "tipoStatus" na controller de médico.
-        [HttpGet("tipoStatusProcesso")]
-        public IActionResult ObterTiposStatusProcesso()
+
+        [HttpPut("{id}/medicamentos")]
+        public async Task<IActionResult> UpdateMedicamentos(long id, List<DispensacaoMedicamentoDTO> novosMedicamentos)
         {
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var tiposStatus = _context.statusprocesso.ToList();
-                return Ok(tiposStatus);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                try
+                {
+                    var dispensacao = await _context.dispensacao
+                        .Include(d => d.medicamento) // Certifique-se de que "medicamentos" é o nome correto da propriedade de navegação
+                        .FirstOrDefaultAsync(d => d.id == id);
+
+                    if (dispensacao == null)
+                    {
+                        return NotFound("Dispensação não encontrada.");
+                    }
+
+                    // Validação dos novos medicamentos
+                    foreach (var medicamentoDto in novosMedicamentos)
+                    {
+                        if (!_context.medicamento.Any(m => m.id == medicamentoDto.idMedicamento))
+                        {
+                            return BadRequest($"Medicamento com id {medicamentoDto.idMedicamento} não encontrado.");
+                        }
+                    }
+
+                    // Remove os medicamentos antigos
+                    _context.dispensacaomedicamento.RemoveRange(dispensacao.medicamento); // Use o nome correto do DbSet
+                    dispensacao.medicamento.Clear();
+
+                    // Adiciona os novos medicamentos
+                    foreach (var medicamentoDto in novosMedicamentos)
+                    {
+                        var medicamento = new DispensacaoMedicamento
+                        {
+                            idMedicamento = medicamentoDto.idMedicamento,
+                            quantidade = medicamentoDto.quantidade,
+                            dataEntrega = medicamentoDto.dataEntrega,
+                            recibo = medicamentoDto.recibo,
+                            receita = medicamentoDto.receita,
+                            idDispensacao = dispensacao.id  // Relaciona com o ID da dispensação
+                        };
+                        dispensacao.medicamento.Add(medicamento);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(dispensacao.medicamento);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao atualizar medicamentos.");
+                }
             }
         }
 
-        [HttpGet("tipoProcesso")]
-        public IActionResult ObterTiposProcesso()
-        {
-            try
-            {
-                var tiposProcesso = _context.tipoprocesso.ToList();
-                return Ok(tiposProcesso);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
 
-       
+
 
 
     }

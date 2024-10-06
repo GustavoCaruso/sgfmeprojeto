@@ -1,269 +1,275 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - www</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Fixa com Navbar e Logo</title>
+    
+    <!-- Bootstrap 5.0.2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
-
+    <!-- Google Fonts - Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- SweetAlert-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <style>
+        /* Aplicando a fonte Roboto para todo o corpo */
         body {
-            background: #eee;
+            display: flex;
+            flex-wrap: nowrap;
+            font-family: 'Roboto', sans-serif; /* Fonte Roboto */
         }
 
-        .logo {
-            width: 200px;
-            height: auto;
-        }
-
-        #side_nav {
-            background: #1f2937;
-            min-width: 250px;
-            max-width: 250px;
-            transition: all 0.3s;
-        }
-
-        .content {
-            min-height: 100vh;
-            width: 100%;
-        }
-
-        hr.h-color {
-            background: #eee;
-        }
-
-        /* Hover state for sidebar items */
-        .sidebar li:hover {
-            background: #eee;
-            border-radius: 8px;
-        }
-
-            .sidebar li:hover a,
-            .sidebar li:hover a:hover {
-                color: #1f2937; /* Dark text on hover */
-            }
-
-        /* Active state for current page */
-        .sidebar li.active {
-            background: #eee;
-            border-radius: 8px;
-        }
-
-            .sidebar li.active a,
-            .sidebar li.active a:hover {
-                color: #1f2937; /* Dark text for active page */
-            }
-
-        /* Default link color */
-        .sidebar li a {
-            color: #fff; /* White text for other items */
-        }
-
-        @@media (max-width: 767px) {
-            #side_nav {
-                margin-left: -250px;
-                position: fixed;
-                height: 100vh;
-                z-index: 1000;
-                overflow-y: auto;
-                width: 250px;
-            }
-
-                #side_nav.active {
-                    margin-left: 0;
-                }
-
-            .content {
-                padding-left: 0;
-            }
-        }
-
-        .open-btn {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1100;
-        }
-
-        .navbar-nav {
-            margin-left: auto;
-        }
-
-        .navbar-collapse {
-            justify-content: flex-end; /* Align navbar content to the right */
-        }
-
-        .navbar-nav.ms-auto {
-            margin-left: auto; /* Push navbar items to the right */
-        }
-
+        /* Navbar */
         .navbar {
-            padding: 0.5rem 1rem; /* Add padding to navbar */
+            height: 56px;
+            background-color: #1F2937; /* Cor personalizada */
         }
 
-        @@media (max-width: 767px) {
-            .navbar-collapse {
-                display: flex;
-                justify-content: flex-end; /* Keep navbar items aligned right */
+        /* Reduzir a logo em telas pequenas */
+        .navbar-brand img {
+            height: 40px;
+            width: auto;
+        }
+
+        @@media (max-width: 768px) {
+            .navbar-brand img {
+                height: 25px; /* Reduzir o tamanho da logo em telas menores */
+            }
+        }
+
+        /* Sidebar fixa na lateral */
+        #sidebar {
+            height: 100vh;
+            background-color: #1F2937; /* Cor personalizada */
+            width: 250px;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Sidebar oculta em telas pequenas */
+        @@media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
             }
 
-            .navbar-nav {
-                flex-direction: row;
-                align-items: center;
+            #sidebar.show {
+                transform: translateX(0);
             }
 
-                .navbar-nav .nav-link {
-                    padding-left: 1rem;
-                }
+            .close-sidebar-btn {
+                display: block;
+                text-align: right;
+                padding: 10px;
+                color: #ffffff;
+            }
+
+            .close-sidebar-btn i {
+                font-size: 24px;
+            }
+        }
+
+        /* Layout para o conteúdo principal */
+        main {
+            flex-grow: 1;
+            margin-top: 56px;
+            padding: 20px;
+            margin-left: 250px;
+        }
+
+        /* Itens da sidebar */
+        .nav-link {
+            color: #ffffff;
+            font-size: 1.1rem; /* Aumentando o tamanho da fonte */
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link i {
+            font-size: 1.1rem; /* Ajustando o tamanho dos ícones para o mesmo tamanho das letras */
+            margin-right: 10px; /* Espaço entre ícone e texto */
+        }
+
+        .nav-link:hover {
+            background-color: #495057;
+            color: #ffffff;
+        }
+
+        .user-profile {
+            font-size: 0.85em;
+            font-style: italic;
+        }
+
+        @@media (max-width: 768px) {
+            main {
+                margin-left: 0;
+            }
+        }
+
+        /* Correção para evitar que os itens da navbar se empurrem */
+        @@media (max-width: 768px) {
+            .navbar .d-flex {
+                flex-wrap: nowrap;
+                overflow: hidden;
+            }
+
+            .navbar .d-flex .btn {
+                margin-left: 5px;
+                margin-top: 0;
+            }
+        }
+
+        /* Estilo do botão Sair */
+        .btn-sair {
+            background-color: #dc3545; /* Cor vermelha */
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .btn-sair:hover {
+            background-color: #c82333; /* Vermelho mais escuro no hover */
+            border-color: #bd2130;
         }
     </style>
 </head>
 <body>
-    <div class="main-container d-flex">
-        <!-- Toggler button for smaller screens to open sidebar -->
-        <button class="btn btn-primary open-btn d-md-none">
-            <i class="fas fa-bars"></i>
-        </button>
 
-        <div class="sidebar" id="side_nav">
-            <div class="header-box px-2 pt-3 pb-4 d-flex justify-content-between">
-                <a class="navbar-brand" href="/Index">
-                    <img src="/img/logo-sgfme.png" alt="Logo SGFME" class="logo">
-                </a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark fixed-top">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+            <!-- Botão Toggler da Sidebar - Apenas em telas menores -->
+            <button class="btn btn-outline-light d-md-none" type="button" id="sidebarToggle">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Logo do site -->
+            <a class="navbar-brand" href="#">
+                <img src="img/logo-sgfme.png" alt="Logo do Site">
+            </a>
+
+            <!-- Botões de Perfil do Usuário e Sair -->
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-2">
+                    <!-- Botão com cor azul padrão (btn-primary) -->
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        João Silva <span class="user-profile"> (Administrador) </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#">Perfil</a></li>
+                        <li><a class="dropdown-item" href="#">Configurações</a></li>
+                    </ul>
+                </div>
+                <!-- Botão Sair com estilo vermelho -->
+                <button class="btn btn-sair" type="button">
+                    Sair
+                </button>
             </div>
+        </div>
+    </nav>
 
-            <ul class="list-unstyled px-2">
-                <li class="nav-item @(ViewData["ActivePage"] == "Index" ? "active" : "")">
-                    <a href="/Index" class="text-decoration-none px-3 py-2 d-block">
+    <!-- Sidebar fixa -->
+    <nav id="sidebar">
+        <div class="position-sticky">
+            <!-- Botão para fechar a sidebar em telas menores -->
+            <div class="close-sidebar-btn d-md-none">
+                <i class="bi bi-x-lg" id="closeSidebar"></i>
+            </div>
+            <ul class="nav flex-column">
+                <!-- Adicionando o item "Início" no topo da sidebar -->
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
                         <i class="fas fa-home"></i> Início
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#submenuPaciente" data-bs-toggle="collapse" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-user-injured"></i> Paciente</span>
-                        <i class="fas fa-chevron-down"></i>
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-file-medical"></i> Dispensação
                     </a>
-                    <ul class="collapse nav flex-column ms-1" id="submenuPaciente">
-                        <li class="w-100 @(ViewData["ActivePage"] == "PacienteCadastro" ? "active" : "")">
-                            <a href="/PacienteCadastro" class="text-decoration-none px-3 py-2 d-block">Cadastrar Paciente</a>
-                        </li>
-                        <li class="w-100 @(ViewData["ActivePage"] == "PacienteGerenciamento" ? "active" : "")">
-                            <a href="/PacienteGerenciamento" class="text-decoration-none px-3 py-2 d-block">Gerenciar Paciente</a>
-                        </li>
-                    </ul>
                 </li>
-                <!-- (demais itens do menu aqui, repita a estrutura acima para outros submenus) -->
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-user"></i> Paciente
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-users"></i> Representante
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-capsules"></i> Medicamento
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-id-badge"></i> Funcionário
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-list-alt"></i> CID
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-user-md"></i> Médico
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-hospital"></i> Estabelecimento de Saúde
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-user-circle"></i> Usuário
+                    </a>
+                </li>
             </ul>
-            <hr class="h-color mx-2">
         </div>
+    </nav>
 
-        <div class="content">
-            <nav class="navbar navbar-expand-md" style="background:#1f2937;">
-                <div class="container-fluid">
-                    <!-- Navbar content aligned to the right -->
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <!-- Exibir nome do usuário no perfil -->
-                                <a class="nav-link active" aria-current="page" href="#">
-                                    <i class="fas fa-user"></i> <span id="perfilUsuario">Nome do Usuário</span><br>
-                                    <span id="perfilNome" style="font-size: 0.85em; color: #999;">Perfil do Usuário</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" id="logoutBtn">Sair</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="dashboard-content px-3 pt-4">
-                @RenderBody()
-            </div>
+    <!-- Main content -->
+    <main>
+        <div class="dashboard-content px-3 pt-4"> <!-- Padding ajustado -->
+            @RenderBody()
         </div>
-    </div>
+    </main>
+
+    <!-- Bootstrap 5.0.2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
-        $(document).ready(function () {
-            // Verifica o token
-            var token = sessionStorage.getItem('token');
-            if (token == null || token == "") {
-                window.location.href = '/login'; // Redireciona para a página de login se não houver token
-            }
+        // Alternar a sidebar para dispositivos móveis
+        var sidebar = document.getElementById('sidebar');
+        var toggler = document.getElementById('sidebarToggle');
+        var closeBtn = document.getElementById('closeSidebar');
 
-            // Requisição para buscar dados do usuário, incluindo perfil
-            $.ajax({
-                url: "https://localhost:7034/api/Usuario/dadosBasicos",
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}` // Se necessário, passe o token
-                },
-                success: function (data) {
-                    if (data && data.length > 0) {
-                        var usuario = data[0]; // Assume que o primeiro resultado seja o usuário atual
-                        $("#perfilUsuario").text(usuario.nomeUsuario);
-                        $("#perfilNome").text(usuario.perfilusuario); // Exibe o nome do perfil do usuário
-                    }
-                },
-                error: function () {
-                    alert("Erro ao buscar os dados do usuário.");
-                }
-            });
+        toggler.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+        });
 
-            // Função para sair
-            $("#logoutBtn").click(function () {
-                sessionStorage.removeItem('token');
-                sessionStorage.removeItem('idUsuario');
-                sessionStorage.removeItem('nomeUsuario');
-                window.location.href = '/login'; // Redireciona para a página de login após logout
-            });
-
-            // Toggle sidebar open and close with the same button
-            $('.open-btn').on('click', function () {
-                $('#side_nav').toggleClass('active');
-            });
-
-            // Handle active class for menu items
-            $(".sidebar ul li a").on('click', function () {
-                $(".sidebar ul li.active").removeClass('active');
-                $(this).parent().addClass('active');
-            });
-
-            // Handle submenu toggle for better user experience
-            $(".sidebar li > a[data-bs-toggle='collapse']").on('click', function () {
-                let target = $(this).attr('href');
-                let isOpen = $(target).hasClass('show');
-                if (!isOpen) {
-                    $(target).collapse('show');
-                } else {
-                    $(target).collapse('hide');
-                }
-            });
-
-            // Preserve the active submenu state on page load
-            $('.collapse').each(function () {
-                if ($(this).find('.active').length > 0) {
-                    $(this).collapse('show');
-                }
-            });
+        // Adicionando funcionalidade ao botão de fechar dentro da sidebar em telas menores
+        closeBtn.addEventListener('click', function() {
+            sidebar.classList.remove('show');
         });
     </script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
