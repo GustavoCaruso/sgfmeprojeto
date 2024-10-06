@@ -278,7 +278,6 @@ namespace SGFME.Application.Controllers
         }
 
 
-        // Endpoint para dados completos de um paciente específico
         [HttpGet("{id}/dadosCompletos")]
         public async Task<ActionResult<object>> GetCompletePacienteData(long id)
         {
@@ -307,10 +306,10 @@ namespace SGFME.Application.Controllers
                         p.nomeMae,
                         p.nomeConjuge,
                         p.rgNumero,
-                        p.rgDataEmissao, // Incluindo data de emissão do RG
-                        p.rgOrgaoExpedidor, // Incluindo órgão expedidor do RG
-                        p.rgUfEmissao, // Incluindo UF de emissão do RG
-                        p.cnsNumero, // Incluindo CNS
+                        p.rgDataEmissao,
+                        p.rgOrgaoExpedidor,
+                        p.rgUfEmissao,
+                        p.cnsNumero,
                         p.cpfNumero,
                         p.idStatus,
                         statusNome = p.status.nome,
@@ -324,17 +323,18 @@ namespace SGFME.Application.Controllers
                         estadoCivilNome = p.estadocivil.nome,
 
                         // Incluindo naturalidade (UF e Cidade)
-                        p.naturalidadeUf, // UF de naturalidade
-                        p.naturalidadeCidade, // Cidade de naturalidade
+                        p.naturalidadeUf,
+                        p.naturalidadeCidade,
 
-                        // Contatos do paciente
+                        // Contatos do paciente, incluindo id do tipo de contato
                         contatos = p.contato.Select(c => new
                         {
                             c.valor,
+                            idTipoContato = c.idTipoContato, // Incluindo o id do tipo de contato
                             tipoContato = c.tipocontato.nome
                         }).ToList(),
 
-                        // Endereços do paciente
+                        // Endereços do paciente, incluindo id do tipo de endereço
                         enderecos = p.endereco.Select(e => new
                         {
                             e.logradouro,
@@ -344,7 +344,8 @@ namespace SGFME.Application.Controllers
                             e.cidade,
                             e.uf,
                             e.cep,
-                            e.pontoReferencia, // Incluindo ponto de referência
+                            e.pontoReferencia,
+                            idTipoEndereco = e.idTipoEndereco, // Incluindo o id do tipo de endereço
                             tipoEndereco = e.tipoendereco.nome
                         }).ToList(),
 
@@ -371,6 +372,7 @@ namespace SGFME.Application.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao buscar os dados completos do paciente: {ex.Message}");
             }
         }
+
 
 
 
@@ -476,7 +478,7 @@ namespace SGFME.Application.Controllers
                     paciente.idProfissao = request.idProfissao;
                     paciente.idCorRaca = request.idCorRaca;
 
-                    // Verificar e atualizar contatos
+                    // Atualizar contatos e endereços conforme implementado anteriormente
                     _context.contato.RemoveRange(paciente.contato);
                     paciente.contato.Clear();
                     foreach (var contatoDto in request.contato)
@@ -491,7 +493,6 @@ namespace SGFME.Application.Controllers
                         paciente.contato.Add(contato);
                     }
 
-                    // Verificar e atualizar endereços
                     _context.endereco.RemoveRange(paciente.endereco);
                     paciente.endereco.Clear();
                     foreach (var enderecoDto in request.endereco)
@@ -513,19 +514,17 @@ namespace SGFME.Application.Controllers
                         paciente.endereco.Add(endereco);
                     }
 
-                    // Verificar representantes duplicados
+                    // Atualizar relação com representantes
                     var rgsUnicos = request.rgRepresentante.Distinct().ToList();
                     if (rgsUnicos.Count != request.rgRepresentante.Count)
                     {
                         return BadRequest("Não é permitido adicionar representantes duplicados.");
                     }
 
-                    // Buscar Representantes pelos RGs
                     var representantesBuscados = await _context.representante
                         .Where(r => rgsUnicos.Contains(r.rgNumero))
                         .ToListAsync();
 
-                    // Verificar se todos os RGs fornecidos existem
                     if (representantesBuscados.Count != rgsUnicos.Count)
                     {
                         var rgsNaoEncontrados = rgsUnicos
@@ -534,7 +533,6 @@ namespace SGFME.Application.Controllers
                         return BadRequest($"Os seguintes RGs de representantes não foram encontrados: {string.Join(", ", rgsNaoEncontrados)}");
                     }
 
-                    // Limpar representantes antigos e adicionar novos
                     _context.pacienterepresentante.RemoveRange(paciente.pacienterepresentante);
                     paciente.pacienterepresentante.Clear();
 
@@ -562,6 +560,7 @@ namespace SGFME.Application.Controllers
                 }
             }
         }
+
 
 
 
@@ -895,7 +894,7 @@ namespace SGFME.Application.Controllers
             }
         }
 
-        
+
 
 
 

@@ -29,16 +29,7 @@
     }
 
     .table-responsive th, .table-responsive td {
-        max-width: 150px;
-    }
-
-    .form-check {
-        display: flex;
-        align-items: center;
-    }
-
-    .form-check-input {
-        margin-right: 10px;
+        max-width: 150px; /* Ajuste conforme necessário */
     }
 </style>
 
@@ -67,7 +58,12 @@
     <div class="section">
         <h2 class="section-title">Informações da Dispensação</h2>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-2">
+                <label for="txtid" class="form-label">Código</label>
+                <input type="text" class="form-control" id="txtid" value="0" placeholder="Código" disabled>
+            </div>
+
+            <div class="col-md-3">
                 <label for="selectPaciente" class="form-label">Paciente</label>
                 <select class="form-control" id="selectPaciente" required>
                     <option value="0">Selecione um paciente</option>
@@ -76,8 +72,7 @@
                     Por favor, selecione um paciente.
                 </div>
             </div>
-
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="selectCid" class="form-label">CID</label>
                 <select class="form-control" id="selectCid" required>
                     <option value="0">Selecione um CID</option>
@@ -88,34 +83,37 @@
             </div>
 
             <div class="col-md-2">
-                <label for="inicioApac" class="form-label">Início APAC</label>
-                <input type="date" class="form-control" id="inicioApac" required>
+                <label for="txtinicioApac" class="form-label">Início APAC</label>
+                <input type="date" class="form-control" id="txtinicioApac" required>
                 <div class="invalid-feedback">
                     Por favor, insira a data de início do APAC.
                 </div>
             </div>
 
             <div class="col-md-2">
-                <label for="fimApac" class="form-label">Fim APAC</label>
-                <input type="date" class="form-control" id="fimApac" required>
+                <label for="txtfimApac" class="form-label">Fim APAC</label>
+                <input type="date" class="form-control" id="txtfimApac" required>
                 <div class="invalid-feedback">
                     Por favor, insira a data de fim do APAC.
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-2">
-                <label for="dataRenovacao" class="form-label">Data de Renovação</label>
-                <input type="date" class="form-control" id="dataRenovacao">
+
+
+            <!-- Inputs para Data de Renovação e Suspensão -->
+            <div class="form-group">
+                <label for="txtdataRenovacao">Data de Renovação</label>
+                <input type="date" id="txtdataRenovacao" class="form-control">
             </div>
 
-            <div class="col-md-2">
-                <label for="dataSuspensao" class="form-label">Data de Suspensão</label>
-                <input type="date" class="form-control" id="dataSuspensao">
+            <div class="form-group">
+                <label for="txtdataSuspensao">Data de Suspensão</label>
+                <input type="date" id="txtdataSuspensao" class="form-control">
             </div>
 
-            <div class="col-md-4">
+
+
+            <div class="col-md-3">
                 <label for="selectStatusProcesso" class="form-label">Status do Processo</label>
                 <select class="form-control" id="selectStatusProcesso" required>
                     <option value="0">Selecione um status</option>
@@ -125,7 +123,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="selectTipoProcesso" class="form-label">Tipo de Processo</label>
                 <select class="form-control" id="selectTipoProcesso" required>
                     <option value="0">Selecione um tipo de processo</option>
@@ -135,9 +133,9 @@
                 </div>
             </div>
 
-            <div class="col-md-12">
-                <label for="txtObservacao" class="form-label">Observações</label>
-                <textarea class="form-control" id="txtObservacao" rows="3" maxlength="500"></textarea>
+            <div class="col-md-6">
+                <label for="txtObservacao" class="form-label">Observação</label>
+                <textarea class="form-control" id="txtObservacao" placeholder="Observações sobre a dispensação" maxlength="500"></textarea>
             </div>
         </div>
     </div>
@@ -145,46 +143,60 @@
     <div class="section">
         <h2 class="section-title">Medicamentos</h2>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="selectMedicamento" class="form-label">Medicamento</label>
                 <select class="form-control" id="selectMedicamento" required>
                     <option value="0">Selecione um medicamento</option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um medicamento.
+                </div>
             </div>
 
             <div class="col-md-2">
                 <label for="txtQuantidade" class="form-label">Quantidade</label>
-                <input type="number" class="form-control" id="txtQuantidade" min="1" required>
+                <input type="number" class="form-control" id="txtQuantidade" placeholder="Quantidade" required>
+                <div class="invalid-feedback">
+                    Por favor, insira a quantidade.
+                </div>
             </div>
 
-            <div class="col-md-1 form-check">
-                <input type="checkbox" class="form-check-input" id="txtRecibo">
-                <label for="txtRecibo" class="form-check-label">Recibo</label>
-            </div>
-
-            <div class="col-md-1 form-check">
-                <input type="checkbox" class="form-check-input" id="txtReceita">
-                <label for="txtReceita" class="form-check-label">Receita</label>
-            </div>
-
-            <div class="col-md-1 form-check">
-                <input type="checkbox" class="form-check-input" id="txtMedicamentoChegou">
-                <label for="txtMedicamentoChegou" class="form-check-label">Chegou</label>
-            </div>
-
-            <div class="col-md-1 form-check">
-                <input type="checkbox" class="form-check-input" id="txtMedicamentoEntregue">
-                <label for="txtMedicamentoEntregue" class="form-check-label">Entregue</label>
-            </div>
-
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="txtDataEntrega" class="form-label">Data de Entrega</label>
-                <input type="date" class="form-control" id="txtDataEntrega">
+                <input type="date" class="form-control" id="txtDataEntrega" required>
+                <div class="invalid-feedback">
+                    Por favor, insira a data de entrega.
+                </div>
             </div>
 
-            <div class="col-md-12 btn-margin">
-                <button type="button" class="btn btn-primary" id="btnAdicionarMedicamento">Adicionar Medicamento</button>
+            <div class="col-md-1">
+                <label class="form-check-label" for="txtRecibo">Recibo</label>
+                <input type="checkbox" class="form-check-input" id="txtRecibo">
             </div>
+
+            <div class="col-md-1">
+                <label class="form-check-label" for="txtReceita">Receita</label>
+                <input type="checkbox" class="form-check-input" id="txtReceita">
+            </div>
+
+
+
+            <!-- Adicione checkboxes para medicamentoChegou e medicamentoEntregue -->
+            <div class ="col-md-1">
+                <label for="txtmedicamentoChegou">Medicamento Chegou</label>
+                <input type="checkbox" class="form-check-input" id="txtmedicamentoChegou">
+            </div>
+
+            <div class="col-md-1">
+                <label for="txtmedicamentoEntregue">Medicamento Entregue</label>
+                <input type="checkbox" class="form-check-input" id="txtmedicamentoEntregue">
+            </div>
+
+
+        </div>
+
+        <div class="col-12 btn-margin">
+            <button type="button" class="btn btn-primary" id="btnAdicionarMedicamento">Adicionar Medicamento</button>
         </div>
 
         <div class="table-responsive">
@@ -193,23 +205,24 @@
                     <tr>
                         <th scope="col">Medicamento</th>
                         <th scope="col">Quantidade</th>
+                        <th scope="col">Data de Entrega</th>
                         <th scope="col">Recibo</th>
                         <th scope="col">Receita</th>
                         <th scope="col">Chegou</th>
                         <th scope="col">Entregue</th>
-                        <th scope="col">Data de Entrega</th>
                         <th scope="col">Ações</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </div>
+        <div id="mensagemValidacao" class="text-danger"></div>
     </div>
 
     <div class="col-12">
         <button type="button" class="btn btn-primary" onclick="location.href='/DispensacaoGerenciamento'">Voltar</button>
-        <button type="button" id="btnSalvar" class="btn btn-primary">Salvar</button>
-        <button type="button" id="btnLimpar" class="btn btn-primary">Limpar</button>
+        <button type="button" id="btnsalvar" class="btn btn-primary">Salvar</button>
+        <button type="button" id="btnlimpar" class="btn btn-primary">Limpar</button>
     </div>
 </form>
 

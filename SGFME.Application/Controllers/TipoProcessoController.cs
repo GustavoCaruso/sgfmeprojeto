@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SGFME.Application.Models;
 using SGFME.Domain.Entidades;
 using SGFME.Domain.Interfaces;
+using SGFME.Infrastructure.Data.Context;
 using SGFME.Service.Validators;
 
 namespace SGFME.Application.Controllers
@@ -12,10 +13,12 @@ namespace SGFME.Application.Controllers
     public class TipoProcessoController : ControllerBase
     {
         private IBaseService<TipoProcesso> _baseService;
+        private readonly SqlServerContext _context;
 
-        public TipoProcessoController(IBaseService<TipoProcesso> baseService)
+        public TipoProcessoController(IBaseService<TipoProcesso> baseService, SqlServerContext context)
         {
             _baseService = baseService;
+            _context = context;
         }
         //Adicionar método para executar comando e retornar IActionResult
         private IActionResult Execute(Func<object> func)
@@ -75,6 +78,12 @@ namespace SGFME.Application.Controllers
                 return NotFound();
 
             return Execute(() => _baseService.GetById<TipoProcessoModel>(id));
+        }
+
+        [HttpGet]
+        public IActionResult SelecionarTodos()
+        {
+            return Execute(() => _baseService.Get<TipoProcessoModel>());
         }
     }
 }

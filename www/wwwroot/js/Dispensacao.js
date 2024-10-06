@@ -2,6 +2,8 @@
 
 let statusProcessoOptions = '';
 let tipoProcessoOptions = '';
+let pacienteOptions = '';
+let medicamentoOptions = '';
 let medicamentos = [];
 let houveAlteracao = false;
 let medicamentoEmEdicao = null;
@@ -32,44 +34,17 @@ $(document).ready(async function () {
         limparFormulario();
     });
 
+    $(".numeric-only").on("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
     $(document).on("click", ".alterar", function (elemento) {
-        let codigo = $(this).closest("tr").find(".codigo").text();
-        console.log("Clique no botão alterar. Código:", codigo);
+        let codigo = $(elemento.target).closest("tr").find(".codigo").text();
         window.location.href = "/DispensacaoCadastro?id=" + codigo;
-    });
-
-    $(document).on("change", ".alterar-status", function (elemento) {
-        let codigo = $(this).closest("tr").find(".codigo").text();
-        let novoStatus = $(this).val();
-
-        if (novoStatus === "0") {
-            alert("Seleção inválida! Por favor, escolha um status válido.");
-            $(this).val($(this).data('original-value'));
-        } else {
-            console.log("Mudança de status. Código:", codigo, "Novo Status:", novoStatus);
-            mudarStatus(codigo, novoStatus);
-        }
-    });
-
-    $(document).on("focus", ".alterar-status", function () {
-        $(this).data('original-value', $(this).val());
     });
 
     $("#btnAdicionarMedicamento").click(function () {
         adicionarMedicamento();
-    });
-
-    $(document).off("click", ".btn-danger[data-type='medicamento']").on("click", ".btn-danger[data-type='medicamento']", function () {
-        const index = $(this).data("index");
-        const confirmDelete = confirm("Você tem certeza que deseja excluir este medicamento?");
-        if (confirmDelete) {
-            medicamentos.splice(index, 1);
-            atualizarTabelaMedicamentos();
-        }
-    });
-
-    $("#btnSalvar").click(function () {
-        salvarDispensacao(); // Chama a função quando o botão for clicado
     });
 });
 
@@ -77,141 +52,153 @@ function carregarDadosSelecoes() {
     return Promise.all([
         carregarOpcoesStatusProcesso(),
         carregarOpcoesTipoProcesso(),
-        carregarPacientes(),
-        carregarCids(),
-        carregarMedicamentos(), // Agora carregando todos os medicamentos disponíveis
+        carregarOpcoesPaciente(),
+        carregarOpcoesMedicamento(),
+        carregarOpcoesCid() // Adiciona o carregamento de CID
     ]);
 }
 
-function carregarPacientes() {
-    return $.ajax({
-        url: urlAPI + "api/Paciente", // Confirme se este é o endpoint correto para obter os pacientes
-        method: "GET",
-        success: function (data) {
-            let pacienteOptions = '<option value="0">Selecione um paciente</option>';
-            data.forEach(item => {
-                pacienteOptions += `<option value="${item.id}">${item.nomeCompleto}</option>`;
-            });
-            $("#selectPaciente").html(pacienteOptions);
-        },
-        error: function () {
-            alert("Erro ao carregar pacientes.");
-        }
-    });
-}
-
-function carregarCids() {
-    return $.ajax({
-        url: urlAPI + "api/Cid", // Confirme se este é o endpoint correto para obter os CIDs
-        method: "GET",
-        success: function (data) {
-            let cidOptions = '<option value="0">Selecione um CID</option>';
-            data.forEach(item => {
-                cidOptions += `<option value="${item.id}">${item.descricao}</option>`;
-            });
-            $("#selectCid").html(cidOptions);
-        },
-        error: function () {
-            alert("Erro ao carregar CIDs.");
-        }
-    });
-}
 
 function carregarOpcoesStatusProcesso() {
     return $.ajax({
-        url: urlAPI + "api/Dispensacao/tipoStatusProcesso", // Endpoint da API para carregar status
+        url: urlAPI + "api/StatusProcesso",
         method: "GET",
         success: function (data) {
-            console.log("Dados recebidos: ", data); // Verificar os dados recebidos
-
-            let statusProcessoOptions = '<option value="0">Selecione um status de processo</option>';
-
-            // Itera sobre o array de status e cria opções para o select
+            console.log("StatusProcesso carregado:", data); // Log para depuração
+            statusProcessoOptions = '<option value="0">Selecione um status</option>';
             data.forEach(item => {
                 statusProcessoOptions += `<option value="${item.id}">${item.nome}</option>`;
             });
-
-            // Atualiza o select com as opções de status
-
             $("#selectStatusProcesso").html(statusProcessoOptions);
         },
-        error: function () {
-            alert("Erro ao carregar os status de processo.");
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Erro ao carregar os status do processo:", textStatus, errorThrown);
+            alert("Erro ao carregar os status do processo.");
         }
     });
 }
 
-
 function carregarOpcoesTipoProcesso() {
     return $.ajax({
-        url: urlAPI + "api/Dispensacao/tipoProcesso",
+        url: urlAPI + "api/TipoProcesso",
         method: "GET",
         success: function (data) {
+            console.log("TipoProcesso carregado:", data); // Log para depuração
             tipoProcessoOptions = '<option value="0">Selecione um tipo de processo</option>';
             data.forEach(item => {
                 tipoProcessoOptions += `<option value="${item.id}">${item.nome}</option>`;
             });
             $("#selectTipoProcesso").html(tipoProcessoOptions);
         },
-        error: function () {
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Erro ao carregar os tipos de processo:", textStatus, errorThrown);
             alert("Erro ao carregar os tipos de processo.");
         }
     });
 }
 
-// Função para carregar medicamentos no select corretamente
-function carregarMedicamentos() {
+
+function carregarOpcoesPaciente() {
     return $.ajax({
-        url: urlAPI + "api/Medicamento", // Confirme se este é o endpoint correto para obter os medicamentos
+        url: urlAPI + "api/Paciente",
         method: "GET",
         success: function (data) {
-            let medicamentoOptions = '<option value="0">Selecione um medicamento</option>';
+            pacienteOptions = '<option value="0">Selecione um paciente</option>';
+            data.forEach(item => {
+                pacienteOptions += `<option value="${item.id}">${item.nomeCompleto}</option>`;
+            });
+            $("#selectPaciente").html(pacienteOptions);
+        },
+        error: function () {
+            alert("Erro ao carregar os pacientes.");
+        }
+    });
+}
+
+function carregarOpcoesMedicamento() {
+    return $.ajax({
+        url: urlAPI + "api/Medicamento",
+        method: "GET",
+        success: function (data) {
+            medicamentoOptions = '<option value="0">Selecione um medicamento</option>';
             data.forEach(item => {
                 medicamentoOptions += `<option value="${item.id}">${item.nome}</option>`;
             });
             $("#selectMedicamento").html(medicamentoOptions);
-            console.log("Medicamentos carregados:", data); // Log para verificar se os medicamentos estão sendo carregados corretamente
         },
         error: function () {
-            alert("Erro ao carregar medicamentos.");
+            alert("Erro ao carregar os medicamentos.");
         }
     });
 }
 
-function carregarMedicamentosPorDispensacao() {
-    const dispensacaoId = $("#txtid").val();
-    if (!dispensacaoId || dispensacaoId === "0") return;
 
+
+function carregarOpcoesCid() {
     return $.ajax({
-        url: urlAPI + "api/Dispensacao/" + dispensacaoId + "/medicamentos",
+        url: urlAPI + "api/Cid",
         method: "GET",
         success: function (data) {
-            let medicamentoOptions = '<option value="0">Selecione um medicamento</option>';
+            let cidOptions = '<option value="0">Selecione um CID</option>';
             data.forEach(item => {
-                medicamentoOptions += `<option value="${item.idMedicamento}">${item.nomeMedicamento}</option>`;
+                cidOptions += `<option value="${item.id}">${item.codigo} - ${item.descricao}</option>`;
             });
-            $("#selectMedicamento").html(medicamentoOptions);
+            $("#selectCid").html(cidOptions);
         },
         error: function () {
-            alert("Erro ao carregar medicamentos.");
+            alert("Erro ao carregar os CIDs.");
         }
     });
 }
 
-function adicionarMedicamento() {
+
+
+
+
+function carregarDispensacoes() {
+    $.ajax({
+        url: urlAPI + "api/Dispensacao/dadosBasicos",
+        method: "GET",
+        success: function (data) {
+            const tabela = $("#tabela");
+            tabela.empty();
+            data.forEach(item => {
+                let linha = `<tr>
+                    <td class="codigo">${item.id}</td>
+                    <td>${item.nomePaciente}</td>
+                    <td>${item.nomeCid}</td>
+                    <td>${new Date(item.inicioApac).toLocaleDateString()}</td>
+                    <td>${new Date(item.fimApac).toLocaleDateString()}</td>
+                    <td>${item.statusNome}</td>
+                    <td>${item.tipoProcessoNome}</td>
+                    <td><button class="btn btn-primary alterar">Alterar</button></td>
+                </tr>`;
+                tabela.append(linha);
+            });
+        },
+        error: function () {
+            alert("Erro ao carregar dispensações.");
+        }
+    });
+}
+
+$("#btnAdicionarMedicamento").click(function () {
     const idMedicamento = $("#selectMedicamento").val();
     const nomeMedicamento = $("#selectMedicamento option:selected").text();
     const quantidade = $("#txtQuantidade").val();
-
-    // Corrigir a captura dos checkboxes
-    const recibo = $("#txtRecibo").prop('checked') ? "Sim" : "Não";
-    const receita = $("#txtReceita").prop('checked') ? "Sim" : "Não";
-    const medicamentoChegou = $("#txtMedicamentoChegou").prop('checked') ? "Sim" : "Não";
-    const medicamentoEntregue = $("#txtMedicamentoEntregue").prop('checked') ? "Sim" : "Não";
     const dataEntrega = $("#txtDataEntrega").val();
+    const recibo = $("#txtRecibo").is(":checked");
+    const receita = $("#txtReceita").is(":checked");
+    const medicamentoChegou = $("#txtmedicamentoChegou").is(":checked"); // Captura o valor de medicamentoChegou
+    const medicamentoEntregue = $("#txtmedicamentoEntregue").is(":checked"); // Captura o valor de medicamentoEntregue
 
-    if (idMedicamento === "0" || !quantidade || !dataEntrega) {
-        alert("Preencha todos os campos obrigatórios de medicamento.");
+    if (!idMedicamento || idMedicamento === "0") {
+        alert("Por favor, selecione um medicamento.");
+        return;
+    }
+
+    if (!quantidade || !dataEntrega) {
+        alert("Por favor, preencha a quantidade e a data de entrega.");
         return;
     }
 
@@ -219,11 +206,11 @@ function adicionarMedicamento() {
         idMedicamento,
         nomeMedicamento,
         quantidade,
+        dataEntrega,
         recibo,
         receita,
-        medicamentoChegou,
-        medicamentoEntregue,
-        dataEntrega
+        medicamentoChegou, // Inclui medicamentoChegou
+        medicamentoEntregue // Inclui medicamentoEntregue
     };
 
     if (medicamentoEmEdicao !== null) {
@@ -235,7 +222,7 @@ function adicionarMedicamento() {
 
     atualizarTabelaMedicamentos();
     limparCamposMedicamento();
-}
+});
 
 function atualizarTabelaMedicamentos() {
     const tabela = $("#medicamentoTable tbody");
@@ -245,11 +232,11 @@ function atualizarTabelaMedicamentos() {
         const linha = `<tr>
             <td>${medicamento.nomeMedicamento}</td>
             <td>${medicamento.quantidade}</td>
-            <td>${medicamento.recibo === "Sim" ? "Sim" : "Não"}</td> <!-- Ajuste -->
-            <td>${medicamento.receita === "Sim" ? "Sim" : "Não"}</td> <!-- Ajuste -->
-            <td>${medicamento.medicamentoChegou === "Sim" ? "Sim" : "Não"}</td> <!-- Ajuste -->
-            <td>${medicamento.medicamentoEntregue === "Sim" ? "Sim" : "Não"}</td> <!-- Ajuste -->
-            <td>${medicamento.dataEntrega}</td>
+            <td>${new Date(medicamento.dataEntrega).toLocaleDateString()}</td>
+            <td>${medicamento.recibo ? "Sim" : "Não"}</td>
+            <td>${medicamento.receita ? "Sim" : "Não"}</td>
+            <td>${medicamento.medicamentoChegou ? "Sim" : "Não"}</td> <!-- Adiciona campo medicamentoChegou -->
+            <td>${medicamento.medicamentoEntregue ? "Sim" : "Não"}</td> <!-- Adiciona campo medicamentoEntregue -->
             <td>
                 <button type="button" class="btn btn-warning btn-edit" data-index="${index}" data-type="medicamento">Editar</button>
                 <button type="button" class="btn btn-danger" data-index="${index}" data-type="medicamento">Excluir</button>
@@ -264,202 +251,177 @@ function atualizarTabelaMedicamentos() {
     });
 }
 
+
 function editarMedicamento(index) {
-    const medicamento = medicamentos[index];
     medicamentoEmEdicao = index;
 
+    let medicamento = medicamentos[index];
     $("#selectMedicamento").val(medicamento.idMedicamento);
     $("#txtQuantidade").val(medicamento.quantidade);
-    $("#txtRecibo").prop('checked', medicamento.recibo === "Sim"); // Ajuste aqui
-    $("#txtReceita").prop('checked', medicamento.receita === "Sim"); // Ajuste aqui
-    $("#txtMedicamentoChegou").prop('checked', medicamento.medicamentoChegou === "Sim"); // Ajuste aqui
-    $("#txtMedicamentoEntregue").prop('checked', medicamento.medicamentoEntregue === "Sim"); // Ajuste aqui
-    $("#txtDataEntrega").val(medicamento.dataEntrega);
+    $("#txtDataEntrega").val(new Date(medicamento.dataEntrega).toISOString().split('T')[0]);
+    $("#txtRecibo").prop('checked', medicamento.recibo);
+    $("#txtReceita").prop('checked', medicamento.receita);
+    $("#txtmedicamentoChegou").prop('checked', medicamento.medicamentoChegou); // Carrega medicamentoChegou
+    $("#txtmedicamentoEntregue").prop('checked', medicamento.medicamentoEntregue); // Carrega medicamentoEntregue
 }
 
+
 function limparCamposMedicamento() {
-    $("#selectMedicamento").val('0');
+    $("#selectMedicamento").val("0");
     $("#txtQuantidade").val('');
-    $("#txtRecibo").prop('checked', false);  // Limpar checkbox Recibo
-    $("#txtReceita").prop('checked', false); // Limpar checkbox Receita
-    $("#txtMedicamentoChegou").prop('checked', false); // Limpar checkbox Chegou
-    $("#txtMedicamentoEntregue").prop('checked', false); // Limpar checkbox Entregue
     $("#txtDataEntrega").val('');
+    $("#txtRecibo").prop('checked', false);
+    $("#txtReceita").prop('checked', false);
     medicamentoEmEdicao = null;
 }
 
-function carregarDispensacoes() {
-    $("#loading").show();
+async function visualizar(id) {
+    try {
+        const dispensacao = await $.ajax({
+            url: `${urlAPI}api/Dispensacao/${id}/dadosCompletos`,
+            method: "GET"
+        });
 
-    $.ajax({
-        url: urlAPI + "api/Dispensacao/dadosBasicos",
-        method: "GET",
-        success: function (data) {
-            console.log(data);
-            const tabela = $("#tabela");
-            tabela.empty();
+        // Preenchendo os campos com os dados retornados
+        $("#txtid").val(dispensacao.id);
+        $("#selectPaciente").val(dispensacao.idPaciente);
+        $("#selectCid").val(dispensacao.idCid);
+        $("#txtinicioApac").val(new Date(dispensacao.inicioApac).toISOString().split('T')[0]);
+        $("#txtfimApac").val(new Date(dispensacao.fimApac).toISOString().split('T')[0]);
+        $("#selectStatusProcesso").val(dispensacao.idStatusProcesso);
+        $("#selectTipoProcesso").val(dispensacao.idTipoProcesso);
+        $("#txtObservacao").val(dispensacao.observacao);
 
-            const fragment = document.createDocumentFragment();
-
-            $.each(data, function (index, item) {
-                var linha = $("#linhaExemplo").clone().removeAttr("id").removeAttr("style");
-                $(linha).find(".codigo").html(item.id);
-                $(linha).find(".nomePaciente").html(item.nomePaciente ? item.nomePaciente : "Nome não disponível");
-                $(linha).find(".cid").html(item.nomeCid || "CID não informado");
-                $(linha).find(".inicioApac").html(new Date(item.inicioApac).toLocaleDateString());
-                $(linha).find(".fimApac").html(new Date(item.fimApac).toLocaleDateString());
-                $(linha).find(".observacao").html(item.observacao ? item.observacao : "Sem observações");
-                $(linha).find(".status").html(item.statusNome || "Status não disponível");
-
-                $(linha).find(".acoes").html(`<button type="button" class="alterar btn btn-info btn-sm">Visualizar</button>`);
-
-                fragment.appendChild(linha[0]);
-            });
-
-            tabela.append(fragment);
-
-            $('#tabelaDispensacao').DataTable({
-                language: {
-                    url: '/js/pt-BR.json'
-                },
-                destroy: true
-            });
-
-            $("#loading").hide();
-        },
-        error: function () {
-            alert("Erro ao carregar dispensações.");
-            $("#loading").hide();
+        // Preenchendo a data de renovação e suspensão, se existirem
+        if (dispensacao.dataRenovacao) {
+            $("#txtdataRenovacao").val(new Date(dispensacao.dataRenovacao).toISOString().split('T')[0]);
+        } else {
+            $("#txtdataRenovacao").val(''); // Limpa se não existir
         }
-    });
-}
 
-function salvarDispensacao() {
-    if (!validarCampos()) {
-        return;
-    }
+        if (dispensacao.dataSuspensao) {
+            $("#txtdataSuspensao").val(new Date(dispensacao.dataSuspensao).toISOString().split('T')[0]);
+        } else {
+            $("#txtdataSuspensao").val(''); // Limpa se não existir
+        }
 
-    // Função para formatar a data corretamente (mantendo o formato de data `YYYY-MM-DD` esperado pela API)
-    function formatarData(data) {
-        if (!data || data === "") return null; // Se o campo estiver vazio, retorna null
-        return data; // Retorna o valor da data, já no formato adequado para a API
-    }
-
-    // Prepara os medicamentos no formato esperado
-    const medicamentosFormatados = medicamentos.map(medicamento => ({
-        id: medicamento.id || 0, // Se não tiver um ID, assume 0 para criação
-        idMedicamento: parseInt(medicamento.idMedicamento), // Garante que seja numérico
-        quantidade: parseInt(medicamento.quantidade), // Garante que seja numérico
-        recibo: medicamento.recibo === true || medicamento.recibo === "Sim", // Booleano
-        receita: medicamento.receita === true || medicamento.receita === "Sim", // Booleano
-        medicamentoChegou: medicamento.medicamentoChegou === true || medicamento.medicamentoChegou === "Sim", // Booleano
-        medicamentoEntregue: medicamento.medicamentoEntregue === true || medicamento.medicamentoEntregue === "Sim", // Booleano
-        dataEntrega: formatarData(medicamento.dataEntrega) // Já está no formato `YYYY-MM-DD`, apenas retorna
-    }));
-
-    // Prepara o objeto conforme esperado pela API
-    const obj = {
-        id: $("#txtid").val() ? parseInt($("#txtid").val()) : 0, // Garante que seja numérico
-        idPaciente: parseInt($("#selectPaciente").val()), // Garante que seja numérico
-        idCid: parseInt($("#selectCid").val()), // Garante que seja numérico
-        inicioApac: formatarData($("#txtinicioApac").val()) || new Date().toISOString(), // Se não houver, usa a data atual
-        fimApac: formatarData($("#txtfimApac").val()) || new Date().toISOString(), // Se não houver, usa a data atual
-        observacao: $("#txtObservacao").val(),
-        dataRenovacao: formatarData($("#dataRenovacao").val()), // Usa a data diretamente
-        dataSuspensao: formatarData($("#dataSuspensao").val()), // Usa a data diretamente
-        idStatusProcesso: parseInt($("#selectStatusProcesso").val()), // Garante que seja numérico
-        idTipoProcesso: parseInt($("#selectTipoProcesso").val()), // Garante que seja numérico
-        medicamento: medicamentosFormatados // Medicamentos formatados
-    };
-
-    console.log("Dados enviados: ", obj); // Log para verificar os dados que estão sendo enviados
-
-    $.ajax({
-        type: obj.id === 0 ? "POST" : "PUT", // Verifica se é criação ou atualização
-        url: urlAPI + "api/Dispensacao" + (obj.id !== 0 ? "/" + obj.id : ""),
-        contentType: "application/json;charset=utf-8",
-        data: JSON.stringify(obj), // Serializa o objeto em JSON
-        dataType: "json",
-        success: function () {
-            limparFormulario();
-            alert("Dados salvos com sucesso!");
-
-            if ($("#tabela").length > 0) {
-                carregarDispensacoes(); // Atualiza a tabela se necessário
+        // Verifica se o nome do medicamento não está preenchido
+        for (const m of dispensacao.medicamento) {
+            if (!m.nomeMedicamento || m.nomeMedicamento === "undefined") {
+                // Busca o nome do medicamento pelo idMedicamento
+                const medicamentoDetalhes = await $.ajax({
+                    url: `${urlAPI}api/Medicamento/${m.idMedicamento}`,
+                    method: "GET"
+                });
+                m.nomeMedicamento = medicamentoDetalhes.nome;  // Preenche o nome do medicamento
             }
-            houveAlteracao = false;
-        },
-        error: function (jqXHR, textStatus) {
-            console.log("Erro ao salvar os dados: ", jqXHR.responseText); // Exibe a resposta de erro no console
-            alert("Erro ao salvar os dados: " + textStatus);
         }
-    });
+
+        // Preenchendo a tabela de medicamentos
+        medicamentos = dispensacao.medicamento.map(m => ({
+            idMedicamento: m.idMedicamento,
+            nomeMedicamento: m.nomeMedicamento,  // Agora o nome será preenchido corretamente
+            quantidade: m.quantidade,
+            dataEntrega: m.dataEntrega,
+            recibo: m.recibo,
+            receita: m.receita,
+            medicamentoChegou: m.medicamentoChegou,
+            medicamentoEntregue: m.medicamentoEntregue
+        }));
+        atualizarTabelaMedicamentos();
+
+    } catch (error) {
+        alert("Erro ao carregar os dados da dispensação.");
+    }
 }
-
-
 
 
 function validarCampos() {
     let isValid = true;
     $(".form-control").removeClass('is-invalid');
 
-    if ($("#selectPaciente").val() === "0") {
-        $("#selectPaciente").addClass('is-invalid');
-        isValid = false;
-    }
-    if ($("#selectCid").val() === "0") {
-        $("#selectCid").addClass('is-invalid');
-        isValid = false;
-    }
+    const camposObrigatorios = [
+        "#selectPaciente",
+        "#txtinicioApac",
+        "#txtfimApac",
+        "#selectStatusProcesso",
+        "#selectTipoProcesso",
+        "#selectCid" // Adiciona o CID na validação
+    ];
+
+    camposObrigatorios.forEach(function (campo) {
+        let valor = $(campo).val().trim();
+
+        if (valor === "" || valor === "0") {
+            $(campo).addClass('is-invalid');
+            isValid = false;
+        }
+    });
 
     if (medicamentos.length === 0) {
-        alert("Por favor, adicione pelo menos um medicamento.");
+        $("#mensagemValidacao").text("Por favor, adicione pelo menos um medicamento.");
         isValid = false;
+    } else {
+        $("#mensagemValidacao").text("");
     }
 
     return isValid;
 }
 
+
+$("#btnsalvar").click(function () {
+    if (validarCampos()) {
+        const obj = {
+            idPaciente: $("#selectPaciente").val(),
+            idCid: $("#selectCid").val(),
+            inicioApac: $("#txtinicioApac").val(),
+            fimApac: $("#txtfimApac").val(),
+            observacao: $("#txtObservacao").val(),
+            idStatusProcesso: $("#selectStatusProcesso").val(),
+            idTipoProcesso: $("#selectTipoProcesso").val(),
+            dataRenovacao: $("#txtdataRenovacao").val(), // Captura a data de renovação
+            dataSuspensao: $("#txtdataSuspensao").val(), // Captura a data de suspensão
+            medicamento: medicamentos.map(medicamento => ({
+                idMedicamento: medicamento.idMedicamento,
+                nomeMedicamento: medicamento.nomeMedicamento,  // Aqui estava o erro
+                quantidade: medicamento.quantidade,
+                dataEntrega: medicamento.dataEntrega,
+                recibo: medicamento.recibo,
+                receita: medicamento.receita,
+                medicamentoChegou: medicamento.medicamentoChegou,  // Adiciona o campo medicamentoChegou
+                medicamentoEntregue: medicamento.medicamentoEntregue // Adiciona o campo medicamentoEntregue
+            }))
+        };
+
+        console.log("Objeto a ser enviado:", obj);
+
+        $.ajax({
+            type: "POST",
+            url: urlAPI + "api/Dispensacao",
+            contentType: "application/json;charset=utf-8",
+            data: JSON.stringify(obj),
+            dataType: "json",
+            success: function () {
+                limparFormulario();
+                alert("Dados salvos com sucesso!");
+                houveAlteracao = false;
+            },
+            error: function (jqXHR, textStatus) {
+                alert("Erro ao salvar os dados: " + textStatus);
+            }
+        });
+    }
+});
+
+
+
 function limparFormulario() {
     $("#selectPaciente").val('0');
-    $("#selectCid").val('0');
     $("#txtinicioApac").val('');
     $("#txtfimApac").val('');
-    $("#txtObservacao").val('');
     $("#selectStatusProcesso").val('0');
     $("#selectTipoProcesso").val('0');
+    $("#txtObservacao").val('');
     medicamentos = [];
     atualizarTabelaMedicamentos();
-}
-
-function visualizar(id) {
-    console.log("Chamando visualizar para o ID: " + id);
-
-    $.ajax({
-        url: urlAPI + "api/Dispensacao/" + id + "/dadosCompletos",
-        method: "GET",
-        success: function (data) {
-            console.log("Dados recebidos:", data);
-
-            if (data) {
-                $("#txtid").val(data.id);
-                $("#selectPaciente").val(data.idPaciente);
-                $("#selectCid").val(data.idCid);
-                $("#txtinicioApac").val(new Date(data.inicioApac).toISOString().split('T')[0]);
-                $("#txtfimApac").val(new Date(data.fimApac).toISOString().split('T')[0]);
-                $("#txtObservacao").val(data.observacao);
-                $("#selectStatusProcesso").val(data.idStatusProcesso);
-                $("#selectTipoProcesso").val(data.idTipoProcesso);
-
-                medicamentos = data.medicamento || [];
-                atualizarTabelaMedicamentos();
-            } else {
-                alert("Nenhuma informação encontrada para essa dispensação.");
-            }
-        },
-        error: function (error) {
-            console.log("Erro ao carregar os dados da dispensação:", error);
-            alert("Erro ao carregar os dados da dispensação.");
-        }
-    });
 }

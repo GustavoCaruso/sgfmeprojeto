@@ -21,6 +21,7 @@ $(document).ready(async function () {
 
     // Função para buscar o representante pelo RG
     // Função para buscar o representante pelo RG e adicioná-lo à lista de representantes
+    // Função para buscar o representante pelo RG e adicioná-lo à lista de representantes
     $("#btnBuscarRepresentante").click(function () {
         var rg = $("#txtRepresentanteRg").val(); // Obtém o valor do campo RG
         if (rg.trim() === "") {
@@ -47,16 +48,16 @@ $(document).ready(async function () {
                 // Adiciona o representante à tabela e à lista de representantes
                 const tabela = $("#representanteTable tbody");
                 var linha = `
-            <tr>
-                <td>${data.nomeCompleto}</td>
-                <td>${data.rgNumero}</td>
-                <td>${data.cpfNumero}</td>
-                <td>${new Date(data.dataNascimento).toLocaleDateString()}</td>
-                <td>
-                    <button class="btn btn-danger btnDesvincularRepresentante" data-rg="${data.rgNumero}">Desvincular</button>
-                </td>
-            </tr>
-            `;
+        <tr>
+            <td>${data.nomeCompleto}</td>
+            <td>${data.rgNumero}</td>
+            <td>${data.cpfNumero}</td>
+            <td>${new Date(data.dataNascimento).toLocaleDateString()}</td>
+            <td>
+                <button class="btn btn-danger btnDesvincularRepresentante" data-rg="${data.rgNumero}">Desvincular</button>
+            </td>
+        </tr>
+        `;
                 tabela.append(linha);
                 rgRepresentantes.push(data.rgNumero); // Atualiza a lista de representantes com o RG do novo representante
                 alert("Representante vinculado com sucesso!");
@@ -67,7 +68,6 @@ $(document).ready(async function () {
         });
     });
 
-
     // Função para desvincular o representante
     $(document).on('click', '.btnDesvincularRepresentante', function () {
         var representanteRg = $(this).data('rg'); // Obtém o RG do representante
@@ -76,6 +76,7 @@ $(document).ready(async function () {
         alert("Representante desvinculado com sucesso!");
         console.log("Representantes RGs vinculados:", rgRepresentantes); // Exibe os RGs vinculados no console
     });
+
 
 
     if ($("#tabela").length > 0) {
@@ -419,7 +420,8 @@ function carregarPacientes() {
             const tabela = $("#tabela");
             tabela.empty();
 
-            const fragment = document.createDocumentFragment();
+            // Usar um array como fragmento temporário
+            const fragment = [];
 
             $.each(data, function (index, item) {
                 var linha = $("#linhaExemplo").clone().removeAttr("id").removeAttr("style");
@@ -446,10 +448,12 @@ function carregarPacientes() {
                     .val(item.idStatus); // Define o valor selecionado
                 $(linha).find(".status").html(statusSelect);
 
-                fragment.appendChild(linha[0]); // Adiciona a linha ao fragmento
+                // Adiciona a linha ao fragmento
+                fragment.push(linha);
             });
 
-            tabela.append(fragment); // Adiciona todas as linhas de uma vez ao DOM
+            // Usa o método .append() para adicionar tudo de uma vez
+            tabela.append(fragment);
 
             $('#tabelaPaciente').DataTable({
                 language: {
@@ -466,6 +470,7 @@ function carregarPacientes() {
         }
     });
 }
+
 
 function validarCampos() {
     let isValid = true;
@@ -493,9 +498,10 @@ function validarCampos() {
     ];
 
     camposObrigatorios.forEach(function (campo) {
-        let valor = $(campo).val().trim();
+        let valor = $(campo).val();
 
-        if (valor === "" || valor === "0") {
+        // Verifica se o valor não é nulo ou undefined antes de aplicar o trim()
+        if (!valor || valor.trim() === "" || valor === "0") {
             $(campo).addClass('is-invalid');
             isValid = false;
         }
@@ -517,6 +523,7 @@ function validarCampos() {
 
     return isValid;
 }
+
 
 $("#btnsalvar").click(function () {
     if (validarCampos()) {
@@ -560,7 +567,6 @@ $("#btnsalvar").click(function () {
             endereco: enderecos
         };
 
-        // Logar os dados enviados
         console.log("Dados enviados:", obj);
 
         // Chamada Ajax para salvar o paciente (POST ou PUT)
@@ -586,6 +592,7 @@ $("#btnsalvar").click(function () {
         });
     }
 });
+
 
 
 
@@ -619,12 +626,13 @@ function limparFormulario() {
 
     contatos = [];
     enderecos = [];
+    rgRepresentantes = []; // Limpa a lista de representantes
     atualizarTabelaContatos();
     atualizarTabelaEnderecos();
+    atualizarTabelaRepresentantes(); // Chama a função para atualizar a tabela de representantes
 
     houveAlteracao = false; // Resetar a flag de alteração após limpar o formulário
 }
-
 function mudarStatus(codigo, novoStatus) {
     console.log("Alterando status para Paciente:", codigo, "Novo Status:", novoStatus);
     $.ajax({
@@ -730,15 +738,18 @@ async function visualizar(codigo) {
         $("#txtpeso").val(jsonResult.peso || '');
         $("#txtaltura").val(jsonResult.altura || '');
 
-        // Preencher contatos
+        // Preencher contatos, associando o tipo correto com base nos dados carregados
         contatos = (jsonResult.contatos || []).map(c => ({
-            tipo: c.tipoContato,
+            idTipoContato: c.idTipoContato,
+            tipo: $("#selectTipoContato option[value='" + c.idTipoContato + "']").text(),
             valor: c.valor
         }));
         atualizarTabelaContatos();
 
-        // Preencher endereços
+        // Preencher endereços, associando o tipo correto com base nos dados carregados
         enderecos = (jsonResult.enderecos || []).map(e => ({
+            idTipoEndereco: e.idTipoEndereco,
+            tipo: $("#selectTipoEndereco option[value='" + e.idTipoEndereco + "']").text(),
             logradouro: e.logradouro,
             numero: e.numero,
             complemento: e.complemento,
@@ -792,6 +803,8 @@ async function visualizar(codigo) {
         $("#loading").hide();
     }
 }
+
+
 
 function atualizarTabelaContatos() {
     const tabela = $("#contatoTable tbody");
@@ -1219,6 +1232,11 @@ $("#txtpeso, #txtaltura").on("blur", function () {
     $(this).val(valor);
 });
 
+// Função para atualizar a tabela de representantes
+function atualizarTabelaRepresentantes() {
+    const tabela = $("#representanteTable tbody");
+    tabela.empty(); // Limpa a tabela de representantes
+}
 
 
 

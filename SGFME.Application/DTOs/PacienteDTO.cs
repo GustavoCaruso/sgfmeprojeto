@@ -25,15 +25,15 @@ namespace SGFME.Application.DTOs
 
 
         public long idStatus { get; set; }
-        
+
 
         public long idSexo { get; set; }
-        
+
 
         public long idProfissao { get; set; }
-        
+
         public long idCorRaca { get; set; }
-        
+
         public long idEstadoCivil { get; set; }
 
         // Lista de Rgs dos representantes
