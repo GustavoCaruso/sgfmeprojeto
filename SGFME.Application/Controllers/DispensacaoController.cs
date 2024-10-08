@@ -302,6 +302,49 @@ namespace SGFME.Application.Controllers
             }
         }
 
+        // Método para buscar paciente pelo RG
+        [HttpGet("buscarPorRg/{rg}")]
+        public async Task<ActionResult<object>> GetPacienteByRg(string rg)
+        {
+            try
+            {
+                // Busca o paciente com base no RG informado
+                var paciente = await _context.paciente
+                    .Include(p => p.pacienterepresentante) // Inclui os representantes vinculados
+                        .ThenInclude(pr => pr.representante) // Inclui os dados do representante
+                    .FirstOrDefaultAsync(p => p.rgNumero == rg);
+
+                // Caso o paciente não seja encontrado
+                if (paciente == null)
+                {
+                    return NotFound("Paciente não encontrado.");
+                }
+
+                // Retorna os dados do paciente, incluindo o idPaciente, data de nascimento, RG, CPF e os representantes
+                var resultado = new
+                {
+                    idPaciente = paciente.id, // Inclui o id do paciente no retorno
+                    nomePaciente = paciente.nomeCompleto,
+                    dataNascimento = paciente.dataNascimento,
+                    rgNumero = paciente.rgNumero,
+                    cpfNumero = paciente.cpfNumero,
+                    representante = paciente.pacienterepresentante.Select(pr => new
+                    {
+                        nomeRepresentante = pr.representante.nomeCompleto,
+                        dataNascimentoRepresentante = pr.representante.dataNascimento,
+                        rgRepresentante = pr.representante.rgNumero,
+                        cpfRepresentante = pr.representante.cpfNumero,
+                    }).ToList()
+                };
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao buscar o paciente: {ex.Message}");
+            }
+        }
+
 
 
 

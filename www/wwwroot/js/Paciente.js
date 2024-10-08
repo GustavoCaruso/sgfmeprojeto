@@ -126,13 +126,20 @@ $(document).ready(async function () {
     $(document).off("click", ".btn-danger[data-type='contato']").on("click", ".btn-danger[data-type='contato']", function () {
         const index = $(this).data("index");
         console.log("Clique para excluir contato. Índice:", index);
+
         const confirmDelete = confirm("Você tem certeza que deseja excluir este contato?");
         if (confirmDelete) {
             console.log("Confirmação de exclusão de contato. Índice:", index);
-            contatos.splice(index, 1);
-            atualizarTabelaContatos();
+            contatos.splice(index, 1); // Remove o contato pelo índice
+            atualizarTabelaContatos(); // Atualiza a tabela de contatos
+        } else {
+            // Não faz nada, apenas loga que a exclusão foi cancelada
+            console.log("Exclusão de contato cancelada.");
         }
     });
+
+
+
 
     $(document).off("click", ".btn-danger[data-type='endereco']").on("click", ".btn-danger[data-type='endereco']", function () {
         const index = $(this).data("index");
@@ -524,20 +531,33 @@ function validarCampos() {
     return isValid;
 }
 
+function removerMascaraCPFouCNS(valor) {
+    return valor.replace(/\D/g, ''); // Remove tudo que não for número
+}
 
+function removerMascaraRG(valor) {
+    return valor.replace(/[^\w]/g, ''); // Remove tudo que não for letras ou números
+}
+
+// No clique do botão salvar
 $("#btnsalvar").click(function () {
     if (validarCampos()) {
         $("#btnsalvar").prop("disabled", true);
 
-        const rgNumero = removerMascara($("#txtrgNumero").val(), "RG");
-        const cnsNumero = removerMascara($("#txtcnsNumero").val(), "CNS");
-        const cpfNumero = removerMascara($("#txtcpfNumero").val(), "CPF");
+        // Removendo as máscaras de CPF, RG e CNS antes de enviar
+        const rgNumero = removerMascaraRG($("#txtrgNumero").val());
+        const cnsNumero = removerMascaraCPFouCNS($("#txtcnsNumero").val());
+        const cpfNumero = removerMascaraCPFouCNS($("#txtcpfNumero").val());
 
-        // Mapear endereços removendo a máscara do CEP
-        enderecos = enderecos.map(endereco => ({
-            ...endereco,
-            cep: removerMascara(endereco.cep, "CEP")
-        }));
+        // Verificar se algum representante já está na tabela, se sim, manter na lista
+        let representantesVinculados = [];
+        $("#representanteTable tbody tr").each(function () {
+            let rgRepresentante = $(this).find('td:nth-child(2)').text();
+            representantesVinculados.push(rgRepresentante);
+        });
+
+        // Unir a lista de representantes atuais com a lista de novos representantes
+        rgRepresentantes = [...new Set([...rgRepresentantes, ...representantesVinculados])];
 
         // Objeto que será enviado no PUT ou POST
         const obj = {
@@ -562,12 +582,10 @@ $("#btnsalvar").click(function () {
             idProfissao: $("#selectProfissao").val(),
             idCorRaca: $("#selectCorRaca").val(),
             idEstadoCivil: $("#selectEstadoCivil").val(),
-            rgRepresentante: rgRepresentantes.length > 0 ? rgRepresentantes : [], // Envia os representantes
+            rgRepresentante: rgRepresentantes.length > 0 ? rgRepresentantes : [],
             contato: contatos,
             endereco: enderecos
         };
-
-        console.log("Dados enviados:", obj);
 
         // Chamada Ajax para salvar o paciente (POST ou PUT)
         $.ajax({
@@ -579,7 +597,7 @@ $("#btnsalvar").click(function () {
             success: function () {
                 limparFormulario();
                 alert("Dados salvos com sucesso!");
-                carregarPacientes();  // Recarregar a lista de pacientes, se necessário
+                carregarPacientes();
             },
             error: function (jqXHR, textStatus) {
                 console.log("Erro ao salvar os dados:", textStatus);
@@ -587,11 +605,12 @@ $("#btnsalvar").click(function () {
                 alert("Erro ao salvar os dados.");
             },
             complete: function () {
-                $("#btnsalvar").prop("disabled", false);  // Reabilitar o botão de salvar após a conclusão
+                $("#btnsalvar").prop("disabled", false);
             }
         });
     }
 });
+
 
 
 
@@ -810,6 +829,7 @@ function atualizarTabelaContatos() {
     const tabela = $("#contatoTable tbody");
     tabela.empty(); // Limpa a tabela antes de adicionar os contatos
 
+    // Reinsere os contatos da lista "contatos" na tabela
     contatos.forEach((contato, index) => {
         let valorFormatado = contato.valor;
 
@@ -831,19 +851,33 @@ function atualizarTabelaContatos() {
         tabela.append(linha);
     });
 
+    // Remove qualquer evento previamente anexado para garantir que o clique seja registrado apenas uma vez
+    $(document).off("click", ".btn-edit[data-type='contato']");
+    $(document).off("click", ".btn-danger[data-type='contato']");
+
     // Vincula o evento de edição ao botão "Editar"
-    $(".btn-edit[data-type='contato']").off("click").on("click", function () {
+    $(document).on("click", ".btn-edit[data-type='contato']", function () {
         const index = $(this).data("index");
         editarContato(index);
     });
 
     // Vincula o evento de exclusão ao botão "Excluir"
-    $(".btn-danger[data-type='contato']").off("click").on("click", function () {
+    $(document).on("click", ".btn-danger[data-type='contato']", function () {
         const index = $(this).data("index");
-        contatos.splice(index, 1); // Remove o contato pelo índice
-        atualizarTabelaContatos(); // Atualiza a tabela novamente
+        console.log("Clique para excluir contato. Índice:", index);
+
+        const confirmDelete = confirm("Você tem certeza que deseja excluir este contato?");
+        if (confirmDelete) {
+            console.log("Confirmação de exclusão de contato. Índice:", index);
+            contatos.splice(index, 1); // Remove o contato pelo índice
+            atualizarTabelaContatos(); // Atualiza a tabela de contatos
+        } else {
+            console.log("Exclusão de contato cancelada.");
+        }
     });
 }
+
+
 
 
 function editarContato(index) {
