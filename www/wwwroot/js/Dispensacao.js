@@ -7,6 +7,7 @@ let medicamentoOptions = '';
 let medicamentos = [];
 let houveAlteracao = false;
 let medicamentoEmEdicao = null;
+let idPaciente = null; // Variável global para armazenar o ID do paciente
 
 $(document).ready(async function () {
     await carregarDadosSelecoes();
@@ -19,8 +20,25 @@ $(document).ready(async function () {
         if (id) {
             visualizar(id);
         } else {
-            let dataAtual = new Date().toISOString().split('T')[0];
-            $("#txtinicioApac").val(dataAtual);
+            // Definir a data atual menos 3 horas para o campo de início APAC
+            let dataAtual = new Date();
+            dataAtual.setHours(dataAtual.getHours() - 3); // Subtrai 3 horas da data atual
+
+            let dataAtualFormatada = dataAtual.toISOString().split('T')[0]; // Formata como YYYY-MM-DD
+            $("#txtinicioApac").val(dataAtualFormatada); // Define no campo de início do APAC
+
+            // Calcular a data de fim como 6 meses à frente
+            let dataFim = new Date(dataAtual); // Cria uma cópia da data atual
+            dataFim.setMonth(dataFim.getMonth() + 6); // Adiciona 6 meses
+
+            // Verifica se a adição de 6 meses resultou em um mês inválido (isso pode acontecer ao adicionar meses em datas como 31)
+            if (dataFim.getDate() !== dataAtual.getDate()) {
+                dataFim.setDate(0); // Define o último dia do mês anterior
+            }
+
+            let dataFimFormatada = dataFim.toISOString().split('T')[0]; // Formata como YYYY-MM-DD
+            $("#txtfimApac").val(dataFimFormatada); // Define no campo de fim do APAC
+        
         }
     }
 
@@ -46,7 +64,96 @@ $(document).ready(async function () {
     $("#btnAdicionarMedicamento").click(function () {
         adicionarMedicamento();
     });
+
+    $("#txtRgPaciente").on('blur', function () {
+        const rgPaciente = $(this).val().trim();
+
+        if (rgPaciente) {
+            $.ajax({
+                url: urlAPI + "api/Dispensacao/buscarPorRg/" + rgPaciente,
+                method: "GET",
+                success: function (data) {
+                    if (data) {
+                        // Preencher os campos do paciente
+                        $("#txtNomePaciente").val(data.nomePaciente);
+                        $("#txtDataNascimento").val(data.dataNascimento ? data.dataNascimento.split('T')[0] : '');
+                        $("#txtCpfPaciente").val(data.cpfNumero);
+
+                        // Armazenar o ID do paciente
+                        idPaciente = data.idPaciente;  // Armazena o ID do paciente retornado
+
+                        // Definir a data atual menos 3 horas para o campo de início APAC
+                        let dataAtual = new Date();
+                        dataAtual.setHours(dataAtual.getHours() - 3); // Subtrai 3 horas da data atual
+
+                        let dataAtualFormatada = dataAtual.toISOString().split('T')[0]; // Extrai apenas a data no formato YYYY-MM-DD
+                        $("#txtinicioApac").val(dataAtualFormatada); // Define no campo de início do APAC
+
+                        // Calcular a data de fim como 6 meses à frente
+                        let dataFim = new Date(dataAtual); // Cria uma cópia da data atual
+                        dataFim.setMonth(dataFim.getMonth() + 6); // Adiciona 6 meses
+
+                        // Verifica se a adição de 6 meses resultou em um mês inválido (exemplo, dia 31)
+                        if (dataFim.getDate() !== dataAtual.getDate()) {
+                            dataFim.setDate(0); // Define o último dia do mês anterior
+                        }
+
+                        let dataFimFormatada = dataFim.toISOString().split('T')[0]; // Extrai apenas a data no formato YYYY-MM-DD
+                        $("#txtfimApac").val(dataFimFormatada); // Define no campo de fim do APAC
+
+                        // Preencher a tabela de representantes
+                        let tbody = $("#representanteTable tbody");
+                        tbody.empty(); // Limpa a tabela
+
+                        data.representante.forEach(rep => {
+                            let dataNascimentoRepresentante = rep.dataNascimentoRepresentante ? new Date(rep.dataNascimentoRepresentante).toLocaleDateString('pt-BR') : '';
+
+                            let row = `
+                            <tr>
+                                <td>${rep.nomeRepresentante}</td>
+                                <td>${rep.rgRepresentante}</td>
+                                <td>${rep.cpfRepresentante}</td>
+                                <td>${dataNascimentoRepresentante}</td>
+                            </tr>`;
+
+                            tbody.append(row);
+                        });
+
+                        if (data.representante.length === 0) {
+                            tbody.append('<tr><td colspan="4">Nenhum representante encontrado</td></tr>');
+                        }
+                    } else {
+                        alert("Paciente não encontrado");
+                        limparCamposPaciente();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("Erro ao buscar o paciente:", textStatus, errorThrown);
+                    alert("Erro ao buscar o paciente");
+                    limparCamposPaciente();
+                }
+            });
+        } else {
+            alert("Por favor, insira um RG válido.");
+            limparCamposPaciente();
+        }
+    });
+
+
+
 });
+
+
+
+// Função para limpar os campos do paciente
+function limparCamposPaciente() {
+    $("#txtNomePaciente").val('');
+    $("#txtDataNascimento").val('');
+    $("#txtCpfPaciente").val('');
+    $("#representanteTable tbody").empty();
+}
+
+
 
 function carregarDadosSelecoes() {
     return Promise.all([
@@ -182,15 +289,15 @@ function carregarDispensacoes() {
     });
 }
 
-$("#btnAdicionarMedicamento").click(function () {
+function adicionarMedicamento() {
     const idMedicamento = $("#selectMedicamento").val();
     const nomeMedicamento = $("#selectMedicamento option:selected").text();
     const quantidade = $("#txtQuantidade").val();
     const dataEntrega = $("#txtDataEntrega").val();
     const recibo = $("#txtRecibo").is(":checked");
     const receita = $("#txtReceita").is(":checked");
-    const medicamentoChegou = $("#txtmedicamentoChegou").is(":checked"); // Captura o valor de medicamentoChegou
-    const medicamentoEntregue = $("#txtmedicamentoEntregue").is(":checked"); // Captura o valor de medicamentoEntregue
+    const medicamentoChegou = $("#txtmedicamentoChegou").is(":checked");
+    const medicamentoEntregue = $("#txtmedicamentoEntregue").is(":checked");
 
     if (!idMedicamento || idMedicamento === "0") {
         alert("Por favor, selecione um medicamento.");
@@ -209,8 +316,8 @@ $("#btnAdicionarMedicamento").click(function () {
         dataEntrega,
         recibo,
         receita,
-        medicamentoChegou, // Inclui medicamentoChegou
-        medicamentoEntregue // Inclui medicamentoEntregue
+        medicamentoChegou,
+        medicamentoEntregue
     };
 
     if (medicamentoEmEdicao !== null) {
@@ -222,7 +329,10 @@ $("#btnAdicionarMedicamento").click(function () {
 
     atualizarTabelaMedicamentos();
     limparCamposMedicamento();
-});
+}
+
+
+
 
 function atualizarTabelaMedicamentos() {
     const tabela = $("#medicamentoTable tbody");
@@ -350,11 +460,16 @@ function validarCampos() {
     ];
 
     camposObrigatorios.forEach(function (campo) {
-        let valor = $(campo).val().trim();
+        let campoElemento = $(campo);
 
-        if (valor === "" || valor === "0") {
-            $(campo).addClass('is-invalid');
-            isValid = false;
+        // Verifica se o campo existe e não está vazio ou não selecionado
+        if (campoElemento.length > 0) {
+            let valor = campoElemento.val() ? campoElemento.val().trim() : "";
+
+            if (valor === "" || valor === "0") {
+                campoElemento.addClass('is-invalid');
+                isValid = false;
+            }
         }
     });
 
@@ -372,24 +487,24 @@ function validarCampos() {
 $("#btnsalvar").click(function () {
     if (validarCampos()) {
         const obj = {
-            idPaciente: $("#selectPaciente").val(),
+            idPaciente: idPaciente, // Usando o ID do paciente armazenado
             idCid: $("#selectCid").val(),
             inicioApac: $("#txtinicioApac").val(),
             fimApac: $("#txtfimApac").val(),
             observacao: $("#txtObservacao").val(),
             idStatusProcesso: $("#selectStatusProcesso").val(),
             idTipoProcesso: $("#selectTipoProcesso").val(),
-            dataRenovacao: $("#txtdataRenovacao").val(), // Captura a data de renovação
-            dataSuspensao: $("#txtdataSuspensao").val(), // Captura a data de suspensão
+            dataRenovacao: $("#txtdataRenovacao").val(),
+            dataSuspensao: $("#txtdataSuspensao").val(),
             medicamento: medicamentos.map(medicamento => ({
                 idMedicamento: medicamento.idMedicamento,
-                nomeMedicamento: medicamento.nomeMedicamento,  // Aqui estava o erro
+                nomeMedicamento: medicamento.nomeMedicamento,
                 quantidade: medicamento.quantidade,
                 dataEntrega: medicamento.dataEntrega,
                 recibo: medicamento.recibo,
                 receita: medicamento.receita,
-                medicamentoChegou: medicamento.medicamentoChegou,  // Adiciona o campo medicamentoChegou
-                medicamentoEntregue: medicamento.medicamentoEntregue // Adiciona o campo medicamentoEntregue
+                medicamentoChegou: medicamento.medicamentoChegou,
+                medicamentoEntregue: medicamento.medicamentoEntregue
             }))
         };
 
